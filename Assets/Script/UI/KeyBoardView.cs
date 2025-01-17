@@ -1,5 +1,7 @@
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 public class KeyBoardView : MonoBehaviour
 {
@@ -9,9 +11,12 @@ public class KeyBoardView : MonoBehaviour
     public Image Key_Right;
     public Image Key_Space;
 
+    public bool isSpacebarOn;
+
     void Start()
     {
-        
+        isSpacebarOn = true;
+        Deactive_KeySpace(); // isSpacebarOn가 true이면 실행됨
     }
 
     public void ChangeColer(int keyCode)
@@ -32,10 +37,11 @@ public class KeyBoardView : MonoBehaviour
         {
             Key_Right.color = Color.white * 0.8f;
         }
-        else if (keyCode == (int)KeyCode.Space)
+        else if (keyCode == (int)KeyCode.Space && isSpacebarOn == true)
         {
             Key_Space.color = Color.white * 0.8f;
         }
+
     }
 
     public void revertColor(int keyCode)
@@ -56,10 +62,29 @@ public class KeyBoardView : MonoBehaviour
         {
             Key_Right.color = Color.white;
         }
-        else if (keyCode == (int)KeyCode.Space)
+        else if (keyCode == (int)KeyCode.Space && isSpacebarOn == true)
         {
             Key_Space.color = Color.white;
         }
+        
+    }
+
+    public void Active_KeySpace()
+    {
+        if (isSpacebarOn == false)
+        {
+            Key_Space.color = Color.white;
+            isSpacebarOn = true;
+        }
+        
+    }
+    public void Deactive_KeySpace()
+    {
+        if (isSpacebarOn == true)
+        {
+            Key_Space.color = Color.white * 0.8f;
+            isSpacebarOn = false;
+        }   
     }
 
     // Update is called once per frame
