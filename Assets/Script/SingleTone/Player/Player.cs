@@ -1,26 +1,8 @@
-using System.Collections;
-using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
-using static UnityEngine.UI.Image;
 
-public class Player : MonoBehaviour
+public class Player : Singleton<Player>
 {
-    public static Player Instance { get; private set; }
-    private void MakeSingleTone()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            return;
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-    }
 
 
     public KeyBoardView keyBoardView { get; set; }
@@ -36,15 +18,16 @@ public class Player : MonoBehaviour
 
     
 
-    private void Awake()
+    protected override void Awake()
     {
-        MakeSingleTone();
+        base.Awake();
         moveVector = Vector2.zero;
     }
 
 
     void Start()
     {
+
     }
 
     void Update()
@@ -144,7 +127,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    
     private void Interact_With_Object()
     {
         //Vector3 direction = transform.position + new Vector3(moveVector.x, moveVector.y, 0);
