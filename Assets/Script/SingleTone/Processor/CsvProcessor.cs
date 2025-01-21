@@ -1,13 +1,12 @@
 using System.Collections.Generic;
-using System;
 using UnityEngine;
-using Unity.VisualScripting;
 using System.Linq;
-using System.Text;
+using UnityEngine.UI;
 
 public class CsvProcessor : Singleton<CsvProcessor>
 {
-    
+    public Text text;
+
     void Start()
     {
         
@@ -69,6 +68,68 @@ public class CsvProcessor : Singleton<CsvProcessor>
         }
     }
 
+    public virtual string[] GetText(CsvInfo csvInfo,Interactive interactive)
+    {
+        string[] csvFileNames = csvInfo.CsvFileName.Split("_");
+
+        // 에러 검사
+        if (csvFileNames[0] == "Interactive")
+        {
+            List<string> csvRows = new List<string>();
+            string gameStage = GameManager.Instance.gameStage; // 현재 진행정도를 확인하기 위한 변수
+
+            foreach (var csvRow in csvInfo.csvData)// csv데이터(행렬)에서 각 행을 꺼냄
+            {
+                // 현재 스테이지가 아닌부분은 패스
+                if (csvRow[0] != gameStage)
+                {
+                    continue; 
+                }
+
+                // 현재 스테이지의 경우
+                else if(csvRow[0] == gameStage)
+                {
+                    // 에러검사
+                    if(csvRow.Count>=2)
+                    {
+                        csvRows.Add(csvRow[1]);
+                    }
+                }
+            }
+            return csvRows.ToArray();
+            
+        }
+        else
+        {
+            Debug.LogError("잘못된 csv파일 전달");
+        }
+
+        return null;
+    }
+
+    public CsvInfo FindCsvInfo(string objectName, CsvInfo[] csvInfos, Interactive interactive)
+    {
+        foreach (var csvInfo in csvInfos)
+        {
+            string[] fileNameWord = csvInfo.CsvFileName.Split('_');
+
+            // 예외처리
+            if (fileNameWord.Length >=2)
+            {
+                // 이름이 같으면 해당하는 csvinfo를 찾은것임
+                if (fileNameWord[1] == objectName) 
+                {
+                    return csvInfo;
+                }
+            }
+            else
+            {
+                //디버깅
+            }
+            
+        }
+        return null;
+    }
     void Update()
     {
         

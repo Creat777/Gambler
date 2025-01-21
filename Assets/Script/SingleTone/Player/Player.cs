@@ -5,23 +5,31 @@ public class Player : Singleton<Player>
 {
 
 
+    // initializer 편집
     public KeyBoardView keyBoardView { get; set; }
+
+    // 에디터 편집
     public Rigidbody2D rigid;
     public Animator animator;
     public Vector2 moveVector;
-    private float rayLength = 1f;
-    public string animation_MoveKey = "isKeyDown";
-    public float moveSpeed;
-    public GameObject bed;
-    public GameObject TempImage;
-    public GameObject hitObject;
 
-    
+    // 스크립트 편집
+    private float rayLength = 1f;
+    public string animation_MoveKey { get; private set; }
+    public float moveSpeed;
+    public short Interactive;
+
+    public string hitObjectName { get; private set; }
+
+
+    //public GameObject TempImage;
 
     protected override void Awake()
     {
         base.Awake();
+        animation_MoveKey = "isKeyDown";
         moveVector = Vector2.zero;
+        Interactive = 1;
     }
 
 
@@ -135,30 +143,44 @@ public class Player : Singleton<Player>
         {
             Vector3 dir = moveVector.normalized;
             Vector3 origin = transform.position;
+
+            // scene으로 확인
             Debug.DrawRay(origin, dir, Color.red, rayLength);
+
+            // 레이캐스트로 확인할 레이어 선택
             int layerMask = LayerMask.GetMask("Interactive");
+
+            // 해당 레이어에서 처음으로 레이캐스트에 닿는 객체의 정보를 읽어옴
             RaycastHit2D hit = Physics2D.Raycast(origin, dir, rayLength, layerMask);
 
             if (hit.collider != null)
             {
-                hitObject = hit.collider.gameObject;
+                hitObjectName = hit.collider.gameObject.name;
+
                 //TempImage.transform.position = Camera.main.WorldToScreenPoint(hit.transform.position);
                 keyBoardView.Active_KeySpace();
             }
             else
             {
-                hitObject = null;
+                hitObjectName = null;
                 keyBoardView.Deactive_KeySpace();
             }
         }
     }
     public void InputSpaceBar()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && keyBoardView.isSpacebarOn)
         {
             keyBoardView.ChangeColer((int)KeyCode.Space);
+
+            // 동기화 세마포어
+            if(Interactive == 1)
+            {
+                Interactive--;
+            }
+            
         }
-        else if (Input.GetKeyUp(KeyCode.Space))
+        else if (Input.GetKeyUp(KeyCode.Space) )
         {
             keyBoardView.revertColor((int)KeyCode.Space);
         }
