@@ -1,18 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using UnityEngine.UI;
+using System.Text;
 
 public class CsvProcessor : Singleton<CsvProcessor>
 {
-    public Text text;
 
     void Start()
     {
         
     }
-    
-
     public virtual void CsvLoading(TextAsset csvFile, List<List<string>> CsvData)
     {
         if (csvFile != null)
@@ -75,23 +72,29 @@ public class CsvProcessor : Singleton<CsvProcessor>
         // 에러 검사
         if (csvFileNames[0] == "Interactive")
         {
+            Debug.Log($"분할완료 : {csvFileNames[0]}_{csvFileNames[1]}");
+
             List<string> csvRows = new List<string>();
-            string gameStage = GameManager.Instance.gameStage; // 현재 진행정도를 확인하기 위한 변수
+            string gameStage = GameManager.Instance.curruentGameStage; // 현재 진행정도를 확인하기 위한 변수
 
             foreach (var csvRow in csvInfo.csvData)// csv데이터(행렬)에서 각 행을 꺼냄
             {
                 // 현재 스테이지가 아닌부분은 패스
                 if (csvRow[0] != gameStage)
                 {
-                    continue; 
+                    Debug.Log($"csvRow[0] : {csvRow[0]}");
+                    Debug.Log($"gameStage : {gameStage}");
+                    continue;  
                 }
 
                 // 현재 스테이지의 경우
                 else if(csvRow[0] == gameStage)
                 {
+                    Debug.Log("게임스테이지에 해당하는 스크립트 참조 성공");
                     // 에러검사
                     if(csvRow.Count>=2)
                     {
+                        // 스크립트 목록에 추가
                         csvRows.Add(csvRow[1]);
                     }
                 }
@@ -111,27 +114,23 @@ public class CsvProcessor : Singleton<CsvProcessor>
     {
         foreach (var csvInfo in csvInfos)
         {
-            string[] fileNameWord = csvInfo.CsvFileName.Split('_');
+            // ex) Interactive_Bed
 
-            // 예외처리
-            if (fileNameWord.Length >=2)
+            // 이름이 같으면 해당하는 csvinfo를 찾은것임
+            if (csvInfo.CsvFileName == objectName)
             {
-                // 이름이 같으면 해당하는 csvinfo를 찾은것임
-                if (fileNameWord[1] == objectName) 
-                {
-                    return csvInfo;
-                }
+                return csvInfo;
             }
-            else
-            {
-                //디버깅
-            }
-            
         }
         return null;
     }
     void Update()
     {
         
+    }
+
+    public string ConvertEncoding(byte[] bytes, Encoding targetEncoding)
+    {
+        return targetEncoding.GetString(bytes);
     }
 }

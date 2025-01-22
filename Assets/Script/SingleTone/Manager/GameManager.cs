@@ -12,7 +12,10 @@ public class GameManager : Singleton<GameManager>
     public bool isInGame {  get; private set; }
     public bool isGamePause {  get; private set; }
     public float gameSpeed { get; private set; }
-    public string gameStage {  get; private set; } // 현재 게임 진행정도를 확인하기 위한 변수
+
+    public string[] gameStages { get; private set; }
+    public int maxStage;
+    public string curruentGameStage {  get; private set; } // 현재 게임 진행정도를 확인하기 위한 변수
 
     protected override void Awake()
     {
@@ -43,7 +46,12 @@ public class GameManager : Singleton<GameManager>
 
     void Start()
     {
-        
+        gameStages = new string[maxStage];
+        for(int i = 0; i < maxStage; i++)
+        {
+            gameStages[i] = $"Stage{i + 1}";
+        }
+        curruentGameStage = gameStages[0];
     }
 
     // Update is called once per frame
