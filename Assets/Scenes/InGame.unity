@@ -1050,7 +1050,7 @@ GameObject:
   - component: {fileID: 1021520828}
   - component: {fileID: 1021520829}
   m_Layer: 6
-  m_Name: Computer
+  m_Name: Interactive_Computer
   m_TagString: Interactive
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1972,7 +1972,7 @@ GameObject:
   - component: {fileID: 1148202752}
   - component: {fileID: 1148202753}
   m_Layer: 6
-  m_Name: Door
+  m_Name: Interactive_Door
   m_TagString: Interactive
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2106,7 +2106,7 @@ GameObject:
   - component: {fileID: 1173014801}
   - component: {fileID: 1173014802}
   m_Layer: 6
-  m_Name: Clock
+  m_Name: Interactive_Clock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4839,7 +4839,7 @@ GameObject:
   - component: {fileID: 1865024073}
   - component: {fileID: 1865024074}
   m_Layer: 6
-  m_Name: Cabinet
+  m_Name: Interactive_Cabinet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
