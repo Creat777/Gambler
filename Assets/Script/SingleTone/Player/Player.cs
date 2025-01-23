@@ -153,6 +153,7 @@ public class Player : Singleton<Player>
             // 해당 레이어에서 처음으로 레이캐스트에 닿는 객체의 정보를 읽어옴
             RaycastHit2D hit = Physics2D.Raycast(origin, dir, rayLength, layerMask);
 
+            // 움직여서 정면에 상호작용한 객체가 있으면 그 객체의 이름을 읽고 상호작용이 옵션을 켬
             if (hit.collider != null)
             {
                 hitObjectName = hit.collider.gameObject.name;
@@ -160,9 +161,9 @@ public class Player : Singleton<Player>
                 //TempImage.transform.position = Camera.main.WorldToScreenPoint(hit.transform.position);
                 keyBoardView.Active_KeySpace();
             }
+            // 그렇지 않으면 상호작용 옵션을 끔
             else
             {
-                hitObjectName = null;
                 keyBoardView.Deactive_KeySpace();
             }
         }

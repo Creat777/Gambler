@@ -1,9 +1,20 @@
 using System.Collections;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+
+//public enum Interactive_ID
+//{
+//    None = 0,
+//    Interactive_Bed,
+//    Interactive_Cabinet,
+//    Interactive_Clock,
+//    Interactive_Computer,
+//    Interactive_Door
+//}
+
 public class TextWindowView : MonoBehaviour
 {
+
     // 에디터에서 연결
     public Text textWindow;
     CsvInfo csvInfo;
@@ -11,19 +22,19 @@ public class TextWindowView : MonoBehaviour
 
     // 스크립트 수정
     Interactive interactive;
-    bool isInteractive;
     bool isTypingReady;
     float typingDelay;
     int TextIndex;
     string currentText;
+    string LastObjectName;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Awake()
     {
         interactive = new Interactive();
-        isInteractive = false;
         isTypingReady = true;
         typingDelay = 0.05f;
+        LastObjectName = "";
     }
 
     private void OnEnable()
@@ -36,7 +47,7 @@ public class TextWindowView : MonoBehaviour
             InteractiveProcess();
 
             // 상호작용을 시작할때 즉시 스크립트가 출력되도록 만듬
-            if (isInteractive && TextSet.Length >= 1)
+            if (TextSet.Length >= 1)
             {
                 if (isTypingReady)
                 {
@@ -57,7 +68,7 @@ public class TextWindowView : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 // 상호작용했고 스크립트를 읽어왔으면
-                if (isInteractive && TextSet.Length >= 1)
+                if (TextSet.Length >= 1)
                 {
                     if (isTypingReady)
                     {
@@ -80,30 +91,24 @@ public class TextWindowView : MonoBehaviour
     private void InteractiveProcess()
     {
         // 플레이어의 레이캐스트에 걸리는 객체
-        string objectName = Player.Instance.hitObjectName;
+        string curruntObjectName = Player.Instance.hitObjectName;
 
-        // 플레이어가 현재 상호작용할 수 있는 객체가 있으면
-        if (objectName != null)
+        // 이 객체는 플레이어가 상호작용 할 수 있을 때만 활성화됨
+        //Debug.Log($"현재 플레이어가 상호작용하는 객체 : {curruntObjectName}");
+
+        // 상호작용하여 스크립트를 읽어오지 않았으면
+        if (LastObjectName != curruntObjectName)
         {
-            Debug.Log($"현재 플레이어가 상호작용하는 객체 : {objectName}");
-            // 상호작용하여 스크립트를 읽어오지 않았으면
-            if (isInteractive == false)
-            {
-                // 스크립트를 읽어오고
-                GetTextSet(objectName);
+            // 스크립트를 읽어오고
+            GetTextSet(curruntObjectName);
 
-                // 스크립트 읽어왔음을 저장
-                isInteractive = true;
-                return;
-            }
+            // 마지막 상호작용한 객체의 이름을 저장
+            LastObjectName = curruntObjectName;
+            return;
         }
-
-        // 플레이어가 현재 상호작용할 수 있는 객체가 없으면
         else
         {
-            // 새롭게 상호작용하여 스크립트를 읽어올 수 있도록 만듬
-            isInteractive = false;
-            return;
+            //Debug.Log("이미 스크립트 목록을 읽어왔습니다");
         }
     }
 
@@ -112,13 +117,13 @@ public class TextWindowView : MonoBehaviour
         CsvInfo[] csvInfos = CsvManager.Instance.InteractiveCsvInfos;
 
         // 플레이어가 상호작용할 수 있는 객체인지 확인
-        csvInfo = CsvProcessor.Instance.FindCsvInfo(objectName, csvInfos, interactive);
+        csvInfo = CsvManager.Instance.FindCsvInfo(objectName, csvInfos, interactive);
 
         // 객체가 있으면 재생할 스크립트를 반환
         if (csvInfo != null)
         {
             Debug.Log($"GetTextSet로 읽어온 스크립트파일 : {csvInfo.CsvFileName}");
-            TextSet = CsvProcessor.Instance.GetText(csvInfo, interactive);
+            TextSet = CsvManager.Instance.GetText(csvInfo, interactive);
         }
     }
 
@@ -169,7 +174,5 @@ public class TextWindowView : MonoBehaviour
         }
         isTypingReady = true;
     }
-
-    // DOTO -> 코루틴으로 텍스트를 화면에 출력
 
 }
