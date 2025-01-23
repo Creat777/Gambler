@@ -4,8 +4,11 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - Door
-  - Interactive
+  - Enemy
+  - EnemyBullet
+  - MainBullet
+  - SubBullet
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -13,8 +16,8 @@ TagManager:
   - 
   - Water
   - UI
-  - Interactive
-  - 
+  - Player
+  - SortingLayer
   - 
   - 
   - 

@@ -1,4 +1,0 @@
-Stage1,서랍이 열쇠로 잠겨있다.
-Stage1,깨끗하게 관리된 것으로 봐서 최근까지 사용하던 물건 같다.
-Stage2,null
-Stage3,null
