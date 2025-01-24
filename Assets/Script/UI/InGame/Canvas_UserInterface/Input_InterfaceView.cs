@@ -13,7 +13,7 @@ public class Input_InterfaceView : MonoBehaviour, interactiveFuc
     protected virtual void Awake()
     {
         isInteractiveOn = true;
-        Deactive_InteractiveButton(); // isInteractiveOn가 true이면 실행됨
+        //Deactive_InteractiveButton(); // isInteractiveOn가 true이면 실행됨
     }
 
     void interactiveFuc.Active_KeySpace()
