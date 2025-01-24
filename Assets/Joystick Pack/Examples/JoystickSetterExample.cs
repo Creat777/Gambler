@@ -10,6 +10,12 @@ public class JoystickSetterExample : MonoBehaviour
     public Image background;
     public Sprite[] axisSprites;
 
+    private void Start()
+    {
+
+    }
+
+    // Joystick Type Dropdown에서 콜백
     public void ModeChanged(int index)
     {
         switch(index)

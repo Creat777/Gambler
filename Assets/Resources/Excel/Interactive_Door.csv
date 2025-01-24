@@ -1,0 +1,5 @@
+stage번호,"selection 유무(1, 0)",말하는 사람,스크립트,1번 선택지,2번 선택지
+Stage1,0,주인공,이 집에서 가장 튼튼한건 이 강철로된 문인거 같다.,null,null
+Stage1,1,주인공,밖으로 나가볼까?,예,아니요
+Stage2,0,null,null,null,null
+Stage3,0,null,null,null,null
