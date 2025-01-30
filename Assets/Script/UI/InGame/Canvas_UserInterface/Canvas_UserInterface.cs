@@ -2,10 +2,9 @@ using UnityEngine;
 
 public class Canvas_UserInterface : MonoBehaviour
 {
-    public KeyBoardView keyBoardView;
-    public JoyStickView joystickView;
-    public OptionView optionView;
-    bool isPopUp;
+    public GameObject input_InterfaceView;
+    public GameObject optionView;
+    bool isOptionViewPopUp;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -23,11 +22,11 @@ public class Canvas_UserInterface : MonoBehaviour
     {
         if(Input.GetKeyUp(KeyCode.Escape))
         {
-            if (isPopUp == false)
+            if (isOptionViewPopUp == false)
             {
                 OptionViewOpen();
             }
-            else if(isPopUp == true)
+            else if(isOptionViewPopUp == true)
             {
                 OptionViewClose();
             }
@@ -36,38 +35,24 @@ public class Canvas_UserInterface : MonoBehaviour
 
     public void OptionViewOpen()
     {
-        if(keyBoardView != null)
+        if(input_InterfaceView != null)
         {
-            keyBoardView.gameObject.SetActive(false);
-            optionView.gameObject.SetActive(true);
+            input_InterfaceView.SetActive(false);
+            optionView.SetActive(true);
             GameManager.Instance.Pause_theGame();
-            isPopUp = true;
-        }
-        else if(joystickView != null)
-        {
-            joystickView.gameObject.SetActive(false);
-            gameObject.SetActive(true);
-            GameManager.Instance.Pause_theGame();
-            isPopUp = true;
+            isOptionViewPopUp = true;
         }
         
     }
 
     public void OptionViewClose()
     {
-        if (keyBoardView != null)
+        if (input_InterfaceView != null)
         {
-            keyBoardView.gameObject.SetActive(true);
-            optionView.gameObject.SetActive(false);
+            input_InterfaceView.SetActive(true);
+            optionView.SetActive(false);
             GameManager.Instance.Continue_theGame();
-            isPopUp = false;
-        }
-        else if (joystickView != null)
-        {
-            joystickView.gameObject.SetActive(true);
-            gameObject.SetActive(false);
-            GameManager.Instance.Pause_theGame();
-            isPopUp = true;
+            isOptionViewPopUp = false;
         }
             
     }

@@ -1,16 +1,24 @@
 using UnityEngine;
 
-public class JoyStickView : MonoBehaviour
+public class JoyStickView : InterfaceView
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public GameObject InteractButton;
+    
+
+    private void Start()
     {
-        
+
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void InteractButton_Off()
     {
-        
+        InteractButton.SetActive(false);
+        isInteractiveOn = false;
+    }
+
+    public override void InteractButton_On()
+    {
+        InteractButton.SetActive(true);
+        isInteractiveOn = true;
     }
 }

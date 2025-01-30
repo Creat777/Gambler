@@ -172,7 +172,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Player
+  m_Name: Player_Keyboard
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: animeCode
@@ -358,7 +358,7 @@ AnimatorStateMachine:
     m_Position: {x: 670, y: 30, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 963847186516531933}
-    m_Position: {x: 130, y: 250, z: 0}
+    m_Position: {x: 140, y: 180, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8648583360820038382}
     m_Position: {x: 670, y: -40, z: 0}

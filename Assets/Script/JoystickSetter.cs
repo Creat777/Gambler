@@ -6,13 +6,12 @@ using UnityEngine.UI;
 public class JoystickSetter : MonoBehaviour
 {
     public VariableJoystick variableJoystick;
-    public Text valueText;
     public Image background;
     public Sprite[] axisSprites;
 
     private void Start()
     {
-        ModeChanged(1);
+
     }
 
     // Joystick Type Dropdown에서 콜백
@@ -65,8 +64,4 @@ public class JoystickSetter : MonoBehaviour
         variableJoystick.SnapY = value;
     }
 
-    private void Update()
-    {
-        valueText.text = "Current Value: " + variableJoystick.Direction;
-    }
 }

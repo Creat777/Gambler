@@ -20,52 +20,53 @@ public struct Interactive
 }
 
 
-
-
-
 public class CsvManager : Singleton<CsvManager>
 {
     // 실사용 안함
     Interactive interactive;
 
     // 스크립트에서 수정
-    public CsvInfo[] InteractiveCsvInfos {  get; private set; } // 상호작용 가능한 객체들의 스크립트csv
-    Dictionary<string, int> InteractiveCsvIdDict; // InteractiveCsvInfos의 파일명에 해당하는 인덱스를 맵핑함
+    //public CsvInfo[] Interactable_CsvList {  get; private set; } // 상호작용 가능한 객체들의 스크립트csv
+    Dictionary<string, CsvInfo> Interactable_CsvDict; // csv파일명과 csv 데이터를 맵핑
 
 
     protected override void Awake()
     {
         base.Awake();
-        InteractiveCsvIdDict = new Dictionary<string, int>();
-        InitCsvManager();
+        Interactable_CsvDict = new Dictionary<string, CsvInfo>();
+
+        // List는 최초 한번만 존재하고 삭제됨
+        List<CsvInfo>  Interactable_CsvList = new List<CsvInfo>();
+        InitCsvManager(Interactable_CsvList);
+        foreach (var csvInfo in Interactable_CsvList)
+        {
+            CsvProcess(csvInfo, interactive);
+        }
+        
     }
 
     private void Start()
     {
-        foreach (var csvInfo in InteractiveCsvInfos)
-        {
-            CsvProcess(csvInfo, interactive);
-        }
+        
     }
-    public void InitCsvManager()
+    public void InitCsvManager(List<CsvInfo> Interactable_CsvList)
     {
-        // 게임중 추가삭제가 없을테니 참조가 빠른 방법을 선택
-        InteractiveCsvInfos = new CsvInfo[6];
-        InteractiveCsvInfos[0] = new CsvInfo("Interactive_Bed");
-        InteractiveCsvInfos[1] = new CsvInfo("Interactive_Cabinet");
-        InteractiveCsvInfos[2] = new CsvInfo("Interactive_Clock");
-        InteractiveCsvInfos[3] = new CsvInfo("Interactive_Computer");
-        InteractiveCsvInfos[4] = new CsvInfo("Interactive_Door");
-        InteractiveCsvInfos[5] = new CsvInfo("Interactive_OutsideDoor");
-        InitCsvIdDict(InteractiveCsvIdDict, InteractiveCsvInfos);
+        
+        Interactable_CsvList.Add(new CsvInfo("Interactable_Bed"));
+        Interactable_CsvList.Add(new CsvInfo("Interactable_Cabinet"));
+        Interactable_CsvList.Add(new CsvInfo("Interactable_Clock"));
+        Interactable_CsvList.Add(new CsvInfo("Interactable_Computer"));
+        Interactable_CsvList.Add(new CsvInfo("Interactable_Door"));
+        Interactable_CsvList.Add(new CsvInfo("Interactable_OutsideDoor"));
+        InitCsvDict(Interactable_CsvDict, Interactable_CsvList);
     }
 
-    public void InitCsvIdDict(Dictionary<string, int> csvIdDict, CsvInfo[] csvInfos)
+    public void InitCsvDict(Dictionary<string, CsvInfo> csvDict, List<CsvInfo> csvInfos)
     {
-        csvIdDict.Clear();
-        for (int i = 0; i < csvInfos.Length; i++)
+        csvDict.Clear();
+        foreach (var csvInfo in csvInfos)
         {
-            csvIdDict.Add(csvInfos[i].CsvFileName, i);
+            csvDict.Add(csvInfo.CsvFileName, csvInfo);
         }
     }
 
@@ -169,9 +170,9 @@ public class CsvManager : Singleton<CsvManager>
                 // 현재 스테이지의 경우
                 else if (csvRow[0] == gameStage)
                 {
-                    Debug.Log("게임스테이지에 해당하는 스크립트 참조 성공");
+                    Debug.Log("게임스테이지에 해당하는 데이터 참조 성공");
 
-                    // selection 유무와 스크립트만을 분리하여 저장
+                    // stage번호를 제외한 모든 정보를 분리하여 저장
                     string[] temp = new string[csvRow.Count-1];
                     for (int i = 1; i < csvRow.Count; i++)
                     {
@@ -193,15 +194,8 @@ public class CsvManager : Singleton<CsvManager>
 
     public CsvInfo FindCsvInfo(string objectName, Interactive interactive)
     {
-        // 파일명(== 오브젝트 이름)에 맵핑된 csvInfos의 인덱스를 저장
-        int index = InteractiveCsvIdDict[objectName];
-
-        // 배열 범위 내에서 올바른 데이터를 반환
-        if(index < InteractiveCsvInfos.Length)
-        {
-            return InteractiveCsvInfos[index];
-        }
-        return null;
+        Interactable_CsvDict.TryGetValue(objectName, out var csvInfo);
+        return csvInfo;
     }
 }
 

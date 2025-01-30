@@ -4,32 +4,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-//public enum Interactive_ID
-//{
-//    None = 0,
-//    Interactive_Bed,
-//    Interactive_Cabinet,
-//    Interactive_Clock,
-//    Interactive_Computer,
-//    Interactive_Door
-//}
 
 public class TextWindowView : MonoBehaviour
 {
 
     // 에디터에서 연결
     public Text textWindow;
-    CsvInfo csvInfo;
+    public Text Speaker;
     private List<string[]> TextSet;
     public RectTransform arrowImageTrans;
-    public GameObject SelectionView;
+    public GameObject selectionView;
 
     // 스크립트 수정
     Interactive interactive;
     bool isTypingReady;
     float typingDelay;
     int TextIndex;
-    string currentText;
+    string[] currentTextData;
     string LastObjectName;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -39,12 +30,12 @@ public class TextWindowView : MonoBehaviour
         isTypingReady = true;
         typingDelay = 0.05f;
         LastObjectName = "";
+        gameObject.SetActive(false);
     }
 
     private void OnEnable()
     {
         GameManager.Instance.Pause_theGame();
-
         // 대화를 시작할때마다 화살표 이미지 살림
         arrowImageTrans.gameObject.SetActive(true);
 
@@ -52,7 +43,7 @@ public class TextWindowView : MonoBehaviour
         ArrowDoTween();
 
 
-        if (Player.Instance != null)
+        if (PlayerMoveAndAnime.Instance != null)
         {
             // 시작 텍스트 인덱스
             TextIndex = 0;
@@ -71,34 +62,83 @@ public class TextWindowView : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDisable()
     {
-        if(Player.Instance!=null)
-        {
-            InteractiveProcess();
+        // 셀렉션뷰를 끔으로써 셀렉션뷰가 초기화되도록만듬
+        selectionView.gameObject.SetActive(false);
 
-            // 스페이스바를 누르면 이어서 스크립트 처리를 시작함
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                NextPrintButton();
-            }
+        if(GameManager.Instance != null)
+        {
+            GameManager.Instance.Continue_theGame();
         }
     }
 
+    //void Update()
+    //{
+    //    if (PlayerMoveAndAnime.Instance != null)
+    //    {
+    //        InteractiveProcess();
+
+    //        // 스페이스바를 누르면 이어서 스크립트 처리를 시작함
+    //        if (Input.GetKeyDown(KeyCode.Space))
+    //        {
+    //            NextPrintButton();
+    //        }
+    //    }
+    //}
+
     public void NextPrintButton()
     {
+        // index 0 : 말하는 사람
+        // index 1 : 스크립트
+        // index 2 : selection 유무(0, 1)
+        // index 3 : 1번째 선택지
+        // index 4 : 2번째 선택지
+        // index 5 : 1번 콜백번호
+        // index 6 : 2번 콜백번호
+
         // 상호작용했고 스크립트를 읽어왔으면
-        if (TextSet.Count >= 1)
+        if (TextSet.Count >= 1 )
         {
-            if (isTypingReady)
+            // selection이 없으면
+            if (currentTextData[2] == "0")
             {
-                PrintText();
+                // 타이핑이 끝난경우 다음 타이핑을 시작
+                if (isTypingReady)
+                {
+                    PrintText();
+                }
+                // 타이핑이 아직 안끝난 경우 타이핑을 끝냄
+                else
+                {
+                    // true로 바꿔서 typing을 끝냄
+                    isTypingReady = true;
+                }
             }
-            else
+
+            // selection이 있으면
+            else if (currentTextData[2] == "1")
             {
-                // true로 바꿔서 typing을 끝냄
-                isTypingReady = true;
+                // 타이핑이 끝난 경우 selectionView를 활성화
+                if(isTypingReady)
+                {
+                    selectionView.SetActive(true);
+                    SelectionView SV = selectionView.GetComponent<SelectionView>();
+
+                    // currentTextData의 인덱스
+                    // index 5 : 1번 콜백번호
+                    // index 6 : 2번 콜백번호
+                    int index_1; int.TryParse(currentTextData[5], out index_1);
+                    int index_2; int.TryParse(currentTextData[6], out index_2);
+
+                    SV.RegisterButtonClick_Selection1(CallBackManager.Instance.CallBackList(index_1));
+                    SV.RegisterButtonClick_Selection2(CallBackManager.Instance.CallBackList(index_2));
+                }
+                // 타이핑이 안끝났으면 타이핑을 끝내기
+                else
+                {
+                    isTypingReady = true;
+                }
             }
 
         }
@@ -109,7 +149,7 @@ public class TextWindowView : MonoBehaviour
     private void InteractiveProcess()
     {
         // 플레이어의 레이캐스트에 걸리는 객체
-        string curruntObjectName = Player.Instance.hitObjectName;
+        string curruntObjectName = PlayerMoveAndAnime.Instance.hitObjectName;
 
         // 상호작용하여 스크립트를 읽어오지 않았으면
         if (LastObjectName != curruntObjectName)
@@ -137,22 +177,29 @@ public class TextWindowView : MonoBehaviour
         // 배열 범위오류 제한
         if (TextIndex < TextSet.Count)
         {
-            // 텍스트 전환
-            currentText = TextSet[TextIndex++][1];
+            // 텍스트 데이터 전환
+            // index 0 : 말하는 사람
+            // index 1 : 스크립트
+            // index 2 : selection 유무(0, 1)
+            // index 3 : 1번째 선택지
+            // index 4 : 2번째 선택지
+            // index 5 : 1번 콜백번호
+            // index 6 : 2번 콜백번호
+            currentTextData = TextSet[TextIndex++];
 
             // 텍스트 순차적으로 보이게함
-            StartCoroutine(TypeDialogue(currentText));
+            Speaker.text = currentTextData[0];
+            StartCoroutine(TypeDialogue(currentTextData[1]));
 
-            // 마지막 대화에서 다음 대화 이미지 삭제
+            // 마지막 대화에서 다음 대화 이미지(화살표) 삭제
             if (TextIndex == TextSet.Count)
                 arrowImageTrans.gameObject.SetActive(false);
             return;
         }
-        // 텍스트가 다 끝난경우
-        if(TextIndex >= TextSet.Count)
+        // 텍스트가 다 끝난경우 // currentTextData[2] == "0"은 PrintText 진입전에 검사했음
+        if (TextIndex >= TextSet.Count)
         {
-            GameManager.Instance.Continue_theGame();
-            gameObject.SetActive(false);
+            CallBackManager.Instance.TextWindowPopUp_Close();
         }
     }
 
@@ -193,7 +240,7 @@ public class TextWindowView : MonoBehaviour
         Sequence sequence = DOTween.Sequence();
 
         // 현재 크기 저장
-        Vector3 originalScale = arrowImageTrans.localScale;
+        Vector3 originalScale = Vector3.one;
         sequence.Append(arrowImageTrans.DOScale(targetScale, duration)) // 커지는 애니메이션
                 .Append(arrowImageTrans.DOScale(originalScale, duration)) // 복귀 애니메이션
                 .SetLoops(-1); // 무한 반복

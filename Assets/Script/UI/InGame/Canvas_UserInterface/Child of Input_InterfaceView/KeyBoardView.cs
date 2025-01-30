@@ -1,9 +1,7 @@
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
-using static System.Runtime.CompilerServices.RuntimeHelpers;
 
-public class KeyBoardView : Input_InterfaceView
+public class KeyBoardView : InterfaceView
 {
     // 에디터 연결
     public Image Key_Left;
@@ -12,11 +10,6 @@ public class KeyBoardView : Input_InterfaceView
     public Image Key_Right;
     public Image Key_Space;
 
-    void Start()
-    {
-        isInteractiveOn = true;
-        Deactive_InteractiveButton(); // isInteractiveOn가 true이면 실행됨
-    }
 
     public void ChangeColer(int keyCode)
     {
@@ -68,7 +61,7 @@ public class KeyBoardView : Input_InterfaceView
         
     }
 
-    public void Active_KeySpace()
+    public override void InteractButton_On()
     {
         if (isInteractiveOn == false)
         {
@@ -77,18 +70,12 @@ public class KeyBoardView : Input_InterfaceView
         }
         
     }
-    public void Deactive_InteractiveButton()
+    public override void InteractButton_Off()
     {
         if (isInteractiveOn == true)
         {
             Key_Space.color = Color.white * 0.8f;
             isInteractiveOn = false;
         }   
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

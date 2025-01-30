@@ -1,0 +1,5 @@
+stage번호,말하는 사람,스크립트,"selection 유무(1, 0)",1번 선택지,2번 선택지,1번 콜백함수,2번 콜백함수
+Stage1,주인공,이 집에서 가장 튼튼한건 이 강철로 만들어진 문인거 같다.,0,null,null
+Stage1,주인공,밖으로 나가볼까?,1,예,아니요,2,1
+Stage2,null,null,0,null,null
+Stage3,null,null,0,null,null
