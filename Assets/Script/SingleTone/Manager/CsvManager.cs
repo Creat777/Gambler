@@ -5,10 +5,16 @@ using System.Linq;
 public class CsvInfo
 {
     public readonly string CsvFileName;
+    public readonly string Path;
     public List<List<string>> csvData;
-    public CsvInfo(string CsvFileName)
+    public CsvInfo(string Path)
     {
-        this.CsvFileName = CsvFileName;
+        this.Path = Path;
+        string[] temp = Path.Split('/');
+        if(temp.Length > 1 )
+        {
+            this.CsvFileName = temp[temp.Length-1];
+        }
         csvData = new List<List<string>>();
     }
 }
@@ -51,13 +57,17 @@ public class CsvManager : Singleton<CsvManager>
     }
     public void InitCsvManager(List<CsvInfo> Interactable_CsvList)
     {
-        
-        Interactable_CsvList.Add(new CsvInfo("Interactable_Bed"));
-        Interactable_CsvList.Add(new CsvInfo("Interactable_Cabinet"));
-        Interactable_CsvList.Add(new CsvInfo("Interactable_Clock"));
-        Interactable_CsvList.Add(new CsvInfo("Interactable_Computer"));
-        Interactable_CsvList.Add(new CsvInfo("Interactable_Door"));
-        Interactable_CsvList.Add(new CsvInfo("Interactable_OutsideDoor"));
+        // 집 내부
+        Interactable_CsvList.Add(new CsvInfo("Inside_Of_House/Interactable_Bed"));
+        Interactable_CsvList.Add(new CsvInfo("Inside_Of_House/Interactable_Cabinet"));
+        Interactable_CsvList.Add(new CsvInfo("Inside_Of_House/Interactable_Clock"));
+        Interactable_CsvList.Add(new CsvInfo("Inside_Of_House/Interactable_Computer"));
+        Interactable_CsvList.Add(new CsvInfo("Inside_Of_House/Interactable_Door"));
+
+        // 집 외부
+        Interactable_CsvList.Add(new CsvInfo("OutSide_Of_House/Interactable_OutsideDoor"));
+        Interactable_CsvList.Add(new CsvInfo("OutSide_Of_House/Interactable_Box_Full"));
+        Interactable_CsvList.Add(new CsvInfo("OutSide_Of_House/Interactable_Box_Empty"));
         InitCsvDict(Interactable_CsvDict, Interactable_CsvList);
     }
 
@@ -72,7 +82,7 @@ public class CsvManager : Singleton<CsvManager>
 
     private void CsvProcess(CsvInfo csvInfo, Interactive unused)
     {
-        TextAsset csvFile = Resources.Load<TextAsset>(csvInfo.CsvFileName);
+        TextAsset csvFile = Resources.Load<TextAsset>(csvInfo.Path);
         CsvLoading(csvFile, csvInfo.csvData, interactive);
         CheckCsv(csvInfo.CsvFileName, csvInfo.csvData);
     }

@@ -1,5 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+
+enum Map
+{
+    InsideOfHouse,
+    OutsideOfHouse
+}
 
 public class GameManager : Singleton<GameManager>
 {
@@ -8,16 +15,17 @@ public class GameManager : Singleton<GameManager>
     public int maxStage;
 
     // 스크립트에서 수정
-    public bool isInGame {  get; private set; }
+    public bool isJoinGame {  get; private set; }
     public bool isGamePause {  get; private set; }
     public float gameSpeed { get; private set; }
 
     public string[] gameStages { get; private set; }
 
+    [SerializeField] private int month = 12;
+    [SerializeField] private int day;
+    public int __month { get { return month; } set { month = value; } }
+    public int __day { get { return day; } set { day = value; } }
 
-    //Dictionary<>
-
-    // DoTO -> 어떤 오브젝트의 어떤 스테이지에서는 선택지가 나와야함
 
 
     public string curruentGameStage {  get; private set; } // 현재 게임 진행정도를 확인하기 위한 변수
@@ -30,11 +38,11 @@ public class GameManager : Singleton<GameManager>
 
     public void Join_In_Game()
     {
-        isInGame = true;
+        isJoinGame = true;
     }
     public void Out_Of_Game()
     {
-        isInGame = false;
+        isJoinGame = false;
     }
 
     public void Pause_theGame()
@@ -48,6 +56,7 @@ public class GameManager : Singleton<GameManager>
         isGamePause = false;
     }
 
+    
 
     void Start()
     {

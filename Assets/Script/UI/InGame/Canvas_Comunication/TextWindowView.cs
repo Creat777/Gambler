@@ -21,7 +21,7 @@ public class TextWindowView : MonoBehaviour
     float typingDelay;
     int TextIndex;
     string[] currentTextData;
-    string LastObjectName;
+    GameObject LastObject;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Awake()
@@ -29,7 +29,6 @@ public class TextWindowView : MonoBehaviour
         interactive = new Interactive();
         isTypingReady = true;
         typingDelay = 0.05f;
-        LastObjectName = "";
         gameObject.SetActive(false);
     }
 
@@ -131,8 +130,8 @@ public class TextWindowView : MonoBehaviour
                     int index_1; int.TryParse(currentTextData[5], out index_1);
                     int index_2; int.TryParse(currentTextData[6], out index_2);
 
-                    SV.RegisterButtonClick_Selection1(CallBackManager.Instance.CallBackList(index_1));
-                    SV.RegisterButtonClick_Selection2(CallBackManager.Instance.CallBackList(index_2));
+                    SV.RegisterButtonClick_Selection1(CallBackManager.Instance.CallBackList(index_1, LastObject ));
+                    SV.RegisterButtonClick_Selection2(CallBackManager.Instance.CallBackList(index_2, LastObject ));
                 }
                 // 타이핑이 안끝났으면 타이핑을 끝내기
                 else
@@ -149,22 +148,14 @@ public class TextWindowView : MonoBehaviour
     private void InteractiveProcess()
     {
         // 플레이어의 레이캐스트에 걸리는 객체
-        string curruntObjectName = PlayerMoveAndAnime.Instance.hitObjectName;
+        GameObject curruntObject = PlayerMoveAndAnime.Instance.hitObject;
 
-        // 상호작용하여 스크립트를 읽어오지 않았으면
-        if (LastObjectName != curruntObjectName)
-        {
-            // 스크립트를 읽어오고
-            InitTextSet(curruntObjectName);
+        // 스크립트를 읽어오고
+        InitTextSet(curruntObject.name);
 
-            // 마지막 상호작용한 객체의 이름을 저장
-            LastObjectName = curruntObjectName;
-            return;
-        }
-        else
-        {
-            //Debug.Log("이미 스크립트 목록을 읽어왔습니다");
-        }
+        // 마지막 상호작용한 객체를 저장
+        LastObject = curruntObject;
+        return;
     }
 
     public void InitTextSet(string objectName)
@@ -244,6 +235,7 @@ public class TextWindowView : MonoBehaviour
         sequence.Append(arrowImageTrans.DOScale(targetScale, duration)) // 커지는 애니메이션
                 .Append(arrowImageTrans.DOScale(originalScale, duration)) // 복귀 애니메이션
                 .SetLoops(-1); // 무한 반복
+        
     }
 
 }

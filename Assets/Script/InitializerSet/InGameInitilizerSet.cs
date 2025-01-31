@@ -11,6 +11,7 @@ public class InGameInitilizerSet : MonoBehaviour
     public GameObject textWindowView;
     public JoyStickView joyStickView;
     public Joystick joystick;
+    public GameObject blackView;
 
     void Start()
     {
@@ -22,6 +23,8 @@ public class InGameInitilizerSet : MonoBehaviour
 
         CallBackManager.Instance.__interfaceView = interfaceView;
         CallBackManager.Instance.__textWindowView = textWindowView;
+
+        CallBackManager.Instance.__BalckView = blackView;
 
         CallBackManager.Instance.__player = PlayerMoveAndAnime.Instance.gameObject;
         GameManager.Instance.Join_In_Game();

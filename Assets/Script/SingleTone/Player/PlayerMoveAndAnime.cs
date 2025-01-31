@@ -1,6 +1,6 @@
 using UnityEngine;
 
-enum StateCode
+public enum StateCode
 {
     Idle = 0,
     Up = 1,
@@ -30,10 +30,10 @@ public class PlayerMoveAndAnime : Singleton<PlayerMoveAndAnime>
     public float moveSpeed;
     public short Interactive;
     bool isStop = false;
-    StateCode curState = StateCode.Idle;
+    public StateCode curState = StateCode.Idle;
     StateCode lastState = StateCode.Idle;
 
-    public string hitObjectName { get; private set; }
+    public GameObject hitObject { get; private set; }
 
 
     //public GameObject TempImage;
@@ -88,7 +88,7 @@ public class PlayerMoveAndAnime : Singleton<PlayerMoveAndAnime>
         // 움직여서 정면에 상호작용한 객체가 있으면 그 객체의 이름을 읽고 상호작용이 옵션을 켬
         if (hit.collider != null)
         {
-            hitObjectName = hit.collider.gameObject.name;
+            hitObject = hit.collider.gameObject;
 
             //TempImage.transform.position = Camera.main.WorldToScreenPoint(hit.transform.position);
             interfaceView.InteractButton_On();
@@ -141,9 +141,6 @@ public class PlayerMoveAndAnime : Singleton<PlayerMoveAndAnime>
     
     public void animationProc()
     {
-        
-        
-
         // 한쪽 성분이라도 존재하면 그쪽으로 상태변환
         // 그렇지 않다면 idle로 상태 변환
         if (joystickVec.y >= 0.1f)

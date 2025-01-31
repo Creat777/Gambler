@@ -1,0 +1,3 @@
+stage번호,말하는 사람,스크립트,"selection 유무(1, 0)",1번 선택지,2번 선택지,1번 콜백함수,2번 콜백함수
+Stage1,주인공,서랍이 잠겨있다.,0,null,null,null,null
+Stage1,주인공,자물쇠가 많이 낡고 녹이 슨 것 같다.,0,null,null,null,null
