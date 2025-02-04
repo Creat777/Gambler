@@ -68,6 +68,7 @@ public class CsvManager : Singleton<CsvManager>
         Interactable_CsvList.Add(new CsvInfo("OutSide_Of_House/Interactable_OutsideDoor"));
         Interactable_CsvList.Add(new CsvInfo("OutSide_Of_House/Interactable_Box_Full"));
         Interactable_CsvList.Add(new CsvInfo("OutSide_Of_House/Interactable_Box_Empty"));
+
         InitCsvDict(Interactable_CsvDict, Interactable_CsvList);
     }
 
