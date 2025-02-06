@@ -9,11 +9,11 @@ public class PlayerPrefsManagerOrigin : MonoBehaviour
     public struct Item
     {
         public int Id; // 내가 소유하고 있는 아이템 번호
-        public int Type; // 아이템 종류 번호 - 아이콘, 아이템의 능력치
+        public int ItemKey; // 아이템 종류 번호 - 아이콘, 아이템의 능력치
 
         public string Encoding()
         {
-            return $"{Id}:{Type}";
+            return $"{Id}:{ItemKey}";
         }
 
         public static Item FromString(string data)
@@ -23,10 +23,10 @@ public class PlayerPrefsManagerOrigin : MonoBehaviour
                 int.TryParse(parts[0], out int id) &&
                 int.TryParse(parts[1], out int type))
             {
-                return new Item { Id = id, Type = type };
+                return new Item { Id = id, ItemKey = type };
             }
 
-            // 모든멤버가 기본값인 객체를 반환 (Id_inInventory : 0, Type : 0)
+            // 모든멤버가 기본값인 객체를 반환 (Id_inInventory : 0, ItemKey : 0)
             return default;
         }
     }
@@ -48,7 +48,7 @@ public class PlayerPrefsManagerOrigin : MonoBehaviour
     {
         HashSet<Item> savedItems = LoadItems();
 
-        Item newItem = new Item { Id = itemId, Type = itemType };
+        Item newItem = new Item { Id = itemId, ItemKey = itemType };
 
         if ( savedItems.Contains(newItem))
         {
@@ -91,7 +91,7 @@ public class PlayerPrefsManagerOrigin : MonoBehaviour
         foreach(string itemString in itemStrings)
         {
             Item item = Item.FromString(itemString);
-            if(item.Id != 0 && item.Type != 0)
+            if(item.Id != 0 && item.ItemKey != 0)
             {
                 items.Add(item);
             }
@@ -106,7 +106,7 @@ public class PlayerPrefsManagerOrigin : MonoBehaviour
 
         if(savedItems.Count == 0)
         {
-            Debug.LogWarning("No items are saved.");
+            Debug.LogWarning("No Player_Items are saved.");
             return -1;
         }
 

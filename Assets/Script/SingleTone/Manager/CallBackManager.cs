@@ -16,6 +16,7 @@ public class CallBackManager : Singleton<CallBackManager>
     [SerializeField] private GameObject interfaceView;
     [SerializeField] private GameObject textWindowView;
     [SerializeField] private GameObject BalckView;
+    [SerializeField] private GameObject iconView;
 
     public GameObject __insideOfHouse { get { return insideOfHouse; } set { insideOfHouse = value; } }
     public GameObject __outsideOfHouse { get { return outsideOfHouse; } set { outsideOfHouse = value; } }
@@ -23,11 +24,12 @@ public class CallBackManager : Singleton<CallBackManager>
     public GameObject __interfaceView { get { return interfaceView; } set { interfaceView = value; } }
     public GameObject __textWindowView { get { return textWindowView; } set { textWindowView = value; } }
     public GameObject __BalckView { get {return BalckView; } set { BalckView = value; } }
+    public GameObject __iconView { get { return iconView; } set { iconView = value; } }
 
     // 스크립트로 편집
     Image blackViewImage;
     Dictionary<bool, string> BoxNameDict;
-    bool isBlakcViewReady;
+    private bool isBlakcViewReady;
 
     protected override void Awake()
     {
@@ -188,12 +190,19 @@ public class CallBackManager : Singleton<CallBackManager>
     // 5
     public virtual void BoxOpen(GameObject Box)
     {
-        // false키에 "Interactable_Box_Empty"저장됨
-        Box.name = BoxNameDict[false];
+        if(PlayerPrefsManager.Instance != null)
+        {
+            // false키에 "Interactable_Box_Empty"저장되어있음
+            Box.name = BoxNameDict[false];
 
-        //DoTo -> box를 염으로써 확인할 수 있는 아이템과 편지를 만들어야함
+            int newItemIndex = PlayerPrefsManager.Instance.GetNewLastId();
+            PlayerPrefsManager.Instance.PlayerGetItem(newItemIndex, ItemManager.Instance.QuestItemSerialNumber);
 
-        TextWindowPopUp_Close();
+            TextWindowPopUp_Close();
+
+            iconView.GetComponent<IconView>().IconUnLock(IconView.Icon.Inventory);
+        }
+        
     }
 
     

@@ -48,25 +48,5 @@ public class Canvas_InGame : MonoBehaviour
     //    }
     //}
 
-    //public void OptionViewOpen()
-    //{
-    //    if(interfaceView != null)
-    //    {
-    //        interfaceView.SetActive(false);
-    //        optionView.SetActive(true);
-    //        GameManager.Instance.Pause_theGame();
-    //        isOptionViewPopUp = true;
-    //    }
-    //}
-
-    //public void OptionViewClose()
-    //{
-    //    if (interfaceView != null)
-    //    {
-    //        interfaceView.SetActive(true);
-    //        optionView.SetActive(false);
-    //        GameManager.Instance.Continue_theGame();
-    //        isOptionViewPopUp = false;
-    //    } 
-    //}
+    
 }

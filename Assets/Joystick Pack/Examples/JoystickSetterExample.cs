@@ -15,7 +15,7 @@ public class JoystickSetterExample : MonoBehaviour
 
     }
 
-    // Joystick Type Dropdown에서 콜백
+    // Joystick ItemKey Dropdown에서 콜백
     public void ModeChanged(int index)
     {
         switch(index)

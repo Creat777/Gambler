@@ -52,16 +52,13 @@ public class PlayerMoveAndAnime : Singleton<PlayerMoveAndAnime>
 
     }
 
-    void Update()
-    {
-        
-        //InputSpaceBar();
-    }
-
     private void FixedUpdate()
     {
-        Move_And_Animation_Joystick();
-        Interact_With_Object();
+        if(GameManager.Instance.currentScene == eScene.InGame)
+        {
+            Move_And_Animation_Joystick();
+            Interact_With_Object();
+        }
     }
     private void Interact_With_Object()
     {
@@ -121,7 +118,7 @@ public class PlayerMoveAndAnime : Singleton<PlayerMoveAndAnime>
         // 이동 조건은 초기 joystickVec으로 하나 가해지는 힘은 curMoveVec을 사용
         if (__joystick.Direction.magnitude >= 0.9f)
         {
-            Debug.Log("addPulse 적용");
+            //Debug.Log("addPulse 적용");
             rigid.AddForce(curMoveVec * moveSpeed / 10, ForceMode2D.Impulse);
         }
 

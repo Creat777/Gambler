@@ -3,6 +3,8 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class PopUp : MonoBehaviour
 {
+    public GameObject content;
+
     public void PopUpViewClose()
     {
         //Debug.Log(transform.parent.gameObject.activeSelf);

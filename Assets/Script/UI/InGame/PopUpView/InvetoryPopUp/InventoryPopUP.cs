@@ -1,11 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class InventoryPopUp : PopUp
 {
-    public GameObject content;
-    public GameObject paperPrefab;
-    public GameObject eggfab;
-    public GameObject meatfab;
     private void OnEnable()
     {
         // 기존 목록 삭제
@@ -14,6 +11,22 @@ public class InventoryPopUp : PopUp
             Destroy(child.gameObject);
         }
 
-        // Do => 새로운 목록 추가
+        HashSet<Item> Player_items = PlayerPrefsManager.Instance.LoadItems();
+
+        foreach (Item item in Player_items)
+        {
+            // 아이템 종합정보를 호출
+            ItemInfo itemInfo = ItemManager.Instance.Itemdict_serialToInfo[item.serialNumber];
+
+            // 아이템 인스턴시
+            GameObject obj = Instantiate(itemInfo.__itemPrefab);
+            obj.SetActive(true);
+
+            // 부모객체 설정
+            obj.transform.SetParent(content.transform);
+
+            // 스케일 초기화
+            obj.transform.localScale = Vector3.one;
+        }
     }
 }

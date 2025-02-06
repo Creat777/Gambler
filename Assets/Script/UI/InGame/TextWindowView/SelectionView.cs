@@ -1,4 +1,6 @@
+using DG.Tweening;
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -18,30 +20,38 @@ public class SelectionView : MonoBehaviour
     // 스크립트에서 편집
 
 
-    private void OnDisable()
-    {
-        // 할일을 마치고 사라질때 연결된 콜백함수를 제거
-        __selection1.onClick.RemoveAllListeners();
-        __selection2.onClick.RemoveAllListeners();
-    }
-
     void Start()
     {
-
+        
     }
 
     // 매개변수로 받은 함수를 버튼 클릭 이벤트에 등록
     // Action : 기본대리자
     public void RegisterButtonClick_Selection1(UnityAction callback)
     {
-        // delegate로 만들어진 Action(대리자)을 직접 전달할 수는 없고 람다식으로 만든 익명함수를 전달함
-        __selection1.onClick.AddListener(callback);
-        // (parameters) => { function_body }
-        // ex) () => Debug.Log("Hello!");
+        // 등록전에 다른 필요없는 함수가 없는지 제거
+        __selection1.onClick.RemoveAllListeners();
+
+        __selection1.onClick.AddListener(
+            () =>
+            {
+                callback();
+                // 콜백이 실행된 후 버튼에 추가된 콜백함수를 제거함
+                __selection1.onClick.RemoveAllListeners();
+            }
+            );
     }
 
     public void RegisterButtonClick_Selection2(UnityAction callback)
     {
-        __selection2.onClick.AddListener(callback);
+        __selection2.onClick.RemoveAllListeners();
+
+        __selection2.onClick.AddListener(
+            ()=>
+            {
+                callback();
+                __selection2.onClick.RemoveAllListeners();
+            }
+            );
     }
 }

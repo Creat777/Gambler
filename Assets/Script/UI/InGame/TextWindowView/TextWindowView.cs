@@ -89,6 +89,8 @@ public class TextWindowView : MonoBehaviour
     //    }
     //}
 
+
+    // 여러번 눌리는 문제가 있음
     public void NextPrintButton()
     {
         // index 0 : 말하는 사람

@@ -1,20 +1,10 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class TouchToStart : MonoBehaviour
+public class GoToLobby : MonoBehaviour
 {
-    void Start()
-    {
-        
-    }
-
     public void MoveToLobby()
     {
         SceneManager.LoadScene("Lobby");
-    }
-
-    void Update()
-    {
-        
     }
 }

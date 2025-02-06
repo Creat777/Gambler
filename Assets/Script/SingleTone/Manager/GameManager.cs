@@ -1,8 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-enum Map
+public enum eScene
+{
+    Title,
+    Lobby,
+    InGame
+}
+
+enum eMap
 {
     InsideOfHouse,
     OutsideOfHouse
@@ -18,8 +26,8 @@ public class GameManager : Singleton<GameManager>
     public bool isJoinGame {  get; private set; }
     public bool isGamePause {  get; private set; }
     public float gameSpeed { get; private set; }
-
     public string[] gameStages { get; private set; }
+    public eScene currentScene;
 
     [SerializeField] private int month = 12;
     [SerializeField] private int day;
@@ -72,5 +80,33 @@ public class GameManager : Singleton<GameManager>
     void Update()
     {
         
+    }
+
+    
+    private void OnEnable()
+    {
+        // 씬이 로드될 때 호출될 함수를 추가
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        // 게임 종료시 콜백제거
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    // 씬 로드 시 호출될 콜백 함수
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        switch (scene.buildIndex)
+        { 
+            case 0:
+                currentScene = eScene.Title; break;
+            case 1:
+                currentScene = eScene.Lobby; break;
+            case 2:
+                currentScene = eScene.InGame; break;
+        }
+
     }
 }

@@ -85,7 +85,7 @@ public class CsvManager : Singleton<CsvManager>
     {
         TextAsset csvFile = Resources.Load<TextAsset>(csvInfo.Path);
         CsvLoading(csvFile, csvInfo.csvData, interactive);
-        CheckCsv(csvInfo.CsvFileName, csvInfo.csvData);
+        //CheckCsv(csvInfo.CsvFileName, csvInfo.csvData);
     }
 
     //
