@@ -1,0 +1,16 @@
+stage번호,말하는 사람,스크립트,"selection 유무(1, 0)",1번 선택지,2번 선택지,1번 콜백함수,2번 콜백함수
+Stage1,문신 아저씨,너냐 이번 참가자가?,0,null,null,null,null
+Stage1,주인공,아저씨는 누구시죠?,0,null,null,null,null
+Stage1,문덕배,난 문덕배다. 덕배 아저씨라고 불러,0,null,null,null,null
+Stage1,문덕배,너같은 어리버리한 놈이 게임 참가자라니 불쌍한 녀석,0,null,null,null,null
+Stage1,문덕배,룰을 설명해주마,0,null,null,null,null
+Stage1,문덕배,이 섬에서 살아서 나가고싶으면 이 칩을 정확히 1만개 모으면 된다.,0,null,null,null,null
+Stage1,주인공,(덕배아저씨한테 칩 100개를 받았다.),0,null,null,null,null
+Stage1,문덕배,칩 1만개를 모으면 섬을 나갈때 정확히 100억이 너한테 주어질거다.,0,null,null,null,null
+Stage1,문덕배,우리가 만든 광산에서 채굴을 하여 칩을 교환받을 수도 있고,0,null,null,null,null
+Stage1,문덕배,아니면 우리가 주최하는 게임에 참가하여 칩을 벌 수도 있다.,0,null,null,null,null
+Stage1,문덕배,궁금한 사항 있나?,1,식량은 어떻게 얻나요?,아니요. 괜찮습니다.,null,1
+Stage1,문덕배,컴퓨터로 주문하면 된다.,0,null,null,null,null
+Stage1,문덕배,컴퓨터는 우리가 만든 네트워크로 연결되어있으니 허튼짓은 생각하지 말아라,0,null,null,null,null
+Stage2,문덕배,어디로 갈거냐?,1,한탕 하러 가야죠!(도박판으로),채굴은 최고의 운동이죠(광산으로),,
+Stage3,null,null,0,null,null,null,null
