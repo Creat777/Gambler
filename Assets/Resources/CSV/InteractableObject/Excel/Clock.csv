@@ -1,0 +1,5 @@
+stage번호,말하는 사람,스크립트,"selection 유무(1, 0)",1번 선택지,1번 콜백함수,2번 선택지,2번 콜백함수
+1,주인공,시간이 벌써 이렇게 됐나…,0,null,null,null,null
+1,주인공,오늘 있었던 일을 상기해보자,0,null,null,null,null
+2,주인공,시간이 벌써 이렇게 됐나…,0,null,null,null,null
+2,주인공,오늘 있었던 일을 상기해보자,0,null,null,null,null

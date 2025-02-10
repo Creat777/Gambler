@@ -39,7 +39,6 @@ public class CSVLoadManager_Origin : MonoBehaviour
         LoadMonsterCsv();
         // 퀘스트 정보 읽어오기
         LoadQuestCsv();
-        
     }
 
     public List<ItemInfo> GetItemList()
@@ -54,8 +53,8 @@ public class CSVLoadManager_Origin : MonoBehaviour
 
     void LoadItemCsv()
     {
-        // List<ItemInfo> itemInfo 를 List<T> dataList로 전달하면서 ItemInfo를 T에 전달
-        // == LoadCsv<ItemInfo>
+        // List<CsvToPrefabs> itemInfo 를 List<T> dataList로 전달하면서 ItemInfo를 T에 전달
+        // == LoadCsv<CsvToPrefabs>
         LoadCsv("Item", itemInfo, 
             (row, itemInfo) =>
         {
@@ -102,7 +101,7 @@ public class CSVLoadManager_Origin : MonoBehaviour
                 }
 
                 Debug.Log("[" + row_num + "]");
-                ItemInfo itemInfo = new ItemInfo();
+                CsvToPrefabs itemInfo = new CsvToPrefabs();
 
                 int field_num = 0;
                 foreach (string field in row)
@@ -191,7 +190,7 @@ public class CSVLoadManager_Origin : MonoBehaviour
                 Debug.Log($"[{row_num}]");
                 T info = new T();
 
-                processRow(row, info); // 전달된 델리게이트 실행
+                processRow(row, info); // 전달된 대행자 실행
 
                 dataList.Add(info);
                 row_num++;

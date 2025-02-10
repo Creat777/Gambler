@@ -1,3 +1,0 @@
-stage번호,말하는 사람,스크립트,"selection 유무(1, 0)",1번 선택지,2번 선택지,1번 콜백함수,2번 콜백함수
-Stage1,주인공,시계가 멈춰있다.,0,null,null,null,null
-Stage1,주인공,시침과 초침은 12시 정각을 가리키고 있다.,0,null,null,null,null

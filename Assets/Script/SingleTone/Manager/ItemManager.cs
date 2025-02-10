@@ -5,8 +5,8 @@ public class ItemManager : Singleton<ItemManager>
 {
     [SerializeField] private ItemTable itemTable;
 
-    public Dictionary<int, ItemInfo> Itemdict_serialToInfo { get; private set; }
-    public Dictionary<string, ItemInfo> ItemDict_NameToInfo { get; private set; }
+    public Dictionary<int, CsvToPrefabs> Itemdict_serialToInfo { get; private set; }
+    public Dictionary<string, CsvToPrefabs> ItemDict_NameToInfo { get; private set; }
 
     public int QuestItemSerialNumber {  get; private set; }
 
@@ -20,8 +20,8 @@ public class ItemManager : Singleton<ItemManager>
 
     private void InitItemDict()
     {
-        Itemdict_serialToInfo = new Dictionary<int, ItemInfo>();
-        ItemDict_NameToInfo = new Dictionary<string, ItemInfo>();
+        Itemdict_serialToInfo = new Dictionary<int, CsvToPrefabs>();
+        ItemDict_NameToInfo = new Dictionary<string, CsvToPrefabs>();
 
         foreach(var itemInfo in itemTable.itemInfoList)
         {

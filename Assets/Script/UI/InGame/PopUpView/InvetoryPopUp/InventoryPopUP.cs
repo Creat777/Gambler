@@ -16,7 +16,7 @@ public class InventoryPopUp : PopUp
         foreach (Item item in Player_items)
         {
             // 아이템 종합정보를 호출
-            ItemInfo itemInfo = ItemManager.Instance.Itemdict_serialToInfo[item.serialNumber];
+            CsvToPrefabs itemInfo = ItemManager.Instance.Itemdict_serialToInfo[item.serialNumber];
 
             // 아이템 인스턴시
             GameObject obj = Instantiate(itemInfo.__itemPrefab);

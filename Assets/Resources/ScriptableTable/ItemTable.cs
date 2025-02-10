@@ -9,7 +9,7 @@ using static UnityEngine.GraphicsBuffer;
 ///  이를 통해, Unity 에디터에서 직접 값들을 수정할 수 있게 된다.
 /// </summary>
 [System.Serializable]
-public class ItemInfo
+public class CsvToPrefabs
 {
     // 아이템 고유 번호
     public int SerialNumber;
@@ -33,27 +33,5 @@ public class ItemInfo
 [CreateAssetMenu(fileName = "ItemTable", menuName = "Scriptable Objects/ItemTable")]
 public class ItemTable : ScriptableObject
 {
-    public List<ItemInfo> itemInfoList = new List<ItemInfo>();
-}
-
-[CustomEditor(typeof(ItemTable))]
-public class ItemTableEditor : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        // GUILayout.Height()를 사용하여 InputField 높이 설정
-        ItemTable itemTable = (ItemTable)target;
-
-        EditorGUILayout.LabelField("Description Input Field");
-
-        // 이 부분에서 InputField의 높이를 조정하는 코드
-        foreach (var itemInfo in itemTable.itemInfoList)
-        {
-            itemInfo.Description = EditorGUILayout.TextArea(itemInfo.Description, GUILayout.Height(40));
-            GUILayout.Space(10);
-        }
-
-        // 기본적인 레이아웃 처리
-        DrawDefaultInspector();
-    }
+    public List<CsvToPrefabs> itemInfoList = new List<CsvToPrefabs>();
 }

@@ -1,6 +1,0 @@
-stage번호,말하는 사람,스크립트,"selection 유무(1, 0)",1번 선택지,2번 선택지,1번 콜백함수,2번 콜백함수
-Stage1,주인공,밖에서 보니 실제 내부보다 훨씬 큰거 같다. 기분탓인가...,0,null,null,null,null
-Stage1,주인공,밖에서 봐도 문만은 튼튼해보인다.,0,null,null,null,null
-Stage1,주인공,안으로 들어갈까?,1,예,아니요,3,1
-Stage2,null,null,0,null,null,null,null
-Stage3,null,null,0,null,null,null,null

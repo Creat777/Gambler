@@ -10,14 +10,35 @@ public enum eScene
     InGame
 }
 
-enum eMap
+public enum eMap
 {
     InsideOfHouse,
     OutsideOfHouse
 }
 
+public enum eStage
+{
+    None,
+    Stage1,
+    Stage2
+}
+
 public class GameManager : Singleton<GameManager>
 {
+    // 싱글톤과 논싱글톤의 연결자
+    static private Connector connector;
+    static public Connector Connector
+    {
+        get { 
+
+            if(connector == null)
+            {
+                connector = GameObject.FindGameObjectWithTag("Connector").GetComponent<Connector>();
+            }
+            return connector;
+        }
+    }
+
     // 에디터에서 수정
     public float defaultGamespeed;
     public int maxStage;
@@ -28,6 +49,8 @@ public class GameManager : Singleton<GameManager>
     public float gameSpeed { get; private set; }
     public string[] gameStages { get; private set; }
     public eScene currentScene;
+    public eMap currentMap;
+    public eStage currentStage;
 
     [SerializeField] private int month = 12;
     [SerializeField] private int day;
@@ -105,7 +128,15 @@ public class GameManager : Singleton<GameManager>
             case 1:
                 currentScene = eScene.Lobby; break;
             case 2:
-                currentScene = eScene.InGame; break;
+                currentScene = eScene.InGame;
+
+                // 새로하기 시작할 시
+                {
+                    Connector.map_Script.ChangeMapTo(eMap.InsideOfHouse);
+                    currentStage = eStage.Stage1;
+                }
+                
+                break;
         }
 
     }

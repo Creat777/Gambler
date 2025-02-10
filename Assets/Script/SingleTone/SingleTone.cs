@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
@@ -12,17 +13,22 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     //              : 클래스 이름으로 접근할 수 있음
     private static T instance;
 
+    private static readonly object _lock = new object();
+
     public static T Instance
     {
         get
         {
-            if (instance == null)
+            lock (_lock)
             {
-                Debug.LogWarning($"{typeof(T).Name}의 싱글톤이 존재하지 않음");
+                if (instance == null)
+                {
+                    Debug.LogWarning("싱글톤이 아직 생성되지 않았습니다.");
+                }
+                // null이 아니면 그대로 참조
+                return instance;
             }
-
-            // null이 아니면 그대로 참조
-            return instance;
+                
         }
 
         private set
@@ -33,15 +39,18 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
     protected void MakeSingleTone()
     {
-        // 싱글톤 인스턴스 설정 및 중복 방지
-        if (instance == null)
+        lock(_lock)
         {
-            instance = this as T; // this 객체를 타입 T로 변환하려고 시도하며, 변환이 실패하면 예외를 던지지 않고 null을 반환
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject); // 중복된 싱글톤 파괴
+            // 싱글톤 인스턴스 설정 및 중복 방지
+            if (instance == null)
+            {
+                instance = this as T; // this 객체를 타입 T로 변환하려고 시도하며, 변환이 실패하면 예외를 던지지 않고 null을 반환
+                DontDestroyOnLoad(gameObject);
+            }
+            else if (instance != this)
+            {
+                Destroy(gameObject); // 중복된 싱글톤 파괴
+            }
         }
     }
 

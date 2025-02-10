@@ -11,22 +11,20 @@ public class TextWindowView : MonoBehaviour
     // 에디터에서 연결
     public Text textWindow;
     public Text Speaker;
-    private List<string[]> TextSet;
+    private List<CsvManager.IteractableInfoList> TextCsv;
     public RectTransform arrowImageTrans;
     public GameObject selectionView;
 
     // 스크립트 수정
-    Interactive interactive;
     bool isTypingReady;
     float typingDelay;
     int TextIndex;
-    string[] currentTextData;
+    CsvManager.IteractableInfoList iteractableInfo;
     GameObject LastObject;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Awake()
     {
-        interactive = new Interactive();
         isTypingReady = true;
         typingDelay = 0.05f;
     }
@@ -45,7 +43,7 @@ public class TextWindowView : MonoBehaviour
         ArrowDoTween();
 
 
-        if (PlayerMoveAndAnime.Instance != null)
+        if (GameManager.Connector.player != null)
         {
             // 시작 텍스트 인덱스
             TextIndex = 0;
@@ -54,7 +52,7 @@ public class TextWindowView : MonoBehaviour
             InteractiveProcess();
 
             // 상호작용을 시작할때 즉시 스크립트가 출력되도록 만듬
-            if (TextSet.Count >= 1)
+            if (TextCsv != null)
             {
                 if (isTypingReady)
                 {
@@ -75,37 +73,13 @@ public class TextWindowView : MonoBehaviour
         }
     }
 
-    //void Update()
-    //{
-    //    if (PlayerMoveAndAnime.Instance != null)
-    //    {
-    //        InteractiveProcess();
-
-    //        // 스페이스바를 누르면 이어서 스크립트 처리를 시작함
-    //        if (Input.GetKeyDown(KeyCode.Space))
-    //        {
-    //            NextPrintButton();
-    //        }
-    //    }
-    //}
-
-
-    // 여러번 눌리는 문제가 있음
     public void NextPrintButton()
     {
-        // index 0 : 말하는 사람
-        // index 1 : 스크립트
-        // index 2 : selection 유무(0, 1)
-        // index 3 : 1번째 선택지
-        // index 4 : 2번째 선택지
-        // index 5 : 1번 콜백번호
-        // index 6 : 2번 콜백번호
-
         // 상호작용했고 스크립트를 읽어왔으면
-        if (TextSet.Count >= 1 )
+        if (TextCsv.Count >= 1 )
         {
             // selection이 없으면
-            if (currentTextData[2] == "0")
+            if (iteractableInfo.eSelect == CsvManager.IteractableInfoList.eSelection.NoneExist)
             {
                 // 타이핑이 끝난경우 다음 타이핑을 시작
                 if (isTypingReady)
@@ -121,7 +95,7 @@ public class TextWindowView : MonoBehaviour
             }
 
             // selection이 있으면
-            else if (currentTextData[2] == "1")
+            else if (iteractableInfo.eSelect == CsvManager.IteractableInfoList.eSelection.Exist)
             {
                 // 타이핑이 끝난 경우 selectionView를 활성화
                 if(isTypingReady)
@@ -129,14 +103,11 @@ public class TextWindowView : MonoBehaviour
                     selectionView.SetActive(true);
                     SelectionView SV = selectionView.GetComponent<SelectionView>();
 
-                    // currentTextData의 인덱스
-                    // index 5 : 1번 콜백번호
-                    // index 6 : 2번 콜백번호
-                    int index_1; int.TryParse(currentTextData[5], out index_1);
-                    int index_2; int.TryParse(currentTextData[6], out index_2);
-
-                    SV.RegisterButtonClick_Selection1(CallBackManager.Instance.CallBackList(index_1, LastObject ));
-                    SV.RegisterButtonClick_Selection2(CallBackManager.Instance.CallBackList(index_2, LastObject ));
+                    // 셀렉션 스크립트 부여 및 콜백 등록
+                    for (int i = 0; i < iteractableInfo.selection.Count; i++)
+                    {
+                        SV.RegisterButtonClick_Selection(i, iteractableInfo.selection[i], iteractableInfo.callback[i]);
+                    }
                 }
                 // 타이핑이 안끝났으면 타이핑을 끝내기
                 else
@@ -153,47 +124,45 @@ public class TextWindowView : MonoBehaviour
     private void InteractiveProcess()
     {
         // 플레이어의 레이캐스트에 걸리는 객체
-        GameObject curruntObject = PlayerMoveAndAnime.Instance.hitObject;
+        GameObject curruntObject = GameManager.Connector.player.GetComponent<Player_MoveAndAnime>().hitObject;
 
-        // 스크립트를 읽어오고
-        InitTextSet(curruntObject.name);
+        if(curruntObject != null)
+        {
+            // csv데이터 가져오기
+            InitTextCsv(curruntObject);
+        }
 
         // 마지막 상호작용한 객체를 저장
         LastObject = curruntObject;
         return;
     }
 
-    public void InitTextSet(string objectName)
+    public void InitTextCsv(GameObject objectName)
     {
-        TextSet = CsvManager.Instance.GetText(objectName, interactive);
+        InteractableObject Script = objectName.GetComponent<InteractableObject>();
+        CsvManager.eCsvFile_InterObj currentObject = Script.GetInteractableEnum();
+        eStage currentStage = GameManager.Instance.currentStage;
+        TextCsv =  CsvManager.Instance.GetInteractableCsv(currentObject, currentStage);
     }
 
     public void PrintText()
     {
         // 배열 범위오류 제한
-        if (TextIndex < TextSet.Count)
+        if (TextIndex < TextCsv.Count)
         {
-            // 텍스트 데이터 전환
-            // index 0 : 말하는 사람
-            // index 1 : 스크립트
-            // index 2 : selection 유무(0, 1)
-            // index 3 : 1번째 선택지
-            // index 4 : 2번째 선택지
-            // index 5 : 1번 콜백번호
-            // index 6 : 2번 콜백번호
-            currentTextData = TextSet[TextIndex++];
+            iteractableInfo = TextCsv[TextIndex++];
 
             // 텍스트 순차적으로 보이게함
-            Speaker.text = currentTextData[0];
-            StartCoroutine(TypeDialogue(currentTextData[1]));
+            Speaker.text = iteractableInfo.speaker;
+            StartCoroutine(TypeDialogue(iteractableInfo.script));
 
             // 마지막 대화에서 다음 대화 이미지(화살표) 삭제
-            if (TextIndex == TextSet.Count)
+            if (TextIndex == TextCsv.Count)
                 arrowImageTrans.gameObject.SetActive(false);
             return;
         }
         // 텍스트가 다 끝난경우 // currentTextData[2] == "0"은 PrintText 진입전에 검사했음
-        if (TextIndex >= TextSet.Count)
+        if (TextIndex >= TextCsv.Count)
         {
             CallBackManager.Instance.TextWindowPopUp_Close();
         }
