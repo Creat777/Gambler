@@ -5,14 +5,12 @@ public class Canvas_InGame : MonoBehaviour
     public GameObject interfaceView;
     public GameObject textWindowView;
     public GameObject PopUPView;
-    public GameObject BlackView;
 
     void Start()
     {
         interfaceView.SetActive(true);
         textWindowView.SetActive(false);
         PopUpViewDisable();
-        BlackView.SetActive(false);
     }
 
     private void PopUpViewDisable()

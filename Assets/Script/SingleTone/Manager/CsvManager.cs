@@ -1,100 +1,60 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.Events;
-
+using PublicSet;
 
 
 
 public class CsvManager : Singleton<CsvManager>
 {
-    // stage별로 폴더를 나눌까?
-
-
-    public enum eCsvFile_InterObj
-    {
-        Bed,
-        Cabinet,
-        Clock,
-        Computer,
-        InsideDoor,
-        Box_Empty,
-        Box_Full,
-        OutsideDoor
-    }
-
-    public class IteractableInfoList
-    {
-        public enum eSelection
-        {
-            NoneExist,
-            Exist
-            
-        }
-        public string speaker { get; set; }
-        public string script { get; set; }
-        public eSelection eSelect { get; set; }
-        public List<string> selection { get; set; }
-        public List<UnityAction> callback { get; set; }
-
-        public IteractableInfoList()
-        {
-            selection = new List<string>();
-            callback = new List<UnityAction>();
-        }
-
-    }
-
     // csv파일 저장을 위한 배열
     // List<IteractableInfoList> : 파일 내 스테이지별 데이터
-    private List<IteractableInfoList>[][] InteractableInfoFiles;
-    private List<IteractableInfoList>[][] PlayerMonologueFiles;
+    private List<cIteractableInfoList>[][] InteractableInfoFiles;
+    private List<cPlayerMonologueInfoList>[][] PlayerMonologueFiles;
 
-    public List<IteractableInfoList> GetInteractableCsv(eCsvFile_InterObj eCsv, eStage eStage)
+    public List<cIteractableInfoList> GetInteractableCsv(eCsvFile_InterObj eCsv, eStage eStage)
     {
         return InteractableInfoFiles[(int)eCsv][(int)eStage];
     }
 
-    enum eCsvFile_PlayerMono
+    public List<cPlayerMonologueInfoList> GetPlayerMonologueCsv(eCsvFile_PlayerMono eCsv, eStage eStage)
     {
-
+        return PlayerMonologueFiles[(int)eCsv][(int)eStage];
     }
-    public class ItemInfo
-    {
-
-    }
-
-
 
     protected override void Awake()
     {
         base.Awake();
 
         // 
-        int FileCount = Enum.GetValues(typeof(eCsvFile_InterObj)).Length;
         int StageCount = Enum.GetValues(typeof(eStage)).Length;
 
-        InteractableInfoFiles = new List<IteractableInfoList>[FileCount][];
-        PlayerMonologueFiles = new List<IteractableInfoList>[FileCount][];
-        NewCsvFile(FileCount, StageCount,InteractableInfoFiles);
-        NewCsvFile(FileCount, StageCount, PlayerMonologueFiles);
+        // 파일개수에서 None은 제외
+
+        // 상호작용 관련
+        int InteractionFileCount = Enum.GetValues(typeof(eCsvFile_InterObj)).Length - 1 ;
+        InteractableInfoFiles = new List<cIteractableInfoList>[InteractionFileCount][];
+        NewCsvFile(InteractionFileCount, StageCount, InteractableInfoFiles);
+
+        // 독백 관련
+        int MonologueFileCount = Enum.GetValues(typeof(eCsvFile_PlayerMono)).Length - 1;
+        PlayerMonologueFiles = new List<cPlayerMonologueInfoList>[InteractionFileCount][];
+        NewCsvFile(MonologueFileCount, StageCount, PlayerMonologueFiles);
     }
 
-    public void NewCsvFile(int FileCount, int StageCount, List<IteractableInfoList>[][] CsvFileInfoPerStage)
+    public void NewCsvFile<T>(int FileCount, int StageCount, List<T>[][] CsvFileInfoPerStage)
     {
-        
         for (int i = 0; i < FileCount; i++)
         {
             // 각 파일들에 스테이지관리를 위한 저장공간
-            CsvFileInfoPerStage[i] = new List<IteractableInfoList>[StageCount];
+            CsvFileInfoPerStage[i] = new List<T>[StageCount];
 
             for (int j = 0; j < StageCount; j++)
             {
                 // 각 스테이지마다 갖는 데이터 공간
-                CsvFileInfoPerStage[i][j] = new List<IteractableInfoList>(); // 리스트 초기화
+                CsvFileInfoPerStage[i][j] = new List<T>(); // 리스트 초기화
             }
         }
     }
@@ -102,77 +62,61 @@ public class CsvManager : Singleton<CsvManager>
     private void Start()
     {
         PrecessCsvOfInteraction();
-        //PrecessCsvOfMonologue();
+        PrecessCsvOfMonologue();
     }
 
     private void PrecessCsvOfInteraction()
     {
         // 상호작용 객체에 대한 csv
         string path = "CSV/InteractableObject/";
-        ProcessCsv<eCsvFile_InterObj>(path, InteractableInfoFiles);
-        /*
-        foreach (var eFileName in Enum.GetValues(typeof(eCsvFile_InterObj)))
-        {
-            //// 각 파일 데이터를 로드할 저장공간 추가
-            //InteractableInfoFiles[eFileName.GetHashCode()] = new List<IteractableInfoList>();
-
-            string FilePath = path + eFileName.ToString();
-            int eFileCode = eFileName.GetHashCode();
-
-            // 파일저장경로와 파일명, 파일 데이터를 로드할 메모리를 넘김
-            foreach (var eStage in Enum.GetValues(typeof(eStage)))
-            {
-                int eStageCode = eStage.GetHashCode();
-                LoadInteractableCsv(FilePath, eFileCode, eStageCode);
-
-                // 각 파일에서 행을 하나씩 뽑아서 데이터를 올바르게 처리했는지 확인
-                foreach (IteractableInfoList info in InteractableInfoFiles[eFileCode][eStageCode])
-                {
-                    PrintProperties(info);
-                }
-            }
-        }
-        */
+        ProcessCsv<eCsvFile_InterObj, cIteractableInfoList>(path, LoadInteractableCsv ,InteractableInfoFiles);
+        
     }
 
     private void PrecessCsvOfMonologue()
     {
         // 플레이어 모놀로그에 대한 csv
         string path = "CSV/PlayerMonologue/";
-        ProcessCsv<eCsvFile_PlayerMono>(path, PlayerMonologueFiles);
+        ProcessCsv<eCsvFile_PlayerMono, cPlayerMonologueInfoList>(path, LoadMonologueCsv, PlayerMonologueFiles);
     }
 
-    private void ProcessCsv<T>(string path, List<IteractableInfoList>[][] CsvFileInfoPerStage) where T : Enum
+    private void ProcessCsv<T_enum, T_class>(string path, Action<string, int> LoadIndividualCsv,List<T_class>[][] CsvFileInfoPerStage) where T_enum : Enum
     {
-        foreach (var eFileName in Enum.GetValues(typeof(T)))
+        foreach (var eFileName in Enum.GetValues(typeof(T_enum)))
         {
-            //// 각 파일 데이터를 로드할 저장공간 추가
-            //InteractableInfoFiles[eFileName.GetHashCode()] = new List<IteractableInfoList>();
+            // 마지막 순서로 None이 있음
+            if ((int)eFileName == Enum.GetValues(typeof(T_enum)).Length - 1) continue;
 
             string FilePath = path + eFileName.ToString();
             int eFileCode = eFileName.GetHashCode();
 
             // 데이터 처리
-            LoadInteractableCsv(FilePath, eFileCode);
+            LoadIndividualCsv(FilePath, eFileCode);
 
             // 처리된 데이터의 확인
             foreach (var eStage in Enum.GetValues(typeof(eStage)))
             {
                 int eStageCode = eStage.GetHashCode();
 
-                // 각 파일에서 행을 하나씩 뽑아서 데이터를 올바르게 처리했는지 확인
-                foreach (IteractableInfoList info in CsvFileInfoPerStage[eFileCode][eStageCode])
+                // 정상적인 스테이지 코드의 경우만 실행
+                if(eStageCode != 0)
                 {
-                    PrintProperties(info);
-                }
+                    // 각 파일에서 행을 하나씩 뽑아서 데이터를 올바르게 처리했는지 확인
+                    foreach (T_class info in CsvFileInfoPerStage[eFileCode][eStageCode])
+                    {
+                        PrintProperties(info);
+                    }
+                }    
+                
             }
         }
     }
 
-    public void LoadInteractableCsv(string path, int i)
+    public void LoadInteractableCsv(string path, int fileEnum)
     {
+        if ((eCsvFile_InterObj)fileEnum == eCsvFile_InterObj.None) return;
 
-        LoadCsv<IteractableInfoList>(path,
+        LoadCsv<cIteractableInfoList>(path,
             (row, info)=>
             {
                 if (info == null) return;
@@ -197,7 +141,7 @@ public class CsvManager : Singleton<CsvManager>
                             }
                             else
                             {
-                                Debug.LogWarning($"[{field}]는 스테이지 코드의 값이 숫자가 아님");
+                                Debug.LogWarning($"[{field}]는 스테이지 코드값이 숫자가 아님");
                             }
                             break;
 
@@ -206,19 +150,19 @@ public class CsvManager : Singleton<CsvManager>
                         case 3: 
                             if(int.TryParse(field, out int intField2)) // 문자열을 정수형으로 캐스팅
                             {
-                                if (Enum.IsDefined(typeof(IteractableInfoList.eSelection), intField2)) // 정수값이 enum에 정의되었는지 확인
+                                if (Enum.IsDefined(typeof(eSelection), intField2)) // 정수값이 enum에 정의되었는지 확인
                                 {
-                                    info.eSelect = (IteractableInfoList.eSelection)intField2;
+                                    info.eSelect = (eSelection)intField2;
                                 }
                                 else
                                 {
-                                    Debug.LogWarning($"{intField2}는 {typeof(IteractableInfoList.eSelection).Name}에 정의되지 않았음");
+                                    Debug.LogWarning($"{intField2}는 {typeof(eSelection).Name}에 정의되지 않았음");
                                 }
                             }
                             break;
                         default:
                             // 선택지가 존재하는 경우에만
-                            if (info.eSelect == IteractableInfoList.eSelection.Exist)
+                            if (info.eSelect == eSelection.Exist)
                             {
                                 if((field_num % 2) == 0)
                                 {
@@ -230,7 +174,7 @@ public class CsvManager : Singleton<CsvManager>
                                     // 선택지에 따른 처리
                                     if (int.TryParse(field, out int intField3))
                                     {
-                                        info.callback.Add(CallBackManager.Instance.CallBackList(intField3));
+                                        info.callback.Add(CallbackManager.Instance.CallBackList(intField3));
                                     }
                                 }
                             }
@@ -243,9 +187,59 @@ public class CsvManager : Singleton<CsvManager>
                 if(stage != eStage.None)
                 {
                     // 각 행의 원소들을 처리한 후 스테이지별 csv파일에 삽입
-                    InteractableInfoFiles[i][(int)stage].Add(info);
+                    InteractableInfoFiles[fileEnum][(int)stage].Add(info);
                 }
                 
+            }
+            );
+    }
+
+    public void LoadMonologueCsv(string path, int fileEnum)
+    {
+        if ((eCsvFile_PlayerMono)fileEnum == eCsvFile_PlayerMono.None) return;
+
+        LoadCsv<cPlayerMonologueInfoList>(path,
+            (row, info) =>
+            {
+                if (info == null) return;
+
+                eStage stage = eStage.None;
+                int field_num = 0;
+                foreach (string field in row)
+                {
+                    //Debug.Log($"{field_num}열 : " + field);
+                    switch (field_num)
+                    {
+                        // 처리된 데이터를 넣을 Stage를 저장
+                        case 0:
+                            if (int.TryParse(field, out int intField))
+                            {
+                                switch (intField)
+                                {
+                                    case 1: Debug.Log($"입력된 스테이지 코드 : {intField}"); stage = eStage.Stage1; break;
+                                    case 2: Debug.Log($"입력된 스테이지 코드 : {intField}"); stage = eStage.Stage2; break;
+                                    default: Debug.LogWarning($"{field}는 정의되지 않은 스테이지 코드"); break;
+                                }
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[{field}]는 스테이지 코드값이 숫자가 아님");
+                            }
+                            break;
+
+                        case 1: info.speaker = field; break;
+                        case 2: info.script = field; break;
+                    }
+                    field_num++;
+                }
+
+                // 정의되지 않은 스테이지의 경우 무시
+                if (stage != eStage.None)
+                {
+                    // 각 행의 원소들을 처리한 후 스테이지별 csv파일에 삽입
+                    PlayerMonologueFiles[fileEnum][(int)stage].Add(info);
+                }
+
             }
             );
     }
@@ -292,7 +286,7 @@ public class CsvManager : Singleton<CsvManager>
         }
         else
         {
-            Debug.LogAssertion($"{resourceName} 파일이 존재하지 않습니다.");
+            Debug.LogWarning($"{resourceName} 파일이 존재하지 않습니다.");
         }
     }
 

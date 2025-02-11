@@ -1,9 +1,10 @@
 using UnityEngine;
+using PublicSet;
 
 public class Bed : InteractableObject
 {
-    public override CsvManager.eCsvFile_InterObj GetInteractableEnum()
+    public override eCsvFile_InterObj GetInteractableEnum()
     {
-        return CsvManager.eCsvFile_InterObj.Bed;
+        return eCsvFile_InterObj.Bed;
     }
 }

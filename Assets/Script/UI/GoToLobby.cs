@@ -5,6 +5,6 @@ public class GoToLobby : MonoBehaviour
 {
     public void MoveToLobby()
     {
-        SceneManager.LoadScene("Lobby");
+        GameManager.Instance.SceneUnloadView(() => SceneManager.LoadScene("Lobby"));
     }
 }

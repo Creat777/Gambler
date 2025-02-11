@@ -2,26 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using PublicSet;
+using DG.Tweening;
+using UnityEngine.UI;
+using System;
 
-public enum eScene
-{
-    Title,
-    Lobby,
-    InGame
-}
 
-public enum eMap
-{
-    InsideOfHouse,
-    OutsideOfHouse
-}
 
-public enum eStage
-{
-    None,
-    Stage1,
-    Stage2
-}
 
 public class GameManager : Singleton<GameManager>
 {
@@ -30,7 +17,6 @@ public class GameManager : Singleton<GameManager>
     static public Connector Connector
     {
         get { 
-
             if(connector == null)
             {
                 connector = GameObject.FindGameObjectWithTag("Connector").GetComponent<Connector>();
@@ -118,23 +104,88 @@ public class GameManager : Singleton<GameManager>
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
+
+    public void SceneLoadView(Action LoadSceneCallback = null)
+    {
+        ProcessSceneView(true, Color.black, Color.clear, LoadSceneCallback);
+    }
+
+    public void SceneUnloadView(Action LoadSceneCallback)
+    {
+        ProcessSceneView(false, Color.clear, Color.black, LoadSceneCallback);
+    }
+
+    public void ProcessSceneView(bool isSceneLoad, Color startColor, Color targetColor, Action callback = null)
+    {
+        Connector.blackView.SetActive(true);
+        Image blackViewImage = connector.blackView.GetComponent<Image>();
+        blackViewImage.color = startColor;
+
+        Sequence sequence = DOTween.Sequence();
+        sequence.AppendInterval(0.3f)
+                .Append(blackViewImage.DOColor(targetColor, 0.7f));
+
+        if(isSceneLoad)
+        {
+            sequence.AppendCallback(() => connector.blackView.SetActive(false));
+        }
+        if (callback != null)
+        {
+            sequence.AppendCallback(() => callback());
+        }
+
+        sequence.SetLoops(1);
+
+        sequence.Play();
+    }
+
+
     // 씬 로드 시 호출될 콜백 함수
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         switch (scene.buildIndex)
         { 
             case 0:
-                currentScene = eScene.Title; break;
-            case 1:
-                currentScene = eScene.Lobby; break;
-            case 2:
-                currentScene = eScene.InGame;
-
-                // 새로하기 시작할 시
                 {
-                    Connector.map_Script.ChangeMapTo(eMap.InsideOfHouse);
-                    currentStage = eStage.Stage1;
+                    currentScene = eScene.Title;
+                    SceneLoadView();
                 }
+                break;
+            case 1:
+                {
+                    currentScene = eScene.Lobby;
+                    SceneLoadView();
+                }
+                 break;
+            case 2:
+                {
+                    currentScene = eScene.InGame;
+                    // 일반적인 경우
+                    {
+                        SceneLoadView();
+                    }
+                    // 새로하기 시작하는 경우
+                    {
+                        Connector.map_Script.ChangeMapTo(eMap.InsideOfHouse);
+                        currentStage = eStage.Stage1;
+                        SceneLoadView(
+                            () =>
+                            {
+                                Debug.Log("콜백 실행됐음");
+                                CallbackManager.Instance.TextWindowPopUp_Open();
+                                TextWindowView textViewScript = Connector.textWindowView.GetComponent<TextWindowView>();
+                                if (textViewScript != null)
+                                {
+                                    textViewScript.StartTestWindow(eTextType.PlayerMonologue, eCsvFile_PlayerMono.PlayerTutorial);
+                                }
+                            }
+                            );
+                        
+                    }
+                }
+                
+
+                
                 
                 break;
         }

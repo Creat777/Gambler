@@ -3,11 +3,10 @@ using UnityEngine.Events;
 using DG.Tweening;
 using UnityEngine.UI;
 using System.Collections;
-using System.Collections.Generic;
 using System;
 
 
-public class CallBackManager : Singleton<CallBackManager>
+public class CallbackManager : Singleton<CallbackManager>
 {
 
     // 스크립트로 편집
@@ -22,10 +21,6 @@ public class CallBackManager : Singleton<CallBackManager>
     void Start()
     {
         isBlakcViewReady = true;
-    }
-    private void FixedUpdate()
-    {
-        
     }
 
     IEnumerator BlackViewProcess(float delay, Action callBack)
@@ -83,6 +78,7 @@ public class CallBackManager : Singleton<CallBackManager>
             case 3: return ChangeMapToInsideOfHouse;
             case 4: return GoToNextDay;
             case 5: return BoxOpen;
+            case 6: return TextHoldOn;
         }
         
         return TrashFuc;
@@ -181,9 +177,12 @@ public class CallBackManager : Singleton<CallBackManager>
         
     }
 
-    
-
-
-    //public void
-
+    //6
+    public virtual void TextHoldOn()
+    {
+        TextWindowView textWindowView_Script = GameManager.Connector.textWindowView.GetComponent<TextWindowView>();
+        textWindowView_Script.PrintText();
+        textWindowView_Script.selectionView.SetActive(false);
+        return;
+    }
 }

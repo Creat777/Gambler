@@ -1,6 +1,7 @@
 using UnityEngine;
+using PublicSet;
 
 public abstract class InteractableObject : MonoBehaviour
 {
-    public abstract CsvManager.eCsvFile_InterObj GetInteractableEnum();
+    public abstract eCsvFile_InterObj GetInteractableEnum();
 }

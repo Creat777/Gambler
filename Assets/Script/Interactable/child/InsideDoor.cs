@@ -1,9 +1,10 @@
 using UnityEngine;
+using PublicSet;
 
 public class InsideDoor : InteractableObject
 {
-    public override CsvManager.eCsvFile_InterObj GetInteractableEnum()
+    public override eCsvFile_InterObj GetInteractableEnum()
     {
-        return CsvManager.eCsvFile_InterObj.InsideDoor;
+        return eCsvFile_InterObj.InsideDoor;
     }
 }

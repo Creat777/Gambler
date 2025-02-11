@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using PublicSet;
+using System;
 
 public class TextWindowView : MonoBehaviour
 {
@@ -11,7 +12,8 @@ public class TextWindowView : MonoBehaviour
     // 에디터에서 연결
     public Text textWindow;
     public Text Speaker;
-    private List<CsvManager.IteractableInfoList> TextCsv;
+    private List<cIteractableInfoList> InteractionTextCsv;
+    private List<cPlayerMonologueInfoList> MonologueTextCsv;
     public RectTransform arrowImageTrans;
     public GameObject selectionView;
 
@@ -19,7 +21,9 @@ public class TextWindowView : MonoBehaviour
     bool isTypingReady;
     float typingDelay;
     int TextIndex;
-    CsvManager.IteractableInfoList iteractableInfo;
+    cIteractableInfoList iteractableInfo { get; set; }
+    cPlayerMonologueInfoList monologueInfo;
+    eTextType currentTextType;
     GameObject LastObject;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -29,36 +33,56 @@ public class TextWindowView : MonoBehaviour
         typingDelay = 0.05f;
     }
 
-    private void OnEnable()
+
+    public void StartTestWindow(eTextType textType, eCsvFile_PlayerMono monologue = eCsvFile_PlayerMono.None )
     {
-        if(GameManager.Instance != null)
+        currentTextType = textType;
+
+        if (GameManager.Instance != null)
         {
             GameManager.Instance.Pause_theGame();
-        }
-        
-        // 대화를 시작할때마다 화살표 이미지 살림
-        arrowImageTrans.gameObject.SetActive(true);
 
-        // 화살표 이미지 애니메이션
-        ArrowDoTween();
+            // 대화를 시작할때마다 화살표 이미지 살림
+            arrowImageTrans.gameObject.SetActive(true);
 
+            // 화살표 이미지 애니메이션
+            ArrowDoTween();
 
-        if (GameManager.Connector.player != null)
-        {
             // 시작 텍스트 인덱스
             TextIndex = 0;
 
-            // 상호작용을 위한 기본처리
-            InteractiveProcess();
+        }
 
-            // 상호작용을 시작할때 즉시 스크립트가 출력되도록 만듬
-            if (TextCsv != null)
-            {
-                if (isTypingReady)
+        
+        switch (currentTextType)
+        {
+            case eTextType.Interaction:
                 {
-                    PrintText();
+                    // 상호작용을 위한 기본처리
+                    InteractionProcess();
+
+                    // 상호작용을 시작할때 즉시 스크립트가 출력되도록 만듬
+                    if (InteractionTextCsv != null)
+                    {
+                        if (isTypingReady)
+                        {
+                            PrintText();
+                        }
+                    }
                 }
-            }
+                break;
+            case eTextType.PlayerMonologue:
+                {
+                    PlayerMonologueProcess(monologue);
+                    if (MonologueTextCsv != null)
+                    {
+                        if (isTypingReady)
+                        {
+                            PrintText();
+                        }
+                    }
+                }
+                break;
         }
     }
 
@@ -75,11 +99,24 @@ public class TextWindowView : MonoBehaviour
 
     public void NextPrintButton()
     {
+        switch(currentTextType)
+        {
+            case eTextType.Interaction:
+                NextButton_with_Interaction(); break;
+
+            case eTextType.PlayerMonologue:
+                NextButton_with_Monologue();  break;
+        }
+        
+    }
+
+    private void NextButton_with_Interaction()
+    {
         // 상호작용했고 스크립트를 읽어왔으면
-        if (TextCsv.Count >= 1 )
+        if (InteractionTextCsv.Count >= 1)
         {
             // selection이 없으면
-            if (iteractableInfo.eSelect == CsvManager.IteractableInfoList.eSelection.NoneExist)
+            if (iteractableInfo.eSelect == eSelection.NoneExist)
             {
                 // 타이핑이 끝난경우 다음 타이핑을 시작
                 if (isTypingReady)
@@ -95,10 +132,10 @@ public class TextWindowView : MonoBehaviour
             }
 
             // selection이 있으면
-            else if (iteractableInfo.eSelect == CsvManager.IteractableInfoList.eSelection.Exist)
+            else if (iteractableInfo.eSelect == eSelection.Exist)
             {
                 // 타이핑이 끝난 경우 selectionView를 활성화
-                if(isTypingReady)
+                if (isTypingReady)
                 {
                     selectionView.SetActive(true);
                     SelectionView SV = selectionView.GetComponent<SelectionView>();
@@ -118,10 +155,27 @@ public class TextWindowView : MonoBehaviour
 
         }
     }
-
+    private void NextButton_with_Monologue()
+    {
+        // 상호작용했고 스크립트를 읽어왔으면
+        if (MonologueTextCsv.Count >= 1)
+        {
+            // 타이핑이 끝난경우 다음 타이핑을 시작
+            if (isTypingReady)
+            {
+                PrintText();
+            }
+            // 타이핑이 아직 안끝난 경우 타이핑을 끝냄
+            else
+            {
+                // true로 바꿔서 typing을 끝냄
+                isTypingReady = true;
+            }
+        }
+    }
 
     // 상호작용을 위한 기본 처리
-    private void InteractiveProcess()
+    private void InteractionProcess()
     {
         // 플레이어의 레이캐스트에 걸리는 객체
         GameObject curruntObject = GameManager.Connector.player.GetComponent<Player_MoveAndAnime>().hitObject;
@@ -129,7 +183,11 @@ public class TextWindowView : MonoBehaviour
         if(curruntObject != null)
         {
             // csv데이터 가져오기
-            InitTextCsv(curruntObject);
+
+            InteractableObject Script = curruntObject.GetComponent<InteractableObject>();
+            eCsvFile_InterObj currentObject = Script.GetInteractableEnum();
+            eStage currentStage = GameManager.Instance.currentStage;
+            InteractionTextCsv = CsvManager.Instance.GetInteractableCsv(currentObject, currentStage);
         }
 
         // 마지막 상호작용한 객체를 저장
@@ -137,36 +195,83 @@ public class TextWindowView : MonoBehaviour
         return;
     }
 
-    public void InitTextCsv(GameObject objectName)
+    private void PlayerMonologueProcess(eCsvFile_PlayerMono monologue)
     {
-        InteractableObject Script = objectName.GetComponent<InteractableObject>();
-        CsvManager.eCsvFile_InterObj currentObject = Script.GetInteractableEnum();
+        eCsvFile_PlayerMono currentMonologue = monologue;
         eStage currentStage = GameManager.Instance.currentStage;
-        TextCsv =  CsvManager.Instance.GetInteractableCsv(currentObject, currentStage);
+        MonologueTextCsv = CsvManager.Instance.GetPlayerMonologueCsv(currentMonologue, currentStage);
     }
 
     public void PrintText()
     {
-        // 배열 범위오류 제한
-        if (TextIndex < TextCsv.Count)
+        switch(currentTextType)
         {
-            iteractableInfo = TextCsv[TextIndex++];
+            case eTextType.Interaction:
+                PrintText_Tamplate(InteractionTextCsv,
+                    ()=>
+                    {
+                        iteractableInfo = InteractionTextCsv[TextIndex++];
+                        Speaker.text = iteractableInfo.speaker;
+                        StartCoroutine(TypeDialogue(iteractableInfo.script));
+                    }); break;
+
+            case eTextType.PlayerMonologue:
+                PrintText_Tamplate(MonologueTextCsv,
+                    ()=>
+                    {
+                        monologueInfo = MonologueTextCsv[TextIndex++];
+                        Speaker.text = monologueInfo.speaker;
+                        StartCoroutine(TypeDialogue(monologueInfo.script));
+                    }); break;
+        }
+        
+    }
+
+    /*
+    private void PrintText_With_Interaction()
+    {
+        // 배열 범위오류 제한
+        if (TextIndex < InteractionTextCsv.Count)
+        {
+            iteractableInfo = InteractionTextCsv[TextIndex++];
 
             // 텍스트 순차적으로 보이게함
             Speaker.text = iteractableInfo.speaker;
             StartCoroutine(TypeDialogue(iteractableInfo.script));
 
             // 마지막 대화에서 다음 대화 이미지(화살표) 삭제
-            if (TextIndex == TextCsv.Count)
+            if (TextIndex == InteractionTextCsv.Count)
                 arrowImageTrans.gameObject.SetActive(false);
             return;
         }
         // 텍스트가 다 끝난경우 // currentTextData[2] == "0"은 PrintText 진입전에 검사했음
-        if (TextIndex >= TextCsv.Count)
+        if (TextIndex >= InteractionTextCsv.Count)
         {
-            CallBackManager.Instance.TextWindowPopUp_Close();
+            CallbackManager.Instance.TextWindowPopUp_Close();
         }
     }
+    */
+
+    private void PrintText_Tamplate<T>(List<T> textCsv, Action callback)
+    {
+        // 배열 범위오류 제한
+        if (TextIndex < textCsv.Count)
+        {
+            callback();
+
+            // 마지막 대화에서 다음 대화 이미지(화살표) 삭제
+            if (TextIndex == textCsv.Count)
+                arrowImageTrans.gameObject.SetActive(false);
+            return;
+        }
+
+        // 텍스트가 다 끝난경우
+        if (TextIndex >= textCsv.Count)
+        {
+            CallbackManager.Instance.TextWindowPopUp_Close();
+        }
+    }
+
 
     IEnumerator TypeDialogue(string dialogue)
     {

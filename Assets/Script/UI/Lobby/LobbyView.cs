@@ -7,7 +7,7 @@ public class LobbyView : MonoBehaviour
     public void StartNewGame()
     {
         // 즉시 게임으로 입장
-        SceneManager.LoadScene("InGame");
+        GameManager.Instance.SceneUnloadView(()=> SceneManager.LoadScene("InGame"));
     }
 
     // 이어하기 버튼 -> 저장기록 팝업 오픈

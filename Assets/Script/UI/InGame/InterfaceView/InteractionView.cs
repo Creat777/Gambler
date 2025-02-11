@@ -1,3 +1,4 @@
+using PublicSet;
 using UnityEngine;
 
 
@@ -29,5 +30,12 @@ public class InteractionView : MonoBehaviour
     {
         InteractButton.SetActive(true);
         isInteractiveOn = true;
+    }
+
+    public void StartInteraction()
+    {
+        CallbackManager.Instance.TextWindowPopUp_Open();
+        TextWindowView textView = GameManager.Connector.textWindowView.GetComponent<TextWindowView>();
+        textView.StartTestWindow(eTextType.Interaction);
     }
 }

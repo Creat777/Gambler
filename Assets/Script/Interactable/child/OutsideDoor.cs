@@ -1,9 +1,10 @@
 using UnityEngine;
+using PublicSet;
 
 public class OutsideDoor : InteractableObject
 {
-    public override CsvManager.eCsvFile_InterObj GetInteractableEnum()
+    public override eCsvFile_InterObj GetInteractableEnum()
     {
-        return CsvManager.eCsvFile_InterObj.OutsideDoor;
+        return eCsvFile_InterObj.OutsideDoor;
     }
 }

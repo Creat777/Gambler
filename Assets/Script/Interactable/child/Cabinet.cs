@@ -1,9 +1,9 @@
 using UnityEngine;
-
+using PublicSet;
 public class Cabinet : InteractableObject
 {
-    public override CsvManager.eCsvFile_InterObj GetInteractableEnum()
+    public override eCsvFile_InterObj GetInteractableEnum()
     {
-        return CsvManager.eCsvFile_InterObj.Cabinet;
+        return eCsvFile_InterObj.Cabinet;
     }
 }

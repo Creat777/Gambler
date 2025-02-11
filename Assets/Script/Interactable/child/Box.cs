@@ -1,26 +1,26 @@
 using UnityEngine;
-
+using PublicSet;
 public class Box : InteractableObject
 {
-    CsvManager.eCsvFile_InterObj current;
+    eCsvFile_InterObj current;
 
     private void Start()
     {
         FillUpBox();
     }
 
-    public override CsvManager.eCsvFile_InterObj GetInteractableEnum()
+    public override eCsvFile_InterObj GetInteractableEnum()
     {
         return current;
     }
 
     public void FillUpBox()
     {
-        current = CsvManager.eCsvFile_InterObj.Box_Full;
+        current = eCsvFile_InterObj.Box_Full;
     }
 
     public void EmptyOutBox()
     {
-        current = CsvManager.eCsvFile_InterObj.Box_Empty;
+        current = eCsvFile_InterObj.Box_Empty;
     }
 }
