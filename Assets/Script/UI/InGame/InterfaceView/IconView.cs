@@ -1,19 +1,15 @@
 using DG.Tweening;
-using System;
 using System.Collections;
 using UnityEngine;
+using PublicSet;
 
 public class IconView : MonoBehaviour
 {
-    
-
     // 에디터 편집
     public Transform CenterTrans;
     public GameObject iconViewCloseButton;
     public float ViewOpenDelay;
 
-    public GameObject popUpView;
-    public GameObject inventoryPopUp;
     public GameObject[] iconLock;
 
     // 스크립트 편집
@@ -63,20 +59,8 @@ public class IconView : MonoBehaviour
         sequence.Play();
     }
 
-    public void InventoryPopUpOpen()
-    {
-        popUpView.SetActive(true);
-        inventoryPopUp.SetActive(true);
-    }
 
-
-    public enum Icon
-    {
-        Inventory,
-        Quest,
-        Status,
-        Message
-    }
+    
 
     public void IconUnLock(Icon choice)
     {

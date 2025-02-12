@@ -13,6 +13,7 @@ public class Connector : MonoBehaviour
     public GameObject textWindowView;
     public GameObject iconView;
     
+    public PopUpView popUpView_Script;
     public InteractionView interactionView_Script;
     public Joystick joystick_Script;
     public Map map_Script;

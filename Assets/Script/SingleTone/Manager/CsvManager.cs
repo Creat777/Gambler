@@ -9,20 +9,33 @@ using PublicSet;
 
 public class CsvManager : Singleton<CsvManager>
 {
+    // Project파일을 에디터로 연결
+    [SerializeField] private ItemTable itemPlusInfoTable;
+
     // csv파일 저장을 위한 배열
     // List<IteractableInfoList> : 파일 내 스테이지별 데이터
-    private List<cIteractableInfoList>[][] InteractableInfoFiles;
-    private List<cPlayerMonologueInfoList>[][] PlayerMonologueFiles;
+    private List<cIteractableInfo>[][] InteractableInfoFiles;
+    private List<cPlayerMonologueInfo>[][] PlayerMonologueFiles;
 
-    public List<cIteractableInfoList> GetInteractableCsv(eCsvFile_InterObj eCsv, eStage eStage)
+    // 아이템을 시리얼 번호로 검색
+    private Dictionary<eItemSerialNumber, cItemInfo> ItemInfoDict;
+
+    public List<cIteractableInfo> GetInteractableCsv(eCsvFile_InterObj eCsv, eStage eStage)
     {
         return InteractableInfoFiles[(int)eCsv][(int)eStage];
     }
 
-    public List<cPlayerMonologueInfoList> GetPlayerMonologueCsv(eCsvFile_PlayerMono eCsv, eStage eStage)
+    public List<cPlayerMonologueInfo> GetPlayerMonologueCsv(eCsvFile_PlayerMono eCsv, eStage eStage)
     {
         return PlayerMonologueFiles[(int)eCsv][(int)eStage];
     }
+
+    public cItemInfo GetItemInfo(eItemSerialNumber eSerialNumber)
+    {
+        return ItemInfoDict[eSerialNumber];
+    }
+
+
 
     protected override void Awake()
     {
@@ -35,14 +48,18 @@ public class CsvManager : Singleton<CsvManager>
 
         // 상호작용 관련
         int InteractionFileCount = Enum.GetValues(typeof(eCsvFile_InterObj)).Length - 1 ;
-        InteractableInfoFiles = new List<cIteractableInfoList>[InteractionFileCount][];
+        InteractableInfoFiles = new List<cIteractableInfo>[InteractionFileCount][];
         NewCsvFile(InteractionFileCount, StageCount, InteractableInfoFiles);
 
         // 독백 관련
         int MonologueFileCount = Enum.GetValues(typeof(eCsvFile_PlayerMono)).Length - 1;
-        PlayerMonologueFiles = new List<cPlayerMonologueInfoList>[InteractionFileCount][];
+        PlayerMonologueFiles = new List<cPlayerMonologueInfo>[InteractionFileCount][];
         NewCsvFile(MonologueFileCount, StageCount, PlayerMonologueFiles);
+
+        // 아이템 관련
+        ItemInfoDict = new Dictionary<eItemSerialNumber, cItemInfo>();
     }
+    
 
     public void NewCsvFile<T>(int FileCount, int StageCount, List<T>[][] CsvFileInfoPerStage)
     {
@@ -63,13 +80,14 @@ public class CsvManager : Singleton<CsvManager>
     {
         PrecessCsvOfInteraction();
         PrecessCsvOfMonologue();
+        PrecessCsvOfItem();
     }
 
     private void PrecessCsvOfInteraction()
     {
         // 상호작용 객체에 대한 csv
         string path = "CSV/InteractableObject/";
-        ProcessCsv<eCsvFile_InterObj, cIteractableInfoList>(path, LoadInteractableCsv ,InteractableInfoFiles);
+        ProcessScriptCsv<eCsvFile_InterObj, cIteractableInfo>(path, LoadInteractableCsv ,InteractableInfoFiles);
         
     }
 
@@ -77,10 +95,140 @@ public class CsvManager : Singleton<CsvManager>
     {
         // 플레이어 모놀로그에 대한 csv
         string path = "CSV/PlayerMonologue/";
-        ProcessCsv<eCsvFile_PlayerMono, cPlayerMonologueInfoList>(path, LoadMonologueCsv, PlayerMonologueFiles);
+        ProcessScriptCsv<eCsvFile_PlayerMono, cPlayerMonologueInfo>(path, LoadMonologueCsv, PlayerMonologueFiles);
     }
 
-    private void ProcessCsv<T_enum, T_class>(string path, Action<string, int> LoadIndividualCsv,List<T_class>[][] CsvFileInfoPerStage) where T_enum : Enum
+    private void PrecessCsvOfItem()
+    {
+        string fileNamePath = "CSV/Item/Item";
+        LoadCsv<cItemInfo>(fileNamePath,
+            (row, itemInfo) =>
+            {
+                // 저장공간을 할당받지 못한 경우
+                if (itemInfo == null) return;
+
+                int field_num = 0;
+
+                // 각 행의 처리 시작
+                foreach (string field in row)
+                {
+                    //Debug.Log($"{field_num}열 : " + field);
+                    switch (field_num)
+                    {
+                        // 처리된 데이터를 넣을 Stage를 저장
+                        case 0:
+                            if (eItemSerialNumber.TryParse(field, out eItemSerialNumber enumField))
+                            {
+                                itemInfo.serialNumber = enumField;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[{field}]는 아이템 시리얼번호가 될 수 없음");
+                            }
+                            break;
+
+                        case 1: itemInfo.name = field; break;
+                        case 2: itemInfo.description = field; break;
+                        case 3:
+                            if (int.TryParse(field, out int intField)) // 문자열을 정수형으로 캐스팅
+                            {
+                                if(intField == 0)
+                                {
+                                    itemInfo.isAvailable = false;
+                                }
+                                else if(intField == 1)
+                                {
+                                    itemInfo.isAvailable = true;
+                                }
+                                else
+                                {
+                                    Debug.LogWarning($"{intField}는 정의되지 않은 데이터");
+                                }
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"{field}는 정수로 캐스팅 불가");
+                            }
+                            break;
+                        case 4:
+                            if (float.TryParse(field, out float floatField))
+                            {
+                                itemInfo.value_Use = floatField;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[{field}]는 사용값이 될 수 없음");
+                            }
+                            break;
+                        case 5:
+                            if (int.TryParse(field, out int intField2)) // 문자열을 정수형으로 캐스팅
+                            {
+                                if (intField2 == 0)
+                                {
+                                    itemInfo.isForSale = false;
+                                }
+                                else if (intField2 == 1)
+                                {
+                                    itemInfo.isForSale = true;
+                                }
+                                else
+                                {
+                                    Debug.LogWarning($"{intField2}는 정의되지 않은 데이터");
+                                }
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"{field}는 정수로 캐스팅 불가");
+                            }
+                            break;
+                        case 6:
+                            if (ulong.TryParse(field, out ulong ulongField2))
+                            {
+                                itemInfo.value_Sale = ulongField2;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"[{field}]는 사용값이 될 수 없음");
+                            }
+                            break;
+
+                    }
+                    field_num++;
+                }
+
+                // 아이템 딕셔너리에 삽입
+                ItemInfoDict[(eItemSerialNumber)itemInfo.serialNumber] = itemInfo;
+            }
+            );
+        
+        // 추가적인 데이터 처리
+        foreach(ItemPlusInfo itemPlusInfo in itemPlusInfoTable.item_PlusInfoList)
+        {
+            eItemSerialNumber serailNumber = itemPlusInfo.serialNumber;
+
+            // 아이템에 해당하는 프리팹을 연결
+            ItemInfoDict[serailNumber].itemPrefab = itemPlusInfo.itemPrefab;
+
+            // 사용 가능한 경우
+            if (ItemInfoDict[serailNumber].isAvailable)
+            {
+                // 콜백리스트에서 아이템에 해당하는 콜백함수를 저장하도록 함
+                ItemInfoDict[serailNumber].itemCallback =
+                    CallbackManager.Instance.CallBackList_Item_Quest(itemPlusInfo.itemCallbackIndex);
+            }
+
+        }
+        
+        // 처리된 데이터의 확인
+        foreach(eItemSerialNumber serail in Enum.GetValues(typeof(eItemSerialNumber)))
+        {
+            if (serail == eItemSerialNumber.None) continue;
+
+            PrintProperties(ItemInfoDict[serail]);
+        }
+    }
+
+    private void ProcessScriptCsv<T_enum, T_class>(string path, Action<string, int> LoadIndividualCsv,List<T_class>[][] CsvFileInfoPerStage) where T_enum : Enum
     {
         foreach (var eFileName in Enum.GetValues(typeof(T_enum)))
         {
@@ -116,7 +264,7 @@ public class CsvManager : Singleton<CsvManager>
     {
         if ((eCsvFile_InterObj)fileEnum == eCsvFile_InterObj.None) return;
 
-        LoadCsv<cIteractableInfoList>(path,
+        LoadCsv<cIteractableInfo>(path,
             (row, info)=>
             {
                 if (info == null) return;
@@ -159,6 +307,10 @@ public class CsvManager : Singleton<CsvManager>
                                     Debug.LogWarning($"{intField2}는 {typeof(eSelection).Name}에 정의되지 않았음");
                                 }
                             }
+                            else
+                            {
+                                Debug.LogWarning($"{field}는 정수값이 아닙니다.");
+                            }
                             break;
                         default:
                             // 선택지가 존재하는 경우에만
@@ -174,12 +326,13 @@ public class CsvManager : Singleton<CsvManager>
                                     // 선택지에 따른 처리
                                     if (int.TryParse(field, out int intField3))
                                     {
-                                        info.callback.Add(CallbackManager.Instance.CallBackList(intField3));
+                                        info.callback.Add(CallbackManager.Instance.CallBackList_Selection(intField3));
                                     }
                                 }
                             }
                             break;
                     }
+                    
                     field_num++;
                 }
 
@@ -198,7 +351,7 @@ public class CsvManager : Singleton<CsvManager>
     {
         if ((eCsvFile_PlayerMono)fileEnum == eCsvFile_PlayerMono.None) return;
 
-        LoadCsv<cPlayerMonologueInfoList>(path,
+        LoadCsv<cPlayerMonologueInfo>(path,
             (row, info) =>
             {
                 if (info == null) return;

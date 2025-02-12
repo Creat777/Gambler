@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -47,6 +48,13 @@ namespace PublicSet
         None,
     }
 
+    public enum eItemSerialNumber
+    {
+        TutorialQuest = 101,
+
+        None
+    }
+
     public enum eSelection
     {
         NoneExist,
@@ -59,8 +67,16 @@ namespace PublicSet
         PlayerMonologue
     }
 
+    public enum Icon
+    {
+        Inventory,
+        Quest,
+        Status,
+        Message
+    }
+
     //Class
-    public class cIteractableInfoList
+    public class cIteractableInfo
     {
 
         public string speaker { get; set; }
@@ -69,23 +85,36 @@ namespace PublicSet
         public List<string> selection { get; set; }
         public List<UnityAction> callback { get; set; }
 
-        public cIteractableInfoList()
+        public cIteractableInfo()
         {
             selection = new List<string>();
             callback = new List<UnityAction>();
         }
-
     }
 
-    public class cPlayerMonologueInfoList
+    public class cPlayerMonologueInfo
     {
         public string speaker { get; set; }
         public string script { get; set; }
-
     }
 
-    public class ItemInfo
+    public class cItemInfo
     {
+        // 기본정보
+        public eItemSerialNumber serialNumber { get; set; }
+        public string name { get; set; }
+        public string description { get; set; }
 
+        // 사용이 가능한 경우 
+        public bool isAvailable { get; set; }
+        public float value_Use { get; set; } // 사용 가능할시 적용할 값
+
+        // 판매가 가능한 경우
+        public bool isForSale { get; set; }
+        public ulong value_Sale { get; set; }
+
+        // 스크립트에서 별도로 추가할 값들
+        public GameObject itemPrefab { get; set; }
+        public UnityAction itemCallback { get; set; }
     }
 }

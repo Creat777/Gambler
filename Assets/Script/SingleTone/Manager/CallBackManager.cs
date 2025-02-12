@@ -4,11 +4,12 @@ using DG.Tweening;
 using UnityEngine.UI;
 using System.Collections;
 using System;
+using PublicSet;
 
 
 public class CallbackManager : Singleton<CallbackManager>
 {
-
+    
     // 스크립트로 편집
     Image blackViewImage;
     private bool isBlakcViewReady;
@@ -68,7 +69,7 @@ public class CallbackManager : Singleton<CallbackManager>
     }
 
     // csv에서 인덱스만으로 함수를 선택할 수있도록 만듬
-    public UnityAction CallBackList(int index)
+    public UnityAction CallBackList_Selection(int index)
     {
         switch (index)
         {
@@ -168,11 +169,13 @@ public class CallbackManager : Singleton<CallbackManager>
             GameManager.Connector.box_Script.EmptyOutBox();
 
             int newItemIndex = PlayerPrefsManager.Instance.GetNewLastId();
-            PlayerPrefsManager.Instance.PlayerGetItem(newItemIndex, ItemManager.Instance.QuestItemSerialNumber);
+
+            // 값이 변경될 수 있어야함
+            PlayerPrefsManager.Instance.PlayerGetItem(newItemIndex, (int)eItemSerialNumber.TutorialQuest);
 
             TextWindowPopUp_Close();
 
-            GameManager.Connector.iconView.GetComponent<IconView>().IconUnLock(IconView.Icon.Inventory);
+            GameManager.Connector.iconView.GetComponent<IconView>().IconUnLock(Icon.Inventory);
         }
         
     }
@@ -184,5 +187,44 @@ public class CallbackManager : Singleton<CallbackManager>
         textWindowView_Script.PrintText();
         textWindowView_Script.selectionView.SetActive(false);
         return;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /// <summary>
+    /// 콜백함수를 반환하는 함수
+    /// </summary>
+    /// <param name="index">값으로 콜백함수를 선택함</param>
+    /// <returns> 버튼에 연결할 콜백함수 </returns>
+    public UnityAction CallBackList_Item_Quest(int index)
+    {
+        switch (index)
+        {
+            case 0: return TutorialStart;
+        }
+
+        return TrashFuc;
+    }
+
+    // 0
+    public void TutorialStart()
+    {
+        Debug.Log("튜토리얼 시작");
+
+        
+
+        IconView iconView_Script =  GameManager.Connector.iconView.GetComponent<IconView>();
+        iconView_Script.IconUnLock(Icon.Quest);
     }
 }

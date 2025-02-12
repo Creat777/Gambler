@@ -171,7 +171,7 @@ public class GameManager : Singleton<GameManager>
                         SceneLoadView(
                             () =>
                             {
-                                Debug.Log("콜백 실행됐음");
+                                //Debug.Log("콜백 실행됐음");
                                 CallbackManager.Instance.TextWindowPopUp_Open();
                                 TextWindowView textViewScript = Connector.textWindowView.GetComponent<TextWindowView>();
                                 if (textViewScript != null)

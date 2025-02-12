@@ -14,4 +14,11 @@ public class CloseButton : MonoBehaviour
         transform.parent.gameObject.SetActive(false);
         transform.parent.GetComponent<PopUp>().PopUpViewClose();
     }
+
+    public void PopUpClose_InCheckPopUp()
+    {
+        Transform Bottom = transform.parent;
+        Transform CheckPopUp = Bottom.parent;
+        CheckPopUp.gameObject.SetActive(false);
+    }
 }

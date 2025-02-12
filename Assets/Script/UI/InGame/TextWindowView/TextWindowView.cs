@@ -12,8 +12,8 @@ public class TextWindowView : MonoBehaviour
     // 에디터에서 연결
     public Text textWindow;
     public Text Speaker;
-    private List<cIteractableInfoList> InteractionTextCsv;
-    private List<cPlayerMonologueInfoList> MonologueTextCsv;
+    private List<cIteractableInfo> InteractionTextCsv;
+    private List<cPlayerMonologueInfo> MonologueTextCsv;
     public RectTransform arrowImageTrans;
     public GameObject selectionView;
 
@@ -21,8 +21,8 @@ public class TextWindowView : MonoBehaviour
     bool isTypingReady;
     float typingDelay;
     int TextIndex;
-    cIteractableInfoList iteractableInfo { get; set; }
-    cPlayerMonologueInfoList monologueInfo;
+    cIteractableInfo iteractableInfo { get; set; }
+    cPlayerMonologueInfo monologueInfo;
     eTextType currentTextType;
     GameObject LastObject;
 
@@ -30,6 +30,7 @@ public class TextWindowView : MonoBehaviour
     private void Awake()
     {
         isTypingReady = true;
+
         typingDelay = 0.05f;
     }
 
@@ -37,6 +38,9 @@ public class TextWindowView : MonoBehaviour
     public void StartTestWindow(eTextType textType, eCsvFile_PlayerMono monologue = eCsvFile_PlayerMono.None )
     {
         currentTextType = textType;
+
+        // 셀렉션뷰가 처음부터 켜져있는 오류 방지
+        if(selectionView.activeSelf == true) selectionView.SetActive(false);
 
         if (GameManager.Instance != null)
         {

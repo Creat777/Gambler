@@ -1,3 +1,5 @@
+using PublicSet;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -9,29 +11,21 @@ using static UnityEngine.GraphicsBuffer;
 ///  이를 통해, Unity 에디터에서 직접 값들을 수정할 수 있게 된다.
 /// </summary>
 [System.Serializable]
-public class CsvToPrefabs
+public class ItemPlusInfo
 {
     // 아이템 고유 번호
-    public int SerialNumber;
+    public eItemSerialNumber serialNumber;
 
-    // 아이템 이름
-    public string Name;
+    // 아이템 프리팹
+    public GameObject itemPrefab;
 
-    // 인벤토리에서 쓰일 아이템 프리팹
-    [SerializeField] private GameObject itemPrefab;
-    public GameObject __itemPrefab { get { return itemPrefab; } private set { itemPrefab = value; } }
+    // 아이템 사용 클릭시 처리될 콜백함수의 번호
+    public int itemCallbackIndex;
 
-
-    // 부여된 값
-    public float value;
-
-    // 설명
-    // internal: 같은 어셈블리 내에서 접근 가능
-    [SerializeField] internal string Description;
 }
 
 [CreateAssetMenu(fileName = "ItemTable", menuName = "Scriptable Objects/ItemTable")]
 public class ItemTable : ScriptableObject
 {
-    public List<CsvToPrefabs> itemInfoList = new List<CsvToPrefabs>();
+    public List<ItemPlusInfo> item_PlusInfoList = new List<ItemPlusInfo>();
 }
