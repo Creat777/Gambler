@@ -33,7 +33,6 @@ public class GameManager : Singleton<GameManager>
     public bool isJoinGame {  get; private set; }
     public bool isGamePause {  get; private set; }
     public float gameSpeed { get; private set; }
-    public string[] gameStages { get; private set; }
     public eScene currentScene;
     public eMap currentMap;
     public eStage currentStage;
@@ -43,13 +42,19 @@ public class GameManager : Singleton<GameManager>
     public int __month { get { return month; } set { month = value; } }
     public int __day { get { return day; } set { day = value; } }
 
+    Dictionary<eStage, string> StageMessageDict;
 
-
-    public string curruentGameStage {  get; private set; } // 현재 게임 진행정도를 확인하기 위한 변수
+    public void Init_StageMessageDict()
+    {
+        StageMessageDict = new Dictionary<eStage, string>();
+        StageMessageDict.Add(eStage.Stage1, "STAGE 1\n여기가 대체 어디야?");
+        StageMessageDict.Add(eStage.Stage2, "STAGE 2\n돈을 벌어보자");
+    }
 
     protected override void Awake()
     {
         base.Awake();
+        Init_StageMessageDict();
         Continue_theGame();
     }
 
@@ -77,18 +82,16 @@ public class GameManager : Singleton<GameManager>
 
     void Start()
     {
-        gameStages = new string[maxStage];
-        for(int i = 0; i < maxStage; i++)
-        {
-            gameStages[i] = $"Stage{i + 1}";
-        }
-        curruentGameStage = gameStages[0];
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.Space))
+        { 
+            StageAnimation(); 
+        }
     }
 
     
@@ -108,6 +111,7 @@ public class GameManager : Singleton<GameManager>
     public void SceneLoadView(Action LoadSceneCallback = null)
     {
         ProcessSceneView(true, Color.black, Color.clear, LoadSceneCallback);
+        //ChangeStage()
     }
 
     public void SceneUnloadView(Action LoadSceneCallback)
@@ -140,6 +144,71 @@ public class GameManager : Singleton<GameManager>
     }
 
 
+
+    public void ChangeStage(eStage stageEnum)
+    {
+        currentStage = stageEnum;
+    }
+
+    public void StageAnimation()
+    {
+        Debug.Log("stage 애니메이션 시작");
+
+        // 이미지 활성화
+        Connector.StageView.SetActive(true);
+
+        // 이미지 색깔 초기화
+        Image stateViewImage = Connector.StageView.GetComponent<Image>();
+        Color colorBack = new Color(1,1,1,0);
+        stateViewImage.color = colorBack;
+
+        // 이미지 내부 텍스트 초기화
+        Text StageViewText = Connector.StageView.transform.GetChild(0).gameObject.GetComponent<Text>();
+        StageViewText.text = StageMessageDict[currentStage];
+        StageViewText.color = Color.clear;
+
+        Sequence sequence = DOTween.Sequence();
+
+        float startDelay = 2f;
+        float EndDelay = 2f;
+
+        // 등장
+        sequence.AppendInterval(1f)
+                .Append(stateViewImage.DOColor(Color.white, startDelay))
+                .Join(StageViewText.DOColor(Color.black, startDelay))
+                .Append(stateViewImage.DOColor(colorBack, EndDelay))
+                .Join(StageViewText.DOColor(Color.clear, EndDelay))
+                .AppendCallback(() =>
+                {
+                    Connector.StageView.SetActive(false);
+                });
+                    sequence.SetLoops(1);
+
+        sequence.Play();
+    }
+
+    
+
+
+
+    private void StartNewGame()
+    {
+        Connector.map_Script.ChangeMapTo(eMap.InsideOfHouse);
+        ChangeStage(eStage.Stage1);
+        SceneLoadView(
+            () =>
+            {
+                //Debug.Log("콜백 실행됐음");
+                CallbackManager.Instance.TextWindowPopUp_Open();
+                TextWindowView textViewScript = Connector.textWindowView.GetComponent<TextWindowView>();
+                if (textViewScript != null)
+                {
+                    textViewScript.StartTestWindow(eTextType.PlayerMonologue, eCsvFile_PlayerMono.PlayerTutorial);
+                }
+            }
+            );
+    }
+
     // 씬 로드 시 호출될 콜백 함수
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -166,21 +235,8 @@ public class GameManager : Singleton<GameManager>
                     }
                     // 새로하기 시작하는 경우
                     {
-                        Connector.map_Script.ChangeMapTo(eMap.InsideOfHouse);
-                        currentStage = eStage.Stage1;
-                        SceneLoadView(
-                            () =>
-                            {
-                                //Debug.Log("콜백 실행됐음");
-                                CallbackManager.Instance.TextWindowPopUp_Open();
-                                TextWindowView textViewScript = Connector.textWindowView.GetComponent<TextWindowView>();
-                                if (textViewScript != null)
-                                {
-                                    textViewScript.StartTestWindow(eTextType.PlayerMonologue, eCsvFile_PlayerMono.PlayerTutorial);
-                                }
-                            }
-                            );
-                        
+                        SceneLoadView();
+                        StartNewGame();
                     }
                 }
                 

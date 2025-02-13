@@ -2,6 +2,12 @@ using DG.Tweening;
 using System.Collections;
 using UnityEngine;
 using PublicSet;
+using UnityEngine.UI;
+using System;
+using UnityEngine.Events;
+using System.Threading;
+using System.Collections.Generic;
+using UnityEngine.InputSystem;
 
 public class IconView : MonoBehaviour
 {
@@ -10,23 +16,102 @@ public class IconView : MonoBehaviour
     public GameObject iconViewCloseButton;
     public float ViewOpenDelay;
 
+    public Button inventory;
+    public Button quest;
+    public Button status;
+    public Button Message;
+    
     public GameObject[] iconLock;
 
     // 스크립트 편집
     private Vector3 CenterPos;
     private Vector3 OutOpScreenPos;
     bool isIconViewOpen;
+
+    Dictionary<eIcon, ePopUpState> iconConditions;
+
+
     
+
 
     private void Awake()
     {
         CenterPos = CenterTrans.position;
         OutOpScreenPos = transform.position;
+
         if (ViewOpenDelay < 0.1f)
         {
             ViewOpenDelay = 0.3f;
         }
+
+        //Init_IconToPopUpStateDict();
     }
+
+    
+
+    
+    private void Start()
+    {
+        PopUpView popUpView = GameManager.Connector.popUpView_Script;
+
+        /*
+        // 버튼 컴포넌트에 기본 실행 함수를 정리
+        ButtonOnClickUpdate(eIcon.Inventory, inventory, popUpView.InventoryPopUpOpen, popUpView.InventoryPopUpClose);
+        ButtonOnClickUpdate(eIcon.Quest, quest, popUpView.QuestPopUpOpen, popUpView.QuestPopUpClose);
+        ButtonClickUpdate(status, popUpView. , popUpView. );
+        ButtonClickUpdate(Message, popUpView. , popUpView.);
+        */
+    }
+
+    /*
+     * 
+    private void Init_IconToPopUpStateDict()
+    {
+        iconConditions = new Dictionary<eIcon, ePopUpState>();
+
+        foreach(eIcon icon in Enum.GetValues(typeof(eIcon)))
+        {
+            iconConditions.Add(icon, ePopUpState.Close);
+        }
+    }
+
+    private void ButtonOnClickUpdate(eIcon icon,Button button, UnityAction open, UnityAction close)
+    {
+        if (iconConditions[icon] == ePopUpState.Open)
+        {
+            // 열고나서 ButtonOnClickUpdate를 실행할때 다음은 클로즈를 버튼에 넣음
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(close);
+        }
+        else if (iconConditions[icon] == ePopUpState.Close)
+        {
+            // 닫고나서 ButtonOnClickUpdate를 실행할 때 다음은 오픈을 버튼에 넣음
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(open);
+        }
+    }
+
+    public void SetPopUpState(eIcon icon, ePopUpState state)
+    {
+        iconConditions[icon] = state;
+        PopUpView popUpView = GameManager.Connector.popUpView_Script;
+
+        switch (icon)
+        {
+            case eIcon.Inventory:
+                ButtonOnClickUpdate(eIcon.Inventory, inventory, popUpView.InventoryPopUpOpen, popUpView.InventoryPopUpClose);
+                break;
+
+            case eIcon.Quest:
+                ButtonOnClickUpdate(eIcon.Quest, quest, popUpView.QuestPopUpOpen, popUpView.QuestPopUpClose);
+                break;
+
+            case eIcon.Status: break;
+
+            case eIcon.Message: break;
+        }
+    }
+    */
 
     public void IconViewOpen()
     {
@@ -62,13 +147,19 @@ public class IconView : MonoBehaviour
 
     
 
-    public void IconUnLock(Icon choice)
+    public void IconUnLock(eIcon choice)
     {
         int choice_int = (int)choice;
 
-        if(Icon.Inventory <= choice && choice <= Icon.Message)
+
+        if(eIcon.Inventory <= choice && choice <= eIcon.Message)
         {
-            if(choice_int < iconLock.Length)
+            if (iconLock[choice_int].activeSelf == false)
+            {
+                Debug.LogWarning($"{iconLock[choice_int]}가 이미 소멸했음");
+                return;
+            }
+            if (choice_int < iconLock.Length)
             {
                 Sequence sequence = DOTween.Sequence();
 

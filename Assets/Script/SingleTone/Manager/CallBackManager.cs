@@ -171,11 +171,11 @@ public class CallbackManager : Singleton<CallbackManager>
             int newItemIndex = PlayerPrefsManager.Instance.GetNewLastId();
 
             // 값이 변경될 수 있어야함
-            PlayerPrefsManager.Instance.PlayerGetItem(newItemIndex, (int)eItemSerialNumber.TutorialQuest);
+            PlayerPrefsManager.Instance.PlayerGetItem(newItemIndex, eItemSerialNumber.TutorialQuest);
 
             TextWindowPopUp_Close();
 
-            GameManager.Connector.iconView.GetComponent<IconView>().IconUnLock(Icon.Inventory);
+            GameManager.Connector.iconView_Script.GetComponent<IconView>().IconUnLock(eIcon.Inventory);
         }
         
     }
@@ -207,14 +207,14 @@ public class CallbackManager : Singleton<CallbackManager>
     /// </summary>
     /// <param name="index">값으로 콜백함수를 선택함</param>
     /// <returns> 버튼에 연결할 콜백함수 </returns>
-    public UnityAction CallBackList_Item_Quest(int index)
+    public UnityAction CallBackList_Item_Quest(eItemCallback index)
     {
         switch (index)
         {
-            case 0: return TutorialStart;
-        }
+            case eItemCallback.TutorialStart : return TutorialStart;
 
-        return TrashFuc;
+            default: return TrashFuc;
+        }
     }
 
     // 0
@@ -222,9 +222,10 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         Debug.Log("튜토리얼 시작");
 
-        
+        GameManager.Instance.ChangeStage(eStage.Stage2);
+        GameManager.Instance.StageAnimation();
 
-        IconView iconView_Script =  GameManager.Connector.iconView.GetComponent<IconView>();
-        iconView_Script.IconUnLock(Icon.Quest);
+        IconView iconView_Script =  GameManager.Connector.iconView_Script.GetComponent<IconView>();
+        iconView_Script.IconUnLock(eIcon.Quest);
     }
 }

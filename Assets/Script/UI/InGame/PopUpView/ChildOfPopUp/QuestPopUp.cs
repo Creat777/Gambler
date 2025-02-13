@@ -1,16 +1,15 @@
 using UnityEngine;
+using PublicSet;
 
 public class QuestPopUp : PopUp
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void OnEnable()
     {
-        
+        //GameManager.Connector.iconView_Script.SetPopUpState(eIcon.Quest, ePopUpState.Open);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDisable()
     {
-        
+        //GameManager.Connector.iconView_Script.SetPopUpState(eIcon.Quest, ePopUpState.Close);
     }
 }

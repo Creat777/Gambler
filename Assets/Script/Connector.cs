@@ -6,13 +6,15 @@ using UnityEngine;
 public class Connector : MonoBehaviour
 {
     public GameObject blackView;
+    public GameObject StageView;
+
     public GameObject player;
     public GameObject insideOfHouse;
     public GameObject outsideOfHouse;
     public GameObject interfaceView;
     public GameObject textWindowView;
-    public GameObject iconView;
-    
+
+    public IconView iconView_Script;
     public PopUpView popUpView_Script;
     public InteractionView interactionView_Script;
     public Joystick joystick_Script;

@@ -13,9 +13,9 @@ public class InventoryPopUp : PopUp
             Destroy(child.gameObject);
         }
 
-        HashSet<Item> Player_items = PlayerPrefsManager.Instance.LoadItems();
+        HashSet<sItem> Player_items = PlayerPrefsManager.Instance.LoadItems();
 
-        foreach (Item item in Player_items)
+        foreach (sItem item in Player_items)
         {
             // 아이템 종합정보를 호출
             cItemInfo itemInfo = CsvManager.Instance.GetItemInfo((eItemSerialNumber)item.serialNumber);
@@ -23,6 +23,12 @@ public class InventoryPopUp : PopUp
             // 아이템 인스턴시
             GameObject obj = Instantiate(itemInfo.itemPrefab);
             obj.SetActive(true);
+            ItemDefault itemScript = obj.GetComponent<ItemDefault>();
+            if(itemScript != null)
+            {
+                itemScript.SaveItemData(item);
+            }
+            //obj.GetComponent
 
             // 아이템 클릭시 처리 함수 정리
             Button button = obj.GetComponent<Button>();
@@ -42,7 +48,16 @@ public class InventoryPopUp : PopUp
                     ()=>
                     { 
                         yesOrNoPopUp_Script.gameObject.SetActive(false);
-                        itemInfo.itemCallback(); 
+                        itemInfo.itemCallback();
+
+
+                        Debug.LogWarning("수정해야함");
+                        // 소모성의 경우 아이템 삭제
+                        if(itemInfo.isConsumable)
+                        {
+                            Destroy(obj); // 아이템은 기본적으로 소모성
+                        }
+                        
                     }
                     );
             }
@@ -66,4 +81,9 @@ public class InventoryPopUp : PopUp
             obj.transform.localScale = Vector3.one;
         }
     }
+    private void FixedUpdate()
+    {
+        
+    }
+
 }

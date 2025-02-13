@@ -50,9 +50,14 @@ namespace PublicSet
 
     public enum eItemSerialNumber
     {
-        TutorialQuest = 101,
+        None,
+        TutorialQuest = 101
+    }
 
-        None
+    public enum eItemCallback
+    {
+        None,
+        TutorialStart
     }
 
     public enum eSelection
@@ -67,12 +72,18 @@ namespace PublicSet
         PlayerMonologue
     }
 
-    public enum Icon
+    public enum eIcon
     {
         Inventory,
         Quest,
         Status,
         Message
+    }
+
+    public enum ePopUpState
+    {
+        Open,
+        Close
     }
 
     //Class
@@ -107,6 +118,7 @@ namespace PublicSet
 
         // 사용이 가능한 경우 
         public bool isAvailable { get; set; }
+        public bool isConsumable { get; set; } // 소모성 아이템 여부
         public float value_Use { get; set; } // 사용 가능할시 적용할 값
 
         // 판매가 가능한 경우
@@ -116,5 +128,6 @@ namespace PublicSet
         // 스크립트에서 별도로 추가할 값들
         public GameObject itemPrefab { get; set; }
         public UnityAction itemCallback { get; set; }
+        
     }
 }

@@ -20,7 +20,7 @@ public class ItemPlusInfo
     public GameObject itemPrefab;
 
     // 아이템 사용 클릭시 처리될 콜백함수의 번호
-    public int itemCallbackIndex;
+    public eItemCallback itemCallbackIndex;
 
 }
 

@@ -101,6 +101,7 @@ public class CsvManager : Singleton<CsvManager>
     private void PrecessCsvOfItem()
     {
         string fileNamePath = "CSV/Item/Item";
+
         LoadCsv<cItemInfo>(fileNamePath,
             (row, itemInfo) =>
             {
@@ -112,6 +113,7 @@ public class CsvManager : Singleton<CsvManager>
                 // 각 행의 처리 시작
                 foreach (string field in row)
                 {
+                    int intField = 0;
                     //Debug.Log($"{field_num}열 : " + field);
                     switch (field_num)
                     {
@@ -130,7 +132,7 @@ public class CsvManager : Singleton<CsvManager>
                         case 1: itemInfo.name = field; break;
                         case 2: itemInfo.description = field; break;
                         case 3:
-                            if (int.TryParse(field, out int intField)) // 문자열을 정수형으로 캐스팅
+                            if (int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
                             {
                                 if(intField == 0)
                                 {
@@ -150,7 +152,32 @@ public class CsvManager : Singleton<CsvManager>
                                 Debug.LogWarning($"{field}는 정수로 캐스팅 불가");
                             }
                             break;
+                        // 소모성 여부
                         case 4:
+
+                            if (int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
+                            {
+                                if (intField == 0)
+                                {
+                                    itemInfo.isAvailable = false;
+                                }
+                                else if (intField == 1)
+                                {
+                                    itemInfo.isAvailable = true;
+                                }
+                                else
+                                {
+                                    Debug.LogWarning($"{intField}는 정의되지 않은 데이터");
+                                }
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"{field}는 정수로 캐스팅 불가");
+                            }
+                            break;
+
+                            // 사용시 데이터
+                        case 5:
                             if (float.TryParse(field, out float floatField))
                             {
                                 itemInfo.value_Use = floatField;
@@ -160,20 +187,22 @@ public class CsvManager : Singleton<CsvManager>
                                 Debug.LogWarning($"[{field}]는 사용값이 될 수 없음");
                             }
                             break;
-                        case 5:
-                            if (int.TryParse(field, out int intField2)) // 문자열을 정수형으로 캐스팅
+
+                            // 판매가능 여부
+                        case 6:
+                            if (int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
                             {
-                                if (intField2 == 0)
+                                if (intField == 0)
                                 {
                                     itemInfo.isForSale = false;
                                 }
-                                else if (intField2 == 1)
+                                else if (intField == 1)
                                 {
                                     itemInfo.isForSale = true;
                                 }
                                 else
                                 {
-                                    Debug.LogWarning($"{intField2}는 정의되지 않은 데이터");
+                                    Debug.LogWarning($"{intField}는 정의되지 않은 데이터");
                                 }
                             }
                             else
@@ -181,7 +210,9 @@ public class CsvManager : Singleton<CsvManager>
                                 Debug.LogWarning($"{field}는 정수로 캐스팅 불가");
                             }
                             break;
-                        case 6:
+
+                            // 판매시 가격
+                        case 7:
                             if (ulong.TryParse(field, out ulong ulongField2))
                             {
                                 itemInfo.value_Sale = ulongField2;
@@ -209,11 +240,14 @@ public class CsvManager : Singleton<CsvManager>
             // 아이템에 해당하는 프리팹을 연결
             ItemInfoDict[serailNumber].itemPrefab = itemPlusInfo.itemPrefab;
 
+            
+
             // 사용 가능한 경우
             if (ItemInfoDict[serailNumber].isAvailable)
             {
+
                 // 콜백리스트에서 아이템에 해당하는 콜백함수를 저장하도록 함
-                ItemInfoDict[serailNumber].itemCallback =
+                ItemInfoDict[serailNumber].itemCallback +=
                     CallbackManager.Instance.CallBackList_Item_Quest(itemPlusInfo.itemCallbackIndex);
             }
 

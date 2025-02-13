@@ -15,4 +15,4 @@ MonoBehaviour:
   item_PlusInfoList:
   - serialNumber: 101
     itemPrefab: {fileID: 4145959588571555389, guid: 25fc352597c91294c9e938ba3688422b, type: 3}
-    itemCallbackIndex: 0
+    itemCallbackIndex: 1

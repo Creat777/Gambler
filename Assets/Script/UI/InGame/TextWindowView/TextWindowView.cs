@@ -24,13 +24,13 @@ public class TextWindowView : MonoBehaviour
     cIteractableInfo iteractableInfo { get; set; }
     cPlayerMonologueInfo monologueInfo;
     eTextType currentTextType;
+    eCsvFile_PlayerMono currentMonologue;
     GameObject LastObject;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Awake()
     {
         isTypingReady = true;
-
         typingDelay = 0.05f;
     }
 
@@ -38,9 +38,10 @@ public class TextWindowView : MonoBehaviour
     public void StartTestWindow(eTextType textType, eCsvFile_PlayerMono monologue = eCsvFile_PlayerMono.None )
     {
         currentTextType = textType;
+        currentMonologue = monologue;
 
         // 셀렉션뷰가 처음부터 켜져있는 오류 방지
-        if(selectionView.activeSelf == true) selectionView.SetActive(false);
+        if (selectionView.activeSelf == true) selectionView.SetActive(false);
 
         if (GameManager.Instance != null)
         {
@@ -273,8 +274,15 @@ public class TextWindowView : MonoBehaviour
         if (TextIndex >= textCsv.Count)
         {
             CallbackManager.Instance.TextWindowPopUp_Close();
+
+            if (currentMonologue == eCsvFile_PlayerMono.PlayerTutorial && GameManager.Instance.currentStage == eStage.Stage1)
+            {
+                GameManager.Instance.StageAnimation();
+            }
         }
     }
+
+    
 
 
     IEnumerator TypeDialogue(string dialogue)
