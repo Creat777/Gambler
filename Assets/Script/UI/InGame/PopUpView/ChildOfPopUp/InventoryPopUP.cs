@@ -7,6 +7,11 @@ public class InventoryPopUp : PopUp
 {
     private void OnEnable()
     {
+        RefreshInventory();
+    }
+
+    public void RefreshInventory()
+    {
         // 기존 목록 삭제
         foreach (Transform child in content.transform)
         {
@@ -23,8 +28,10 @@ public class InventoryPopUp : PopUp
             // 아이템 인스턴시
             GameObject obj = Instantiate(itemInfo.itemPrefab);
             obj.SetActive(true);
+
+            // 인스턴시된 아이템에 각 정보를 저장
             ItemDefault itemScript = obj.GetComponent<ItemDefault>();
-            if(itemScript != null)
+            if (itemScript != null)
             {
                 itemScript.SaveItemData(item);
             }
@@ -40,30 +47,40 @@ public class InventoryPopUp : PopUp
                 //아이템 클릭시 사용여부를 묻는 팝업창이 나오도록 콜백을 연결
                 button.onClick.AddListener(GameManager.Connector.popUpView_Script.YesOrNoPopUpOpen);
 
-                // 팝업창을 초기화 및 yes선택을 누를시 아이템 고유 콜백을 처리하도록 연결
-                YesOrNoPopUp yesOrNoPopUp_Script =  GameManager.Connector.popUpView_Script.yesOrNoPopUp.GetComponent<YesOrNoPopUp>();
+                // 팝업창을 초기화
+                YesOrNoPopUp yesOrNoPopUp_Script = GameManager.Connector.popUpView_Script.yesOrNoPopUp.GetComponent<YesOrNoPopUp>();
                 string inputString = $"아이템 이름 : {itemInfo.name}\n\n{itemInfo.description}";
                 yesOrNoPopUp_Script.UpdateMainDescription(inputString);
-                yesOrNoPopUp_Script.AddYesButtonCallBack(
-                    ()=>
-                    { 
-                        yesOrNoPopUp_Script.gameObject.SetActive(false);
-                        itemInfo.itemCallback();
 
+                
 
-                        Debug.LogWarning("수정해야함");
-                        // 소모성의 경우 아이템 삭제
-                        if(itemInfo.isConsumable)
+                // 소모성 아이템인 경우
+                if(itemInfo.isConsumable)
+                {
+                    // yes선택을 누를시 아이템 고유 콜백을 처리하도록 연결
+                    yesOrNoPopUp_Script.AddYesButtonCallBack(
+                        () =>
                         {
-                            Destroy(obj); // 아이템은 기본적으로 소모성
+                            yesOrNoPopUp_Script.gameObject.SetActive(false);
+                            itemInfo.itemCallback();
+                            obj.GetComponent<ItemDefault>().UsedByPlayer();
                         }
-                        
-                    }
-                    );
+                        );
+                }
+                else
+                {
+                    yesOrNoPopUp_Script.AddYesButtonCallBack(
+                        () =>
+                        {
+                            yesOrNoPopUp_Script.gameObject.SetActive(false);
+                            itemInfo.itemCallback();
+                        }
+                        );
+                }
             }
 
             // 기타 잡템의 경우 
-            else if(itemInfo.isAvailable == false)
+            else if (itemInfo.isAvailable == false)
             {
                 //확인창만 나오도록 만듬
                 button.onClick.AddListener(GameManager.Connector.popUpView_Script.CheckPopUpOpen);

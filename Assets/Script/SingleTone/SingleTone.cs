@@ -24,6 +24,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
                 if (instance == null)
                 {
                     Debug.LogWarning("싱글톤이 아직 생성되지 않았습니다.");
+                    return null;
                 }
                 // null이 아니면 그대로 참조
                 return instance;
@@ -31,13 +32,13 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
                 
         }
 
-        private set
+        protected set
         {
             instance = value;
         }
     }
 
-    protected void MakeSingleTone()
+    protected virtual void MakeSingleTone()
     {
         lock(_lock)
         {
@@ -53,6 +54,8 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
             }
         }
     }
+
+    
 
     protected virtual void Awake()
     {

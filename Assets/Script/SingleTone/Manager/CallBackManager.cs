@@ -71,6 +71,7 @@ public class CallbackManager : Singleton<CallbackManager>
     // csv에서 인덱스만으로 함수를 선택할 수있도록 만듬
     public UnityAction CallBackList_Selection(int index)
     {
+        // csv선택지에서 자유롭게 콜백함수를 고를 수 있음
         switch (index)
         {
             case 0: return TextWindowPopUp_Open;
@@ -80,8 +81,14 @@ public class CallbackManager : Singleton<CallbackManager>
             case 4: return GoToNextDay;
             case 5: return BoxOpen;
             case 6: return TextHoldOn;
+            case 7: return SavePlayerData;
+            case 8: return StartComputer;
+            case 9: return GetGamblingCoin;
+            case 10: return GotoCasino;
+            case 11: return GotoUnknownIsland;
+            case 12: return TellmeOneMoreTime;
         }
-        
+
         return TrashFuc;
     }
     public void TrashFuc()
@@ -111,12 +118,7 @@ public class CallbackManager : Singleton<CallbackManager>
         StartCoroutine(BlackViewProcess(delay, 
             () =>
         {
-            // 맵 변경
-            GameManager.Connector.insideOfHouse.SetActive(false);
-            GameManager.Connector.outsideOfHouse.SetActive(true);
-
-            // 플레이어를 변경된 맵의 문 앞으로 이동
-            GameManager.Connector.player.transform.position = Vector2.zero;
+            GameManager.Connector.map_Script.ChangeMapTo(eMap.OutsideOfHouse);
         }
         ));
         
@@ -130,13 +132,7 @@ public class CallbackManager : Singleton<CallbackManager>
         StartCoroutine(BlackViewProcess(delay,
             () =>
             {
-
-                // 맵 변경
-                GameManager.Connector.insideOfHouse.SetActive(true);
-                GameManager.Connector.outsideOfHouse.SetActive(false);
-
-                // 플레이어를 변경된 맵의 문 앞으로 이동
-                GameManager.Connector.player.transform.position = new Vector2(0, 2);
+                GameManager.Connector.map_Script.ChangeMapTo(eMap.InsideOfHouse);
             }
         ));
         
@@ -185,8 +181,55 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         TextWindowView textWindowView_Script = GameManager.Connector.textWindowView.GetComponent<TextWindowView>();
         textWindowView_Script.PrintText();
-        textWindowView_Script.selectionView.SetActive(false);
         return;
+    }
+
+    // 7
+    public virtual void SavePlayerData()
+    {
+        Debug.Log("추가 필요");
+    }
+
+    // 8
+    public virtual void StartComputer()
+    {
+        Debug.Log("추가 필요");
+    }
+
+    // 9
+    public virtual void GetGamblingCoin()
+    {
+        PlayManager.Instance.PlayerMoneyPlus(100);
+        TextHoldOn();
+    }
+
+    // 10
+    public virtual void GotoCasino()
+    {
+        float delay = 2.0f;
+        // 암막 중에 실행될 처리를 람다함수로 전달
+        StartCoroutine(BlackViewProcess(delay,
+            () =>
+            {
+                GameManager.Connector.map_Script.ChangeMapTo(eMap.Casino);
+
+                // 플레이어를 변경된 맵의 문 앞으로 이동
+                GameManager.Connector.player.transform.position = new Vector2(0, 2);
+            }
+        ));
+    }
+
+    // 11
+    public virtual void GotoUnknownIsland()
+    {
+
+    }
+
+    // 12
+    public virtual void TellmeOneMoreTime()
+    {
+        GameManager.Connector.textWindowView.GetComponent<TextWindowView>().TextIndexInit(0);
+        TextHoldOn();
     }
 
 
@@ -222,8 +265,8 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         Debug.Log("튜토리얼 시작");
 
-        GameManager.Instance.ChangeStage(eStage.Stage2);
-        GameManager.Instance.StageAnimation();
+        //GameManager.Instance.ChangeStage(eStage.Stage2);
+        //GameManager.Instance.StageAnimation();
 
         IconView iconView_Script =  GameManager.Connector.iconView_Script.GetComponent<IconView>();
         iconView_Script.IconUnLock(eIcon.Quest);

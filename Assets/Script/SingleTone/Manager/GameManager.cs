@@ -48,7 +48,7 @@ public class GameManager : Singleton<GameManager>
     {
         StageMessageDict = new Dictionary<eStage, string>();
         StageMessageDict.Add(eStage.Stage1, "STAGE 1\n여기가 대체 어디야?");
-        StageMessageDict.Add(eStage.Stage2, "STAGE 2\n돈을 벌어보자");
+        StageMessageDict.Add(eStage.Stage2, "STAGE 2\n카지노에 입성하자");
     }
 
     protected override void Awake()
@@ -111,7 +111,6 @@ public class GameManager : Singleton<GameManager>
     public void SceneLoadView(Action LoadSceneCallback = null)
     {
         ProcessSceneView(true, Color.black, Color.clear, LoadSceneCallback);
-        //ChangeStage()
     }
 
     public void SceneUnloadView(Action LoadSceneCallback)
@@ -142,8 +141,6 @@ public class GameManager : Singleton<GameManager>
 
         sequence.Play();
     }
-
-
 
     public void ChangeStage(eStage stageEnum)
     {
@@ -187,10 +184,6 @@ public class GameManager : Singleton<GameManager>
         sequence.Play();
     }
 
-    
-
-
-
     private void StartNewGame()
     {
         Connector.map_Script.ChangeMapTo(eMap.InsideOfHouse);
@@ -232,6 +225,7 @@ public class GameManager : Singleton<GameManager>
                     // 일반적인 경우
                     {
                         SceneLoadView();
+                        
                     }
                     // 새로하기 시작하는 경우
                     {

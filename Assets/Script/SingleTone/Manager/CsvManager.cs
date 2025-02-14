@@ -213,9 +213,9 @@ public class CsvManager : Singleton<CsvManager>
 
                             // 판매시 가격
                         case 7:
-                            if (ulong.TryParse(field, out ulong ulongField2))
+                            if (int.TryParse(field, out int intField2))
                             {
-                                itemInfo.value_Sale = ulongField2;
+                                itemInfo.value_Sale = intField2;
                             }
                             else
                             {
@@ -318,6 +318,7 @@ public class CsvManager : Singleton<CsvManager>
                                 {
                                     case 1: Debug.Log($"입력된 스테이지 코드 : {intField}"); stage = eStage.Stage1; break;
                                     case 2: Debug.Log($"입력된 스테이지 코드 : {intField}"); stage = eStage.Stage2; break;
+                                    case 3: Debug.Log($"입력된 스테이지 코드 : {intField}"); stage = eStage.Stage3; break;
                                     default: Debug.LogWarning($"{field}는 정의되지 않은 스테이지 코드"); break;
                                 }
                             }

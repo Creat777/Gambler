@@ -16,14 +16,17 @@ namespace PublicSet
     public enum eMap
     {
         InsideOfHouse,
-        OutsideOfHouse
+        OutsideOfHouse,
+        Casino,
+        UnknownIsland
     }
 
     public enum eStage
     {
         None,
         Stage1,
-        Stage2
+        Stage2,
+        Stage3
     }
 
     public enum eCsvFile_InterObj
@@ -36,7 +39,8 @@ namespace PublicSet
         Box_Empty,
         Box_Full,
         OutsideDoor,
-        NPC_MunDuckBea,
+        NPC_MunDuckBea_Acquaintance,
+        NPC_MunDuckBea_Encounter,
 
         None,
     }
@@ -123,7 +127,7 @@ namespace PublicSet
 
         // 판매가 가능한 경우
         public bool isForSale { get; set; }
-        public ulong value_Sale { get; set; }
+        public int value_Sale { get; set; }
 
         // 스크립트에서 별도로 추가할 값들
         public GameObject itemPrefab { get; set; }

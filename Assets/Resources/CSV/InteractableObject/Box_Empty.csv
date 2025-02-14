@@ -1,3 +1,4 @@
-stage��ȣ,���ϴ� ���,��ũ��Ʈ,"selection ����(1, 0)",1�� ������,1�� �ݹ��Լ�,2�� ������,2�� �ݹ��Լ�
-1,���ΰ�,�ڽ� ���� ����ִ١�,0,null,null,null,null
-2,���ΰ�,�ڽ� ���� ����ִ١�,0,null,null,null,null
+stage번호,말하는 사람,스크립트,"selection 유무(1, 0)",1번 선택지,1번 콜백함수,2번 선택지,2번 콜백함수
+1,주인공,박스 안이 비어있다…,0,null,null,null,null
+2,주인공,박스 안이 비어있다…,0,null,null,null,null
+3,주인공,박스 안이 비어있다…,0,null,null,null,null

@@ -5,6 +5,8 @@ using UnityEngine;
 // æ¿∫π±ÕΩ√ ΩÃ±€≈Ê ∞¥√º¿« √≥∏Æ ¥„¥Á
 public class Connector : MonoBehaviour
 {
+    public GameObject[] canvas;
+
     public GameObject blackView;
     public GameObject StageView;
 
@@ -13,6 +15,7 @@ public class Connector : MonoBehaviour
     public GameObject outsideOfHouse;
     public GameObject interfaceView;
     public GameObject textWindowView;
+    public GameObject playerMoneyView;
 
     public IconView iconView_Script;
     public PopUpView popUpView_Script;

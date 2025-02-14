@@ -35,7 +35,7 @@ public class TextWindowView : MonoBehaviour
     }
 
 
-    public void StartTestWindow(eTextType textType, eCsvFile_PlayerMono monologue = eCsvFile_PlayerMono.None )
+    public void StartTestWindow(eTextType textType, eCsvFile_PlayerMono monologue = eCsvFile_PlayerMono.None)
     {
         currentTextType = textType;
         currentMonologue = monologue;
@@ -58,7 +58,7 @@ public class TextWindowView : MonoBehaviour
 
         }
 
-        
+
         switch (currentTextType)
         {
             case eTextType.Interaction:
@@ -96,7 +96,7 @@ public class TextWindowView : MonoBehaviour
         // 셀렉션뷰를 끔으로써 셀렉션뷰가 초기화되도록만듬
         selectionView.gameObject.SetActive(false);
 
-        if(GameManager.Instance != null)
+        if (GameManager.Instance != null)
         {
             GameManager.Instance.Continue_theGame();
         }
@@ -104,15 +104,15 @@ public class TextWindowView : MonoBehaviour
 
     public void NextPrintButton()
     {
-        switch(currentTextType)
+        switch (currentTextType)
         {
             case eTextType.Interaction:
                 NextButton_with_Interaction(); break;
 
             case eTextType.PlayerMonologue:
-                NextButton_with_Monologue();  break;
+                NextButton_with_Monologue(); break;
         }
-        
+
     }
 
     private void NextButton_with_Interaction()
@@ -143,12 +143,13 @@ public class TextWindowView : MonoBehaviour
                 if (isTypingReady)
                 {
                     selectionView.SetActive(true);
-                    SelectionView SV = selectionView.GetComponent<SelectionView>();
+                    SelectionView selectionView_Script = selectionView.GetComponent<SelectionView>();
 
                     // 셀렉션 스크립트 부여 및 콜백 등록
-                    for (int i = 0; i < iteractableInfo.selection.Count; i++)
+                    for (int i = 0; i < iteractableInfo.selection.Count && i < iteractableInfo.callback.Count; i++)
                     {
-                        SV.RegisterButtonClick_Selection(i, iteractableInfo.selection[i], iteractableInfo.callback[i]);
+
+                        selectionView_Script.RegisterButtonClick_Selection(i, iteractableInfo.selection[i], iteractableInfo.callback[i]);
                     }
                 }
                 // 타이핑이 안끝났으면 타이핑을 끝내기
@@ -185,7 +186,7 @@ public class TextWindowView : MonoBehaviour
         // 플레이어의 레이캐스트에 걸리는 객체
         GameObject curruntObject = GameManager.Connector.player.GetComponent<Player_MoveAndAnime>().hitObject;
 
-        if(curruntObject != null)
+        if (curruntObject != null)
         {
             // csv데이터 가져오기
 
@@ -209,11 +210,11 @@ public class TextWindowView : MonoBehaviour
 
     public void PrintText()
     {
-        switch(currentTextType)
+        switch (currentTextType)
         {
             case eTextType.Interaction:
                 PrintText_Tamplate(InteractionTextCsv,
-                    ()=>
+                    () =>
                     {
                         iteractableInfo = InteractionTextCsv[TextIndex++];
                         Speaker.text = iteractableInfo.speaker;
@@ -222,40 +223,16 @@ public class TextWindowView : MonoBehaviour
 
             case eTextType.PlayerMonologue:
                 PrintText_Tamplate(MonologueTextCsv,
-                    ()=>
+                    () =>
                     {
                         monologueInfo = MonologueTextCsv[TextIndex++];
                         Speaker.text = monologueInfo.speaker;
                         StartCoroutine(TypeDialogue(monologueInfo.script));
                     }); break;
         }
-        
+
     }
 
-    /*
-    private void PrintText_With_Interaction()
-    {
-        // 배열 범위오류 제한
-        if (TextIndex < InteractionTextCsv.Count)
-        {
-            iteractableInfo = InteractionTextCsv[TextIndex++];
-
-            // 텍스트 순차적으로 보이게함
-            Speaker.text = iteractableInfo.speaker;
-            StartCoroutine(TypeDialogue(iteractableInfo.script));
-
-            // 마지막 대화에서 다음 대화 이미지(화살표) 삭제
-            if (TextIndex == InteractionTextCsv.Count)
-                arrowImageTrans.gameObject.SetActive(false);
-            return;
-        }
-        // 텍스트가 다 끝난경우 // currentTextData[2] == "0"은 PrintText 진입전에 검사했음
-        if (TextIndex >= InteractionTextCsv.Count)
-        {
-            CallbackManager.Instance.TextWindowPopUp_Close();
-        }
-    }
-    */
 
     private void PrintText_Tamplate<T>(List<T> textCsv, Action callback)
     {
@@ -282,7 +259,10 @@ public class TextWindowView : MonoBehaviour
         }
     }
 
-    
+    public void TextIndexInit(int value)
+    {
+        TextIndex = value;
+    }
 
 
     IEnumerator TypeDialogue(string dialogue)
@@ -291,23 +271,42 @@ public class TextWindowView : MonoBehaviour
         textWindow.text = "";
         foreach (char letter in dialogue)
         {
-            if (isTypingReady == false) // 다시 버튼을 안눌렀으면 문자가 하나씩 나타남
+            // UI에 글자를 타이핑
+            // 줄바꿈 문자를 별도로 구별
+            if (letter == '_')
             {
-                // UI에 글자를 타이핑
+                textWindow.text += '\n';
+            }
+            else
+            {
                 textWindow.text += letter;
+            }
 
-                // 공백을 제외한 문자만 타이핑 딜레이를 적용
-                if(letter != ' ')
+            // 다시 버튼을 안눌렀으면 문자가 하나씩 나타남
+            if (isTypingReady == false)
+            {
+                // 공백과 개행문자를 제외한 문자만 타이핑 딜레이를 적용
+                if (letter != ' ' || letter != '_')
                 {
                     yield return new WaitForSeconds(typingDelay);
                 }
-                
+
             }
-            else // 타이핑 도중 화면을 클릭하면 타이핑을 멈추고 전체 문장을 보여줌
-            {
-                textWindow.text = dialogue;
-                break;
-            }
+            //else // 타이핑 도중 화면을 클릭하면 타이핑을 없이 전체 문장을 보여줌
+            //{
+            //    //textWindow.text = dialogue;
+            //    //break;
+
+            //    // 줄바꿈 문제를 별도로 구별
+            //    if (letter == '_')
+            //    {
+            //        textWindow.text += '\n';
+            //    }
+            //    else
+            //    {
+            //        textWindow.text += letter;
+            //    }
+            //}
         }
         isTypingReady = true;
     }
@@ -326,7 +325,7 @@ public class TextWindowView : MonoBehaviour
         sequence.Append(arrowImageTrans.DOScale(targetScale, duration)) // 커지는 애니메이션
                 .Append(arrowImageTrans.DOScale(originalScale, duration)) // 복귀 애니메이션
                 .SetLoops(-1); // 무한 반복
-        
+
     }
 
 }
