@@ -2,25 +2,25 @@ using UnityEngine;
 using PublicSet;
 public class Box : InteractableObject
 {
-    eCsvFile_InterObj current;
+    eTextScriptFile current;
 
     private void Start()
     {
         FillUpBox();
     }
 
-    public override eCsvFile_InterObj GetInteractableEnum()
+    public override eTextScriptFile GetInteractableEnum()
     {
         return current;
     }
 
     public void FillUpBox()
     {
-        current = eCsvFile_InterObj.Box_Full;
+        current = eTextScriptFile.Box_Full;
     }
 
     public void EmptyOutBox()
     {
-        current = eCsvFile_InterObj.Box_Empty;
+        current = eTextScriptFile.Box_Empty;
     }
 }

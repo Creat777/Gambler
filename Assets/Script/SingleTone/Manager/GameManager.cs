@@ -166,20 +166,28 @@ public class GameManager : Singleton<GameManager>
 
         Sequence sequence = DOTween.Sequence();
 
-        float startDelay = 2f;
-        float EndDelay = 2f;
+        float intervalDelay = 0.5f; // 이벤트 종료후 스테이지화면 등장 대기시간
+        float startDelay = 1f; // 화면 등장시간
+        float middleDelay = 1; // 유지시간
+        float endDelay = 1f; // 퇴장시간
 
         // 등장
-        sequence.AppendInterval(1f)
+        sequence.AppendInterval(intervalDelay)
+
                 .Append(stateViewImage.DOColor(Color.white, startDelay))
                 .Join(StageViewText.DOColor(Color.black, startDelay))
-                .Append(stateViewImage.DOColor(colorBack, EndDelay))
-                .Join(StageViewText.DOColor(Color.clear, EndDelay))
+
+                .AppendInterval(middleDelay)
+
+                .Append(stateViewImage.DOColor(colorBack, endDelay))
+                .Join(StageViewText.DOColor(Color.clear, endDelay))
+
                 .AppendCallback(() =>
                 {
                     Connector.StageView.SetActive(false);
-                });
-                    sequence.SetLoops(1);
+                })
+
+                .SetLoops(1);
 
         sequence.Play();
     }
@@ -196,7 +204,7 @@ public class GameManager : Singleton<GameManager>
                 TextWindowView textViewScript = Connector.textWindowView.GetComponent<TextWindowView>();
                 if (textViewScript != null)
                 {
-                    textViewScript.StartTestWindow(eTextType.PlayerMonologue, eCsvFile_PlayerMono.PlayerTutorial);
+                    textViewScript.StartTestWindow(eTextScriptFile.PlayerTutorial);
                 }
             }
             );

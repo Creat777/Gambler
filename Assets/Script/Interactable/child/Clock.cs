@@ -2,8 +2,8 @@ using UnityEngine;
 using PublicSet;
 public class Clock : InteractableObject
 {
-    public override eCsvFile_InterObj GetInteractableEnum()
+    public override eTextScriptFile GetInteractableEnum()
     {
-        return eCsvFile_InterObj.Clock;
+        return eTextScriptFile.Clock;
     }
 }

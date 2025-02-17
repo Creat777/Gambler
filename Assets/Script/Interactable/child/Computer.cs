@@ -3,8 +3,8 @@ using PublicSet;
 
 public class Computer : InteractableObject
 {
-    public override eCsvFile_InterObj GetInteractableEnum()
+    public override eTextScriptFile GetInteractableEnum()
     {
-        return eCsvFile_InterObj.Computer;
+        return eTextScriptFile.Computer;
     }
 }

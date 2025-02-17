@@ -2,8 +2,8 @@ using UnityEngine;
 using PublicSet;
 public class Cabinet : InteractableObject
 {
-    public override eCsvFile_InterObj GetInteractableEnum()
+    public override eTextScriptFile GetInteractableEnum()
     {
-        return eCsvFile_InterObj.Cabinet;
+        return eTextScriptFile.Cabinet;
     }
 }

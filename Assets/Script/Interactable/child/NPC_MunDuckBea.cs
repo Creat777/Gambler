@@ -4,21 +4,21 @@ using UnityEngine;
 
 public class NPC_MunDuckBea : InteractableObject
 {
-    eCsvFile_InterObj currentFile;
+    eTextScriptFile currentFile;
     eStage currentStage;
 
     private void Start()
     {
-        currentFile = eCsvFile_InterObj.NPC_MunDuckBea_Encounter;
+        currentFile = eTextScriptFile.NPC_MunDuckBea_Encounter;
         currentStage = GameManager.Instance.currentStage;
     }
-    public override eCsvFile_InterObj GetInteractableEnum()
+    public override eTextScriptFile GetInteractableEnum()
     {
         // 최초 조우시 Encounter 파일번호 반환
-        if (currentFile == eCsvFile_InterObj.NPC_MunDuckBea_Encounter)
+        if (currentFile == eTextScriptFile.NPC_MunDuckBea_Encounter)
         {
-            currentFile = eCsvFile_InterObj.NPC_MunDuckBea_Acquaintance;
-            return eCsvFile_InterObj.NPC_MunDuckBea_Encounter;
+            currentFile = eTextScriptFile.NPC_MunDuckBea_Acquaintance;
+            return eTextScriptFile.NPC_MunDuckBea_Encounter;
         }
 
         // 그렇지 않으면 Acquaintance 파일번호 반환
@@ -35,7 +35,7 @@ public class NPC_MunDuckBea : InteractableObject
         if (currentStage != GameManager.Instance.currentStage)
         {
             currentStage = GameManager.Instance.currentStage;
-            currentFile = eCsvFile_InterObj.NPC_MunDuckBea_Encounter;
+            currentFile = eTextScriptFile.NPC_MunDuckBea_Encounter;
         }
     }
 }

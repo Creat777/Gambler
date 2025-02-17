@@ -29,7 +29,7 @@ namespace PublicSet
         Stage3
     }
 
-    public enum eCsvFile_InterObj
+    public enum eTextScriptFile
     {
         Bed,
         Cabinet,
@@ -41,16 +41,17 @@ namespace PublicSet
         OutsideDoor,
         NPC_MunDuckBea_Acquaintance,
         NPC_MunDuckBea_Encounter,
-
-        None,
-    }
-
-    public enum eCsvFile_PlayerMono
-    {
         PlayerTutorial,
 
         None,
     }
+
+    //public enum eCsvFile_PlayerMono
+    //{
+    //    PlayerTutorial,
+
+    //    None,
+    //}
 
     public enum eItemSerialNumber
     {
@@ -70,11 +71,6 @@ namespace PublicSet
         Exist
     }
 
-    public enum eTextType
-    {
-        Interaction,
-        PlayerMonologue
-    }
 
     public enum eIcon
     {
@@ -91,7 +87,7 @@ namespace PublicSet
     }
 
     //Class
-    public class cIteractableInfo
+    public class eTextScriptInfo
     {
 
         public string speaker { get; set; }
@@ -100,18 +96,18 @@ namespace PublicSet
         public List<string> selection { get; set; }
         public List<UnityAction> callback { get; set; }
 
-        public cIteractableInfo()
+        public eTextScriptInfo()
         {
             selection = new List<string>();
             callback = new List<UnityAction>();
         }
     }
 
-    public class cPlayerMonologueInfo
-    {
-        public string speaker { get; set; }
-        public string script { get; set; }
-    }
+    //public class cPlayerMonologueInfo
+    //{
+    //    public string speaker { get; set; }
+    //    public string script { get; set; }
+    //}
 
     public class cItemInfo
     {
