@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using PublicSet;
-using System;
+
 
 public class TextWindowView : MonoBehaviour
 {
@@ -32,7 +32,9 @@ public class TextWindowView : MonoBehaviour
     }
 
 
-    public void StartTestWindow( eTextScriptFile textFileEnum = eTextScriptFile.None)
+
+
+    public void StartTextWindow( eTextScriptFile textFileEnum = eTextScriptFile.None)
     {
         currentTextFile = textFileEnum;
 
@@ -72,6 +74,9 @@ public class TextWindowView : MonoBehaviour
     {
         // 셀렉션뷰를 끔으로써 셀렉션뷰가 초기화되도록만듬
         selectionView.gameObject.SetActive(false);
+
+        // 리스트의 count를 0으로 만들어서 오류를 방지
+        textScriptDataList = new List<eTextScriptInfo>();
 
         if (GameManager.Instance != null)
         {
@@ -123,9 +128,7 @@ public class TextWindowView : MonoBehaviour
                     isTypingReady = true;
                 }
             }
-
         }
-
     }
 
     // 상호작용을 위한 기본 처리
@@ -143,8 +146,24 @@ public class TextWindowView : MonoBehaviour
 
                 InteractableObject Script = curruntObject.GetComponent<InteractableObject>();
                 eTextScriptFile interactionFileEnum = Script.GetInteractableEnum();
-                eStage currentStage = GameManager.Instance.currentStage;
-                textScriptDataList = CsvManager.Instance.GetTextScript(interactionFileEnum, currentStage);
+
+                // 성공적으로 파일번호를 받아왔으면 데이터를 저장
+                if(interactionFileEnum != eTextScriptFile.None)
+                {
+                    eStage currentStage = GameManager.Instance.currentStage;
+                    textScriptDataList = CsvManager.Instance.GetTextScript(interactionFileEnum, currentStage);
+                }
+
+                // 파일번호를 아직 받지 못한 객체이면 텍스트창을 종료
+                else
+                {
+                    CallbackManager.Instance.TextWindowPopUp_Close();
+                }
+                
+            }
+            else
+            {
+                Debug.LogWarning($"curruntObject : {curruntObject}");
             }
 
             // 마지막 상호작용한 객체를 저장
@@ -179,7 +198,7 @@ public class TextWindowView : MonoBehaviour
         {
             CallbackManager.Instance.TextWindowPopUp_Close();
 
-            if (currentTextFile == eTextScriptFile.PlayerTutorial
+            if (currentTextFile == eTextScriptFile.PlayerMonologue
                 && GameManager.Instance.currentStage == eStage.Stage1)
             {
                 GameManager.Instance.StageAnimation();
@@ -189,43 +208,39 @@ public class TextWindowView : MonoBehaviour
 
     }
 
-
-    //private void PrintText_Tamplate<T>(List<T> textCsv, Action callback)
-    //{
-    //    // 배열 범위오류 제한
-    //    if (TextIndex < textCsv.Count)
-    //    {
-    //        textScriptData = textScriptDataList[TextIndex++];
-    //        Speaker.text = textScriptData.speaker;
-    //        StartCoroutine(TypeDialogue(textScriptData.script));
-
-    //        // 마지막 대화에서 다음 대화 이미지(화살표) 삭제
-    //        if (TextIndex == textCsv.Count)
-    //            arrowImageTrans.gameObject.SetActive(false);
-    //        return;
-    //    }
-
-    //    // 텍스트가 다 끝난경우
-    //    if (TextIndex >= textCsv.Count)
-    //    {
-    //        CallbackManager.Instance.TextWindowPopUp_Close();
-
-    //        if (currentTextFile == eTextScriptFile.PlayerTutorial 
-    //            && GameManager.Instance.currentStage == eStage.Stage1)
-    //        {
-    //            GameManager.Instance.StageAnimation();
-    //        }
-    //    }
-    //}
-
     public void TextIndexInit(int value)
     {
         TextIndex = value;
     }
 
+    
 
     IEnumerator TypeDialogue(string dialogue)
     {
+        // 텍스트에서 변수 처리
+        if(dialogue.Contains("{Month}"))
+        {
+            dialogue = dialogue.Replace("{Month}", GameManager.Instance.Month.ToString());
+        }
+        if(dialogue.Contains("{Day}"))
+        {
+            dialogue = dialogue.Replace("{Day}", GameManager.Instance.Day.ToString());
+        }
+        if(dialogue.Contains("{d-Day}"))
+        {
+            int d_day = 31 - GameManager.Instance.Day;
+            if (d_day > 0)
+            {
+                dialogue = dialogue.Replace("{d-Day}", d_day.ToString()+"일 이겠군");
+            }
+            else if (d_day == 0)
+            {
+                dialogue = dialogue.Replace("{d-Day}", "오늘이 마지막이겠군");
+            }
+            
+        }
+        
+
         isTypingReady = false;
         textWindow.text = "";
         foreach (char letter in dialogue)
@@ -287,4 +302,56 @@ public class TextWindowView : MonoBehaviour
 
     }
 
+    public void SkipText()
+    {
+        // 현재 텍스트에 셀렉션이 있으면
+        if (textScriptData.eSelect == eSelection.Exist)
+        {
+            // 타이핑 종료
+            isTypingReady = true;
+
+            // 타이핑 종료 후 선택지 활성화 절차 실행 후 종료
+            NextPrintButton();
+            return;
+        }
+
+        // 셀렉션이 없으면 셀렉션을 포함한 텍스트가 나올 때 까지 반복
+        do
+        {
+            if (TextIndex < textScriptDataList.Count)
+            {
+                textScriptData = textScriptDataList[TextIndex++];
+            }
+
+            // 대화가 끝날때까지 선택지가 없으면 그대로 대화창을 종료
+            else
+            {
+                isTypingReady = true;
+
+                // printText의 if (TextIndex >= textScriptDataList.Count) 분기 실행
+                PrintText();
+                
+                return;
+            }
+        }
+        while (textScriptData.eSelect == eSelection.NoneExist);
+
+        // PrintText에서도 다음인덱스의 데이터를 받기때문에 인덱스의 숫자를 1 줄임
+        TextIndex--;
+
+        // 셀렉션이 있는 텍스트의 printText 시작
+        PrintText();
+
+        // 바로 타이핑 종료
+        isTypingReady = true;
+
+        // 타이핑 종료 후 선택지 활성화 절차 실행 및 종료
+        // else if (textScriptData.eSelect == eSelection.Exist) 분기 실행
+        NextPrintButton();
+
+        return;
+
+    }
+
 }
+

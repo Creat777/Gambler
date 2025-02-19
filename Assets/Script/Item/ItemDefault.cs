@@ -4,29 +4,25 @@ using UnityEngine;
 public class ItemDefault : MonoBehaviour
 {
     sItem item;
-    
-    public sItem SaveItemData(int id, eItemSerialNumber serial)
+    cItemInfo itemInfo;
+
+    public sItem Item { get { return item; } }
+    public cItemInfo ItemInfo { get { return itemInfo; } }
+
+    public void SaveItemData(int id, eItemSerialNumber serial)
     {
-        return item = new sItem(id, serial);
+        item = new sItem(id, serial);
+        itemInfo = CsvManager.Instance.GetItemInfo(item.serialNumber);
     }
-    public sItem SaveItemData(sItem item)
+    public void SaveItemData(sItem inputItem)
     {
-        return item = new sItem(item);
+        item = new sItem(inputItem);
+        itemInfo = CsvManager.Instance.GetItemInfo(item.serialNumber);
     }
 
     public void UsedByPlayer()
     {
         PlayerPrefsManager.Instance.PlayerLoseItem(item);
-
-        InventoryPopUp inventoryPopUpScript =  GameManager.Connector.popUpView_Script.inventoryPopUp.GetComponent<InventoryPopUp>();
-        if(inventoryPopUpScript!= null)
-        {
-            inventoryPopUpScript.RefreshInventory();
-        }
-        else
-        {
-            Debug.LogWarning("error");
-        }
     }
 
     public void SoldByPlayer()
@@ -35,15 +31,5 @@ public class ItemDefault : MonoBehaviour
 
         cItemInfo itemInfo = CsvManager.Instance.GetItemInfo(item.serialNumber);
         PlayManager.Instance.PlayerMoneyPlus(itemInfo.value_Sale);
-
-        InventoryPopUp inventoryPopUpScript = GameManager.Connector.popUpView_Script.inventoryPopUp.GetComponent<InventoryPopUp>();
-        if (inventoryPopUpScript != null)
-        {
-            inventoryPopUpScript.RefreshInventory();
-        }
-        else
-        {
-            Debug.LogWarning("error");
-        }
     }
 }

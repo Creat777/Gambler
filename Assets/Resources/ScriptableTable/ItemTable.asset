@@ -13,6 +13,18 @@ MonoBehaviour:
   m_Name: ItemTable
   m_EditorClassIdentifier: 
   item_PlusInfoList:
+  - serialNumber: 10001
+    itemPrefab: {fileID: 4145959588571555389, guid: 25fc352597c91294c9e938ba3688422b, type: 3}
+    itemCallbackIndex: 0
+  - serialNumber: 1001
+    itemPrefab: {fileID: 2660466668946392764, guid: 04dd519fddd74574987f5c1f88c4313c, type: 3}
+    itemCallbackIndex: 2
+  - serialNumber: 2001
+    itemPrefab: {fileID: 3470960725087035298, guid: 26fb2798d924eae4a845b4184e552cb8, type: 3}
+    itemCallbackIndex: 2
+  - serialNumber: 3001
+    itemPrefab: {fileID: 2104349883236275492, guid: 1d6589250fd60e54ea025eb9c74f9f42, type: 3}
+    itemCallbackIndex: 2
   - serialNumber: 101
     itemPrefab: {fileID: 4145959588571555389, guid: 25fc352597c91294c9e938ba3688422b, type: 3}
     itemCallbackIndex: 1

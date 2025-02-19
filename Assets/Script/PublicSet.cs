@@ -6,6 +6,16 @@ using UnityEngine.Events;
 namespace PublicSet
 {
     //ENUM
+
+    public enum ePlayerSaveKey
+    {
+        None,
+        Player_1,
+        Player_2,
+        Player_3,
+        Player_4,
+    }
+
     public enum eScene
     {
         Title,
@@ -31,6 +41,7 @@ namespace PublicSet
 
     public enum eTextScriptFile
     {
+        // 상호작용
         Bed,
         Cabinet,
         Clock,
@@ -41,28 +52,34 @@ namespace PublicSet
         OutsideDoor,
         NPC_MunDuckBea_Acquaintance,
         NPC_MunDuckBea_Encounter,
-        PlayerTutorial,
+
+        // 독백
+        PlayerMonologue,
 
         None,
     }
 
-    //public enum eCsvFile_PlayerMono
-    //{
-    //    PlayerTutorial,
-
-    //    None,
-    //}
-
     public enum eItemSerialNumber
     {
         None,
-        TutorialQuest = 101
+
+        // 퀘스트 아이템
+        TutorialQuest = 101,
+
+        // 소모성 아이템
+        Meat = 1001,
+        Fish = 2001,
+        Egg = 3001,
+
+        // 기타 잡템
+        Notice_Stage1 = 10001
     }
 
     public enum eItemCallback
     {
         None,
-        TutorialStart
+        TutorialStart,
+        EatMeal
     }
 
     public enum eSelection

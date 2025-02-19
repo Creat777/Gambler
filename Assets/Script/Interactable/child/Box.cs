@@ -6,7 +6,7 @@ public class Box : InteractableObject
 
     private void Start()
     {
-        FillUpBox();
+        current = eTextScriptFile.None;
     }
 
     public override eTextScriptFile GetInteractableEnum()
