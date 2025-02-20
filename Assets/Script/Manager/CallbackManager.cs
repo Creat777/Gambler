@@ -24,7 +24,7 @@ public class CallbackManager : Singleton<CallbackManager>
         isBlakcViewReady = true;
     }
 
-    IEnumerator BlackViewProcess(float delay, Action middleCallBack, Action endCallback = null)
+    public IEnumerator BlackViewProcess(float delay, Action middleCallBack, Action endCallback = null)
     {
         isBlakcViewReady = false;
 
@@ -99,9 +99,10 @@ public class CallbackManager : Singleton<CallbackManager>
             case 7: return SavePlayerData;
             case 8: return StartComputer;
             case 9: return GetGamblingCoin;
-            case 10: return GotoCasino;
+            case 10: return GotoCasinoPlace;
             case 11: return GotoUnknownIsland;
             case 12: return TellmeOneMoreTime;
+            case 13: return EnterCasino;
         }
 
         return TrashFuc;
@@ -221,7 +222,7 @@ public class CallbackManager : Singleton<CallbackManager>
     }
 
     // 10
-    public virtual void GotoCasino()
+    public virtual void GotoCasinoPlace()
     {
         float delay = 2.0f;
         // 암막 중에 실행될 처리를 람다함수로 전달
@@ -229,9 +230,6 @@ public class CallbackManager : Singleton<CallbackManager>
             () =>
             {
                 GameManager.Connector.map_Script.ChangeMapTo(eMap.Casino);
-
-                // 플레이어를 변경된 맵의 문 앞으로 이동
-                GameManager.Connector.player.transform.position = new Vector2(0, 2);
             }
         ));
     }
@@ -248,6 +246,19 @@ public class CallbackManager : Singleton<CallbackManager>
         GameManager.Connector.textWindowView.GetComponent<TextWindowView>().TextIndexInit(0);
         TextHoldOn();
     }
+
+    // 13
+    public virtual void EnterCasino()
+    {
+        //Debug.Log("카지노 입장");
+        float delay = 2.0f;
+        StartCoroutine(BlackViewProcess(delay,
+
+            GameManager.Connector.MainCanvas_script.CasinoViewOpen,
+            GameManager.Connector.MainCanvas_script.CasinoView.GetComponent<CasinoView>().StartDealerDialogue
+            ));
+    }
+
 
 
 

@@ -67,6 +67,10 @@ public class TextWindowView : MonoBehaviour
                 PrintText();
             }
         }
+        else
+        {
+            Debug.LogWarning("textScriptDataList가 비어있음");
+        }
 
     }
 
@@ -196,6 +200,7 @@ public class TextWindowView : MonoBehaviour
         // 텍스트가 다 끝난경우
         if (TextIndex >= textScriptDataList.Count)
         {
+            Debug.Log($"현재 실행된 문자열의 개수는 {textScriptDataList.Count}입니다.");
             CallbackManager.Instance.TextWindowPopUp_Close();
 
             if (currentTextFile == eTextScriptFile.PlayerMonologue

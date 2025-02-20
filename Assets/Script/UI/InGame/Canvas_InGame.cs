@@ -1,16 +1,30 @@
+using PublicSet;
 using UnityEngine;
 
 public class Canvas_InGame : MonoBehaviour
 {
     public GameObject interfaceView;
+    public GameObject CasinoView;
     public GameObject textWindowView;
     public GameObject PopUPView;
+    
 
     void Start()
     {
-        interfaceView.SetActive(true);
-        textWindowView.SetActive(false);
         PopUpViewDisable();
+        CloseAllOfView();
+        interfaceView.SetActive(true);
+    }
+
+    public void CloseAllOfView()
+    {
+        foreach (Transform child in transform)
+        {
+            if (child.gameObject.activeSelf == true)
+            {
+                child.gameObject.SetActive(false);
+            }
+        }
     }
 
     private void PopUpViewDisable()
@@ -25,26 +39,29 @@ public class Canvas_InGame : MonoBehaviour
         PopUPView.SetActive(false);
     }
 
-    //// Update is called once per frame
-    //void Update()
-    //{
-    //    PopUpOrganize();
-    //}
+    public void CasinoViewOpen()
+    {
+        CloseAllOfView();
 
-    //public void PopUpOrganize()
-    //{
-    //    if(Input.GetKeyUp(KeyCode.Escape))
-    //    {
-    //        if (isOptionViewPopUp == false)
-    //        {
-    //            OptionViewOpen();
-    //        }
-    //        else if(isOptionViewPopUp == true)
-    //        {
-    //            OptionViewClose();
-    //        }
-    //    }
-    //}
+        CasinoView.SetActive(true);
+
+        
+    }
+
+    public void CasinoViewClose()
+    {
+        float delay = 2.0f;
+        StartCoroutine(CallbackManager.Instance.BlackViewProcess(
+            delay,
+            ()=>
+            {
+                CloseAllOfView();
+                interfaceView.SetActive(true);
+            }
+
+            ));
+        
+    }
 
     
 }

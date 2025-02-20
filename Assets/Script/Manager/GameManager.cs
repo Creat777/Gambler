@@ -96,8 +96,8 @@ public class GameManager : Singleton<GameManager>
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
-        { 
-            StageAnimation(); 
+        {
+            CallbackManager.Instance.EnterCasino();
         }
     }
 

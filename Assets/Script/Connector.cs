@@ -5,7 +5,7 @@ using UnityEngine;
 // æ¿∫π±ÕΩ√ ΩÃ±€≈Ê ∞¥√º¿« √≥∏Æ ¥„¥Á
 public class Connector : MonoBehaviour
 {
-    public GameObject[] canvas;
+    public Canvas_InGame MainCanvas_script;
 
     public GameObject blackView;
     public GameObject StageView;

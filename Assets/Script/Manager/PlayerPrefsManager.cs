@@ -286,7 +286,7 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKeyDown(KeyCode.Escape))
         {
             PlayerPrefs.DeleteAll();
             Debug.Log("葛电 历厘等 单捞磐 昏力");

@@ -41,17 +41,25 @@ namespace PublicSet
 
     public enum eTextScriptFile
     {
-        // 상호작용
+        // 실내
         Bed,
         Cabinet,
         Clock,
         Computer,
         InsideDoor,
+
+        // 야외
         Box_Empty,
         Box_Full,
         OutsideDoor,
         NPC_MunDuckBea_Acquaintance,
         NPC_MunDuckBea_Encounter,
+
+        // 카지노
+        NPC_MunDuckBea_InCasino,
+        NPC_Caesar,
+        CasinoDoor,
+        CasinoDealer,
 
         // 독백
         PlayerMonologue,
