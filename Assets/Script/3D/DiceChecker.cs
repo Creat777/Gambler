@@ -9,7 +9,7 @@ public class DiceChecker : MonoBehaviour
     {
         if (collision.gameObject.tag == "Dice")
         {
-            Debug.Log($"충돌! {collision.gameObject.name}");
+            //Debug.Log($"충돌! {collision.gameObject.name}");
             if (int.TryParse(collision.gameObject.name, out int value))
             {
                 diceValue = value;

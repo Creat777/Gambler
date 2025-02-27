@@ -6,7 +6,11 @@ using DG.Tweening;
 public class CardGameView : MonoBehaviour
 {
     // 에디터 연결
+    public CardGamePlayManager cardGamePlayManager;
     public GameObject PlayerInterface;
+    public CardScreenButton cardScreenButton;
+    public DiceButton diceButton;
+
     public GameObject SubScreen_Card;
     public GameObject StartButton;
 
@@ -21,8 +25,11 @@ public class CardGameView : MonoBehaviour
 
     private void Awake()
     {
-        
+        cardScreenButton.Deactivate_Button();
+        diceButton.Deactivate_Button();
     }
+
+
 
     private void Start()
     {
@@ -31,24 +38,47 @@ public class CardGameView : MonoBehaviour
         CenterPos = transform.position;
         Interface_OutOfMainScreenPos = PlayerInterface.transform.position;
         CardScreen_OutOfMainScreenPos = SubScreen_Card.transform.position;
+
+        if (cardGamePlayManager == null)
+            Debug.LogAssertion($"cardGamePlayManager == null ");
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.W))
+        {
+            Debug.LogWarning("테스트");
+            StartGameButton();
+        }
     }
 
     // 시작버튼 콜백
     public void StartGameButton()
     {
         // 게임 시작 누를 시 필요없는 인터페이스 비활성화
-        StartButton.SetActive(false);
-        
-        // 모든 카드를 덱의 자식객체로 전환
-        DeckOfCards.ReturnAllOfCards();
+        Sequence sequence = DOTween.Sequence();
 
-        StartCoroutine
-        (
-            startDelay(
-            DeckOfCards.CardShuffle, // 카드를 덱의 자식객체 순서에서 섞기
-            ()=> DeckOfCards.CardDistribution(PlayerInterfaceOnOff), // 카드 분배 후 플레이어 인터페이스 활성화
-            2)
-        );
+        // dotween이 끝난후 복귀할 스케일 저장
+        Vector3 scaleOrigin = StartButton.transform.localScale;
+
+        // dotween 애니메이션 시간
+        float delay = 0.5f;
+
+        // 화면에서 버튼의 크기를 완전히 줄인다음 실제 크기로 복귀와 동시에 비활성화
+        sequence.Append(StartButton.transform.DOScale(Vector3.zero, delay));
+        sequence.AppendCallback(()=>StartButton.transform.localScale = scaleOrigin);
+        sequence.AppendCallback(() => StartButton.SetActive(false));
+
+        // 모든 카드를 덱의 자식객체로 전환
+        sequence.AppendCallback(() => DeckOfCards.ReturnAllOfCards());
+
+        // 카드 셔플 하고 덱을 뷰의 가운데로 이동
+        sequence.AppendCallback(() => DeckOfCards.CardShuffle());
+        sequence.AppendInterval(2f); // 카드가 중력으로 바닥에 떨어질때까지 기다림
+
+        // 인터페이스 활성화
+        sequence.AppendCallback(() => PlayerInterfaceOnOff());
+        diceButton.Activate_Button();
     }
 
     // 백버튼 콜백
