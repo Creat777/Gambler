@@ -5,6 +5,7 @@ public class Canvas_InGame : MonoBehaviour
 {
     public GameObject interfaceView;
     public GameObject CasinoView;
+    public GameObject CardGameView;
     public GameObject textWindowView;
     public GameObject PopUPView;
     
@@ -42,24 +43,20 @@ public class Canvas_InGame : MonoBehaviour
     public void CasinoViewOpen()
     {
         CloseAllOfView();
-
+        GameManager.Instance.ChangeCardGameView(true);
         CasinoView.SetActive(true);
-
-        
     }
 
     public void CasinoViewClose()
     {
         float delay = 2.0f;
-        StartCoroutine(CallbackManager.Instance.BlackViewProcess(
+        GameManager.Instance.ChangeCardGameView(false);
+        CallbackManager.Instance.BlackViewProcess(
             delay,
-            ()=>
-            {
-                CloseAllOfView();
-                interfaceView.SetActive(true);
-            }
+            ()=> CloseAllOfView(),
+            () => interfaceView.SetActive(true)
 
-            ));
+            );
         
     }
 

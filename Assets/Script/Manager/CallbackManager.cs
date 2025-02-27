@@ -24,7 +24,7 @@ public class CallbackManager : Singleton<CallbackManager>
         isBlakcViewReady = true;
     }
 
-    public IEnumerator BlackViewProcess(float delay, Action middleCallBack, Action endCallback = null)
+    public void BlackViewProcess(float delay, Action middleCallBack, Action endCallback = null)
     {
         isBlakcViewReady = false;
 
@@ -60,22 +60,23 @@ public class CallbackManager : Singleton<CallbackManager>
             sequence.AppendCallback(() => endCallback());
         }
 
+        sequence.AppendCallback(
+            () =>
+            {
+                // 비활성화를 해야 화면 클릭이 가능함
+                GameManager.Connector.blackView.SetActive(false);
+
+                // 게임 지속
+                GameManager.Instance.Continue_theGame();
+
+                isBlakcViewReady = true;
+            }
+            );
+
         sequence.SetLoops(1);
 
         // 시퀀스 플레이(시퀀스 플레이는 생성후 최초 1회만 플레이 가능함)
         sequence.Play();
-
-        // 화면이 복귀 되는 시간만큼 딜레이
-        yield return new WaitForSeconds(delay);
-
-        // 비활성화를 해야 화면 클릭이 가능함
-        GameManager.Connector.blackView.SetActive(false);
-
-        // 인터페이스 활성화 및 게임 지속
-        GameManager.Connector.interfaceView.SetActive(true);
-        GameManager.Instance.Continue_theGame();
-
-        isBlakcViewReady = true;
     }
 
     public void TrashFuc()
@@ -120,7 +121,13 @@ public class CallbackManager : Singleton<CallbackManager>
     public virtual void TextWindowPopUp_Close()
     {
         GameManager.Connector.textWindowView.SetActive(false);
-        GameManager.Connector.interfaceView.SetActive(true);
+
+        // 카지노 게임뷰가 아닌 경우에만 인터페이스를 활성화
+        if(GameManager.Instance.isCasinoGameView == false)
+        {
+            GameManager.Connector.interfaceView.SetActive(true);
+        }
+        
     }
 
     // 2
@@ -128,12 +135,10 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         float delay = 2.0f;
         // 암막 중에 실행될 처리를 람다함수로 전달
-        StartCoroutine(BlackViewProcess(delay, 
-            () =>
-        {
-            GameManager.Connector.map_Script.ChangeMapTo(eMap.OutsideOfHouse);
-        }
-        ));
+        BlackViewProcess(delay, 
+            () => GameManager.Connector.map_Script.ChangeMapTo(eMap.OutsideOfHouse), 
+            () => GameManager.Connector.interfaceView.SetActive(true)
+        );
         
     }
 
@@ -142,12 +147,10 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         float delay = 2.0f;
         // 암막 중에 실행될 처리를 람다함수로 전달
-        StartCoroutine(BlackViewProcess(delay,
-            () =>
-            {
-                GameManager.Connector.map_Script.ChangeMapTo(eMap.InsideOfHouse);
-            }
-        ));
+        BlackViewProcess(delay,
+            () =>GameManager.Connector.map_Script.ChangeMapTo(eMap.InsideOfHouse),
+            () =>GameManager.Connector.interfaceView.SetActive(true)
+        );
         
     }
 
@@ -156,7 +159,7 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         float delay = 4.0f;
 
-        StartCoroutine(BlackViewProcess(delay,
+        BlackViewProcess(delay,
                 () =>
                 {
                     GameManager.Instance.Day++;
@@ -165,7 +168,7 @@ public class CallbackManager : Singleton<CallbackManager>
                 {
                     GameManager.Instance.StartPlayerMonologue();
                 }
-            ));
+            );
 
     }
 
@@ -226,12 +229,13 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         float delay = 2.0f;
         // 암막 중에 실행될 처리를 람다함수로 전달
-        StartCoroutine(BlackViewProcess(delay,
+        BlackViewProcess(delay,
             () =>
             {
                 GameManager.Connector.map_Script.ChangeMapTo(eMap.Casino);
+                GameManager.Connector.interfaceView.SetActive(true);
             }
-        ));
+        );
     }
 
     // 11
@@ -252,11 +256,16 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         //Debug.Log("카지노 입장");
         float delay = 2.0f;
-        StartCoroutine(BlackViewProcess(delay,
-
-            GameManager.Connector.MainCanvas_script.CasinoViewOpen,
-            GameManager.Connector.MainCanvas_script.CasinoView.GetComponent<CasinoView>().StartDealerDialogue
-            ));
+        BlackViewProcess(delay,
+            ()=>
+            {
+                GameManager.Connector.MainCanvas_script.CasinoViewOpen();
+            },
+            ()=>  
+            {
+                GameManager.Connector.MainCanvas_script.CasinoView.GetComponent<CasinoView>().StartDealerDialogue();
+            }
+            );
     }
 
 

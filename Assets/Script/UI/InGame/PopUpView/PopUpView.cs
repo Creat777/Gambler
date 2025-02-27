@@ -10,6 +10,7 @@ public class PopUpView : MonoBehaviour
     public GameObject yesOrNoPopUp;
     public GameObject checkPopUp;
     public GameObject questPopUp;
+    public GameObject CardGameRulePopUp;
 
     
 
@@ -19,7 +20,7 @@ public class PopUpView : MonoBehaviour
     }
 
     
-
+    // 버튼 콜백
     public void OptionPopUpOpen()
     {
         gameObject.SetActive(true);
@@ -27,12 +28,7 @@ public class PopUpView : MonoBehaviour
         optionPopUp.transform.SetAsLastSibling();
     }
 
-    public void OptionPopUpClose()
-    {
-        optionPopUp.SetActive(false);
-    }
-
-    
+    // 버튼 콜백
     public void InventoryPopUpOpen()
     {
         gameObject.SetActive(true);
@@ -41,36 +37,23 @@ public class PopUpView : MonoBehaviour
 
     }
 
-    public void InventoryPopUpClose()
-    {
-        inventoryPopUp.SetActive(false);
-
-    }
-
+    // 버튼 콜백
     public void YesOrNoPopUpOpen()
     {
         gameObject.SetActive(true);
         yesOrNoPopUp.SetActive(true);
         yesOrNoPopUp.transform.SetAsLastSibling();
     }
-    public void YesOrNoPopUpClose()
-    {
-        yesOrNoPopUp.SetActive(false);
 
-    }
-
+    // 버튼 콜백
     public void CheckPopUpOpen()
     {
         gameObject.SetActive(true);
         checkPopUp.SetActive(true);
         checkPopUp.transform.SetAsLastSibling();
     }
-    public void CheckPopUpClose()
-    {
-        checkPopUp.SetActive(false);
-    }
 
-
+    // 버튼 콜백
     public void QuestPopUpOpen()
     {
         gameObject.SetActive(true);
@@ -78,8 +61,12 @@ public class PopUpView : MonoBehaviour
         questPopUp.transform.SetAsLastSibling();
 
     }
-    public void QuestPopUpClose()
+
+    // 버튼 콜백
+    public void CardGameRulePopUpOpen()
     {
-        questPopUp.SetActive(false);
+        gameObject.SetActive(true);
+        CardGameRulePopUp.SetActive(true);
+        CardGameRulePopUp.transform.SetAsLastSibling();
     }
 }

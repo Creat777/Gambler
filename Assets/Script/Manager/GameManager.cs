@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -32,6 +31,7 @@ public class GameManager : Singleton<GameManager>
     // 스크립트에서 수정
     public bool isJoinGame {  get; private set; }
     public bool isGamePause {  get; private set; }
+    public bool isCasinoGameView {  get; private set; }
     public float gameSpeed { get; private set; }
 
     public ePlayerSaveKey currentSaveKey;
@@ -81,29 +81,24 @@ public class GameManager : Singleton<GameManager>
         isGamePause = false;
     }
 
+    public void ChangeCardGameView(bool boolValue)
+    {
+        isCasinoGameView = boolValue;
+    }
+
     public void NextStage()
     {
         currentStage++;
         StageAnimation();
     }
 
-    void Start()
+    private void Update()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
+            Debug.Log("테스트 시작");
             CallbackManager.Instance.EnterCasino();
         }
-    }
-
-    private void FixedUpdate()
-    {
-        
     }
 
 

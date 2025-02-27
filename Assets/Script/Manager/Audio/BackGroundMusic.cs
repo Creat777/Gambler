@@ -96,25 +96,4 @@ public class BackGroundMusic : GameAudio
         return value;
     }
 
-    //public void BossEnter()
-    //{
-    //    if (audioSource != null)
-    //    {
-    //        // 이미 재생되는 음악이면 함수 종료
-    //        if (audioSource.clip == bossMusic) return;
-
-    //        audioSource.Stop();
-    //        audioSource.loop = true;
-    //        audioSource.clip = bossMusic;
-    //        audioSource.Play();
-    //    }
-    //    else
-    //    {
-    //        Debug.LogError("audioSource == null");
-    //    }
-    //}
-
-
-
-
 }

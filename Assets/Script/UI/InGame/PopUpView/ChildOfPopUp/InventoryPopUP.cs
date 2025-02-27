@@ -19,7 +19,7 @@ public class InventoryPopUp : PopUp
     public void RefreshInventory()
     {
         // 기존 목록 삭제
-        foreach (Transform child in content.transform)
+        foreach (Transform child in contentTrans)
         {
             Destroy(child.gameObject);
         }
@@ -130,11 +130,13 @@ public class InventoryPopUp : PopUp
             }
 
             // 부모객체 설정
-            obj.transform.SetParent(content.transform);
+            obj.transform.SetParent(contentTrans);
 
             // 스케일 초기화
             obj.transform.localScale = Vector3.one;
         }
+
+        ChangeContentRectTransform();
     }
 
 }
