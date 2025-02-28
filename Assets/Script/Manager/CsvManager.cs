@@ -13,12 +13,12 @@ public class CsvManager : Singleton<CsvManager>
     [SerializeField] private ItemTable itemPlusInfoTable;
 
     // csv파일 저장을 위한 배열
-    private List<eTextScriptInfo>[,] InteractableInfoFiles;
+    private List<cTextScriptInfo>[,] InteractableInfoFiles;
 
     // 아이템을 시리얼 번호로 검색
     private Dictionary<eItemSerialNumber, cItemInfo> ItemInfoDict;
 
-    public List<eTextScriptInfo> GetTextScript(eTextScriptFile eCsv, eStage eStage)
+    public List<cTextScriptInfo> GetTextScript(eTextScriptFile eCsv, eStage eStage)
     {
         return InteractableInfoFiles[(int)eCsv,(int)eStage];
     }
@@ -45,12 +45,12 @@ public class CsvManager : Singleton<CsvManager>
 
         // 상호작용 관련
         int textScriptFileCount = Enum.GetValues(typeof(eTextScriptFile)).Length - 1;
-        InteractableInfoFiles = new List<eTextScriptInfo>[textScriptFileCount, StageCount];
+        InteractableInfoFiles = new List<cTextScriptInfo>[textScriptFileCount, StageCount];
 
         for(int i = 0; i < InteractableInfoFiles.Length; i++)
         {
             InteractableInfoFiles[i / StageCount, i% StageCount]
-                = new List<eTextScriptInfo>();
+                = new List<cTextScriptInfo>();
         }
 
         // 아이템 관련
@@ -83,7 +83,7 @@ public class CsvManager : Singleton<CsvManager>
     {
         // 상호작용 객체에 대한 csv
         string path = "CSV/TextScript/";
-        ProcessScriptCsv<eTextScriptFile, eTextScriptInfo>(path, LoadTextCsv ,InteractableInfoFiles);
+        ProcessScriptCsv<eTextScriptFile, cTextScriptInfo>(path, LoadTextCsv ,InteractableInfoFiles);
         
     }
 
@@ -252,9 +252,6 @@ public class CsvManager : Singleton<CsvManager>
                 Debug.LogAssertion($"serailNumber{serailNumber}는 딕셔너리 키에 없습니다.");
             }
 
-
-
-
             // 사용 가능한 경우
             if (ItemInfoDict[serailNumber].isAvailable)
             {
@@ -271,7 +268,8 @@ public class CsvManager : Singleton<CsvManager>
         {
             if (serail == eItemSerialNumber.None) continue;
 
-            PrintProperties(ItemInfoDict[serail]);
+            Debug.Log($"csv Item({ItemInfoDict[serail].name}) 프린트 생략");
+            //PrintProperties(ItemInfoDict[serail]);
         }
     }
 
@@ -300,7 +298,8 @@ public class CsvManager : Singleton<CsvManager>
                     // 각 파일에서 행을 하나씩 뽑아서 데이터를 올바르게 처리했는지 확인
                     foreach (T_class info in CsvFileInfoPerStage[eFileCode, eStageCode])
                     {
-                        PrintProperties(info);
+                        Debug.Log($"csv TextScript({(info as cTextScriptInfo).script}) 프린트 생략");
+                        //PrintProperties(info);
                     }
                 }    
                 
@@ -312,7 +311,7 @@ public class CsvManager : Singleton<CsvManager>
     {
         if ((eTextScriptFile)fileEnum == eTextScriptFile.None) return;
 
-        LoadCsv<eTextScriptInfo>(path,
+        LoadCsv<cTextScriptInfo>(path,
             (row, info)=>
             {
                 if (info == null) return;
@@ -398,7 +397,7 @@ public class CsvManager : Singleton<CsvManager>
 
     
 
-    void LoadCsv<T>(string resourceName, Action<List<string>, T> RowCallBack) where T : new()
+    public void LoadCsv<T>(string resourceName, Action<List<string>, T> RowCallBack) where T : new()
         // where T : new() : 제네릭 타입 T가 매개변수 없는 기본 생성자를 가진 클래스여야 한다는 조건을 의미
     {
         List<List<string>> csvData = new List<List<string>>();
@@ -445,7 +444,7 @@ public class CsvManager : Singleton<CsvManager>
     }
 
     // 프로퍼티가 설정된 데이터멤버만 출력됨
-    void PrintProperties(object obj)
+    public void PrintProperties(object obj)
     {
         Type type = obj.GetType(); // 객체의 타입 가져오기
         PropertyInfo[] properties = type.GetProperties(); // 모든 속성 가져오기

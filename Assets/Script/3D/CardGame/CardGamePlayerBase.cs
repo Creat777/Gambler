@@ -9,6 +9,9 @@ public abstract class CardGamePlayerBase : MonoBehaviour
     {
         myDiceValue = diceValue;
         diceDone = true;
+
+        Debug.Log($"{gameObject.name}의 눈금은 {myDiceValue}입니다" +
+            $"-> diceDone == {diceDone}");
     }
 
 
@@ -16,5 +19,9 @@ public abstract class CardGamePlayerBase : MonoBehaviour
     {
         diceDone = false;
         myDiceValue = 0;
+
+        Debug.Log($"{gameObject.name}의 속성 초기화 ->" +
+            $"diceDone == {diceDone} " +
+            $"myDiceValue == {myDiceValue}");
     }
 }

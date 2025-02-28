@@ -1,5 +1,7 @@
 using DG.Tweening;
+using PublicSet;
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class DeckOfCards : MonoBehaviour
@@ -23,8 +25,7 @@ public class DeckOfCards : MonoBehaviour
     {
         floorPos = floor.transform.position;
 
-        // 카드 초기화
-        InitCards();
+        
 
         // 처음에 위치 설정
         SetCardPositions();
@@ -34,6 +35,9 @@ public class DeckOfCards : MonoBehaviour
     {
         if (cardGamePlayManager == null)
             Debug.LogAssertion($"cardGamePlayManager == null ");
+
+        // 카드 초기화
+        InitCards();
     }
 
     private void InitCards()
@@ -44,8 +48,75 @@ public class DeckOfCards : MonoBehaviour
         for (int i = 0; i < transform.childCount; i++)
         {
             Cards[i] = transform.GetChild(i).gameObject;
-
         }
+        ProcessCsvOfCard(Cards);
+    }
+
+    private void ProcessCsvOfCard(GameObject[] Cards)
+    {
+        string fileNamePath = "CSV/Card/Card";
+        CsvManager.Instance.LoadCsv<cTrumpCardInfo>(fileNamePath,
+            (row, trumpCardInfo) => // trumpCard는 컴포넌트로 쓰일 스크립트
+            {
+                // 저장공간을 할당받지 못한 경우
+                if (trumpCardInfo == null) return;
+
+                int field_num = 0;
+
+
+                // 각 행의 처리 시작
+                foreach (string field in row)
+                {
+                    switch (field_num)
+                    {
+                        case 0: 
+                            if (int.TryParse(field, out int intField))
+                            {
+                                trumpCardInfo.cardIndex = intField; break;
+                            }
+                            else
+                            {
+                                Debug.LogAssertion($"타입오류 -> {field}");
+                            }
+                            break;
+
+                        case 1: trumpCardInfo.cardName = field;
+                            break;
+
+                        case 2:
+                            if (eCardType.TryParse(field, out eCardType eCardTypeField))
+                            {
+                                trumpCardInfo.cardType = eCardTypeField; break;
+                            }
+                            else
+                            {
+                                Debug.LogAssertion($"타입오류 -> {field}");
+                            }
+                            break;
+
+                        case 3:
+                            if (int.TryParse(field, out int intField2))
+                            {
+                                trumpCardInfo.cardValue = intField2; break;
+                            }
+                            else
+                            {
+                                Debug.LogAssertion($"타입오류 -> {field}");
+                            }
+                            break;
+                        default: break;
+                    }
+                    field_num++;
+                }
+
+                // 처리된 데이터를 각 카드에 삽입
+                if(trumpCardInfo.cardIndex>=0 && trumpCardInfo.cardIndex < Cards.Length)
+                {
+                    Cards[trumpCardInfo.cardIndex].AddComponent<TrumpCard>().SetTrumpCard(trumpCardInfo);
+                }
+                
+            }
+            );
     }
 
     public void SetPlayerNumber()
@@ -144,13 +215,14 @@ public class DeckOfCards : MonoBehaviour
             sequence.Join(player.transform.GetChild(i).DOLocalMoveX(width * offset, delay));
         }
 
-        // 플레이어(Me)의 카드 배분이 끝났으면 자기 카드를 확인 할 수 있도록 만들고 주사위버튼을 잠금
+        // 플레이어(Me)의 카드 배분이 끝났으면 자기 카드를 확인 할 수 있도록 만듬
         if(player.layer == cardGamePlayManager.layerOfMe)
         {
-            Debug.Log("내 카드 보기 활성화!");
+            //Debug.Log("내 카드 보기 활성화!");
             sequence.AppendCallback(()=> cardGamePlayManager.cardGameView.cardScreenButton.Activate_Button());
         }
 
+        // 모든 처리가 끝났으면 카드게임 매니저가 다음 순서의 플레이어를 실행하도록 요청
         sequence.AppendCallback(cardGamePlayManager.NPC_Dice);
 
         sequence.SetLoops(1);

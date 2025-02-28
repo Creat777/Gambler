@@ -12,7 +12,7 @@ public class TextWindowView : MonoBehaviour
     // 에디터에서 연결
     public Text textWindow;
     public Text Speaker;
-    private List<eTextScriptInfo> textScriptDataList;
+    private List<cTextScriptInfo> textScriptDataList;
     public RectTransform arrowImageTrans;
     public GameObject selectionView;
 
@@ -20,7 +20,7 @@ public class TextWindowView : MonoBehaviour
     bool isTypingReady;
     float typingDelay;
     int TextIndex;
-    eTextScriptInfo textScriptData { get; set; }
+    cTextScriptInfo textScriptData { get; set; }
     GameObject LastObject;
     eTextScriptFile currentTextFile;
 
@@ -80,7 +80,7 @@ public class TextWindowView : MonoBehaviour
         selectionView.gameObject.SetActive(false);
 
         // 리스트의 count를 0으로 만들어서 오류를 방지
-        textScriptDataList = new List<eTextScriptInfo>();
+        textScriptDataList = new List<cTextScriptInfo>();
 
         if (GameManager.Instance != null)
         {
@@ -200,7 +200,7 @@ public class TextWindowView : MonoBehaviour
         // 텍스트가 다 끝난경우
         if (TextIndex >= textScriptDataList.Count)
         {
-            Debug.Log($"현재 실행된 문자열의 개수는 {textScriptDataList.Count}입니다.");
+            Debug.Log($"현재 실행된 문자열의 개수 == {textScriptDataList.Count}");
             CallbackManager.Instance.TextWindowPopUp_Close();
 
             if (currentTextFile == eTextScriptFile.PlayerMonologue

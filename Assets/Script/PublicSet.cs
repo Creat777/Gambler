@@ -111,8 +111,17 @@ namespace PublicSet
         Close
     }
 
+    public enum eCardType
+    {
+        Joker,
+        Spades,
+        Clubs,
+        Diamonds,
+        Hearts
+    }
+
     //Class
-    public class eTextScriptInfo
+    public class cTextScriptInfo
     {
 
         public string speaker { get; set; }
@@ -121,7 +130,7 @@ namespace PublicSet
         public List<string> selection { get; set; }
         public List<UnityAction> callback { get; set; }
 
-        public eTextScriptInfo()
+        public cTextScriptInfo()
         {
             selection = new List<string>();
             callback = new List<UnityAction>();
@@ -154,5 +163,13 @@ namespace PublicSet
         public GameObject itemPrefab { get; set; }
         public UnityAction itemCallback { get; set; }
         
+    }
+
+    public class cTrumpCardInfo
+    {
+        public int cardIndex { get; set; }
+        public string cardName { get; set; }
+        public eCardType cardType { get; set; }
+        public int cardValue { get; set; }
     }
 }

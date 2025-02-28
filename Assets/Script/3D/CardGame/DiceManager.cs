@@ -24,7 +24,9 @@ public class DiceManager : MonoBehaviour
     {
         // 회전 지연시간을 랜덤으로 설정
         float delay;
-        delay = Random.Range(3.0f, 6.0f);
+        Debug.Log("다이스 딜레이 수정했음");
+        //delay = Random.Range(3.0f, 6.0f);
+        delay = Random.Range(2.0f, 3.0f);
 
         // x축 회전
         int[] randomValues = new int[3];
