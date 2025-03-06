@@ -268,7 +268,7 @@ public class CsvManager : Singleton<CsvManager>
         {
             if (serail == eItemSerialNumber.None) continue;
 
-            Debug.Log($"csv Item({ItemInfoDict[serail].name}) 프린트 생략");
+            //Debug.Log($"csv Item({ItemInfoDict[serail].name}) 프린트 생략");
             //PrintProperties(ItemInfoDict[serail]);
         }
     }
@@ -298,7 +298,7 @@ public class CsvManager : Singleton<CsvManager>
                     // 각 파일에서 행을 하나씩 뽑아서 데이터를 올바르게 처리했는지 확인
                     foreach (T_class info in CsvFileInfoPerStage[eFileCode, eStageCode])
                     {
-                        Debug.Log($"csv TextScript({(info as cTextScriptInfo).script}) 프린트 생략");
+                        //Debug.Log($"csv TextScript({(info as cTextScriptInfo).script}) 프린트 생략");
                         //PrintProperties(info);
                     }
                 }    
@@ -329,10 +329,18 @@ public class CsvManager : Singleton<CsvManager>
                             {
                                 switch (intField)
                                 {
-                                    case 1: Debug.Log($"입력된 스테이지 코드 : {intField}"); stage = eStage.Stage1; break;
-                                    case 2: Debug.Log($"입력된 스테이지 코드 : {intField}"); stage = eStage.Stage2; break;
-                                    case 3: Debug.Log($"입력된 스테이지 코드 : {intField}"); stage = eStage.Stage3; break;
-                                    default: Debug.LogWarning($"{field}는 정의되지 않은 스테이지 코드"); break;
+                                    case 1: 
+                                        //Debug.Log($"입력된 스테이지 코드 : {intField}"); 
+                                        stage = eStage.Stage1; break;
+                                    case 2: 
+                                        //Debug.Log($"입력된 스테이지 코드 : {intField}"); 
+                                        stage = eStage.Stage2; break;
+                                    case 3: 
+                                        //Debug.Log($"입력된 스테이지 코드 : {intField}"); 
+                                        stage = eStage.Stage3; break;
+                                    default: 
+                                        Debug.LogWarning($"{field}는 정의되지 않은 스테이지 코드"); 
+                                        break;
                                 }
                             }
                             else
@@ -439,7 +447,7 @@ public class CsvManager : Singleton<CsvManager>
         }
         else
         {
-            Debug.LogWarning($"{resourceName} 파일이 존재하지 않습니다.");
+            Debug.LogAssertion($"{resourceName} 파일이 존재하지 않습니다.");
         }
     }
 

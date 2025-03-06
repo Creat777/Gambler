@@ -19,12 +19,12 @@ public class DiceManager : MonoBehaviour
             Debug.LogAssertion($"cardGamePlayManager == null ");
     }
 
-    // 버튼콜백(매개변수 Me) 및 스크립트 호출
+    // DiceButton으로 최초 버튼콜백, 이후 GameSetting에 의해 실행
     public void RotateDice(GameObject currentPlayer)
     {
         // 회전 지연시간을 랜덤으로 설정
         float delay;
-        Debug.Log("다이스 딜레이 수정했음");
+        //Debug.Log("다이스 딜레이 수정했음");
         //delay = Random.Range(3.0f, 6.0f);
         delay = Random.Range(2.0f, 3.0f);
 
@@ -58,18 +58,15 @@ public class DiceManager : MonoBehaviour
                 $"주사위 값이 저장되지 않았음");
         }
         
-        // 주사위 눈금에 따라서 카드분배를 시작
+        // 주사위 값이 정해진 후 카드분배를 시작
         sequence.AppendCallback(() => cardGamePlayManager.deckOfCards.CardDistribution(currentPlayer, currentDiceValue));
 
 
-        // Player(Me)의 경우 한번만 누를 수 있도록 설정
+        // Player(Me)의 경우 한번만 버튼을 누를 수 있도록 설정
         if (currentPlayer.layer == LayerMask.NameToLayer("Me"))
         {
             cardGamePlayManager.cardGameView.diceButton.Deactivate_Button();
         }
-
-        
-            
 
         sequence.SetLoops(1);
         sequence.Play();

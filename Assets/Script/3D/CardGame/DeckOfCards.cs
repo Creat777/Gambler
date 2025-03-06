@@ -1,7 +1,5 @@
 using DG.Tweening;
 using PublicSet;
-using System;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class DeckOfCards : MonoBehaviour
@@ -54,14 +52,21 @@ public class DeckOfCards : MonoBehaviour
 
     private void ProcessCsvOfCard(GameObject[] Cards)
     {
-        string fileNamePath = "CSV/Card/Card";
+        Debug.Log("ProcessCsvOfCard 실행 시작");
+
+        string fileNamePath = "CSV/TrumpCardInfo/CardsInfo";
+
         CsvManager.Instance.LoadCsv<cTrumpCardInfo>(fileNamePath,
             (row, trumpCardInfo) => // trumpCard는 컴포넌트로 쓰일 스크립트
             {
                 // 저장공간을 할당받지 못한 경우
-                if (trumpCardInfo == null) return;
+                if (trumpCardInfo == null)
+                {
+                    Debug.LogAssertion("trumpCardInfo == null");
+                    return;
+                }
 
-                int field_num = 0;
+                    int field_num = 0;
 
 
                 // 각 행의 처리 시작
@@ -104,7 +109,9 @@ public class DeckOfCards : MonoBehaviour
                                 Debug.LogAssertion($"타입오류 -> {field}");
                             }
                             break;
-                        default: break;
+
+                        default: Debug.LogAssertion($"잘못된 데이터 : {field}");
+                            break;
                     }
                     field_num++;
                 }
@@ -112,7 +119,8 @@ public class DeckOfCards : MonoBehaviour
                 // 처리된 데이터를 각 카드에 삽입
                 if(trumpCardInfo.cardIndex>=0 && trumpCardInfo.cardIndex < Cards.Length)
                 {
-                    Cards[trumpCardInfo.cardIndex].AddComponent<TrumpCard>().SetTrumpCard(trumpCardInfo);
+                    trumpCardInfo.isFaceDown = true; // 모든 카드는 처음에 뒤집어져있음
+                    Cards[trumpCardInfo.cardIndex].GetComponent<TrumpCardDefault>().SetTrumpCard(trumpCardInfo);
                 }
                 
             }
@@ -133,27 +141,57 @@ public class DeckOfCards : MonoBehaviour
     {
         for (int i = 0; i < Players.Length; i++)
         {
-            for (int j = Players[i].transform.childCount-1; j >= 0; j--)
+            CardGamePlayerBase playerScript = Players[i].GetComponent<CardGamePlayerBase>();
+            if(playerScript != null)
             {
-                Transform child = Players[i].transform.GetChild(j);
-
-                // 자색 객체가 나의 레이어를 사용중이면 반환시 레이어도 디폴트로 변경
-                if (Players[i].layer == cardGamePlayManager.layerOfMe)
-                {
-                    child.gameObject.layer = 0;
-                }
-
-                child.SetParent(this.transform);
+                ReturnAllOfCardFromCardBox(playerScript.openBox.transform);
+                ReturnAllOfCardFromCardBox(playerScript.closeBox.transform);
             }
+            else
+            {
+                Debug.LogAssertion("플레이어 스크립트 없음");
+                return;
+            }
+            
+        }
+    }
+
+    private void ReturnAllOfCardFromCardBox(Transform cardBox)
+    {
+        // 자식객체에 있는 카드박스들
+        for (int j = 0; j < cardBox.childCount; j++)
+        {
+            Transform child = cardBox.GetChild(j);
+
+            // 레이어가 디폴트값이 아니면 디폴트로 변경
+            if (cardBox.gameObject.layer != 0)
+            {
+                child.gameObject.layer = 0;
+            }
+
+            child.SetParent(this.transform);
         }
     }
 
     public void CardDistribution(GameObject player, int diceValue)
     {
+        if(cardGamePlayManager == null)
+        {
+            Debug.LogAssertion("cardGamePlayManager == null");
+            return;
+        }
+
         float delay = 0.5f;
         DG.Tweening.Sequence sequence = DG.Tweening.DOTween.Sequence();
 
         Debug.Log($"{player.name}의 카드 분배 시작");
+        CardGamePlayerBase playerScript = player.GetComponent<CardGamePlayerBase>();
+
+        if(playerScript == null)
+        {
+            Debug.LogAssertion("playerScript == null");
+            return;
+        }
 
         // 한장씩 꺼내어 플레이어한테 분배
         for (int i = 0; i < diceValue; i++)
@@ -161,8 +199,8 @@ public class DeckOfCards : MonoBehaviour
             // 항상 0번인덱스의 자식객체(카드)는 존재함
             Transform child = transform.GetChild(0);
 
-            // 카드를 플레이어의 자식객체로 설정
-            child.SetParent(player.transform);
+            // 카드를 플레이어의 자식객체로 설정, 플레이어는 받은 카드를 정리
+            playerScript.AddCard(child);
 
             // 스케일 초기화
             child.localScale = Vector3.one * transform.localScale.x;
@@ -174,13 +212,13 @@ public class DeckOfCards : MonoBehaviour
                 child.gameObject.layer = cardGamePlayManager.layerOfMe;
             }
 
-            // 카드를 플레이어한테 분배
+            // 카드를 플레이어한테 분배 Animaition
             sequence.AppendCallback(()=> child.position += Vector3.up*5);
             sequence.Append(
                 child.DOMove(child.parent.position + Vector3.up * (i+1), delay)
                 );
 
-            // 플레이어 방향에 맞게 카드를 회전
+            // 플레이어 방향에 맞게 카드를 회전 Animaition
             Vector3 targetRotation = child.parent.rotation.eulerAngles;
             sequence.Join(
                 child.DORotate(targetRotation, delay, RotateMode.WorldAxisAdd)
@@ -188,128 +226,38 @@ public class DeckOfCards : MonoBehaviour
         }
 
         // 카드배분 후 잠시 기다림
-        sequence.AppendInterval(delay * 2 );
+        sequence.AppendInterval(delay * 2);
 
-        // 플레이어가 받은 카드를 펼치기
-        sequence.AppendInterval(delay); // join과 같은 타임
-        float width = float.MinValue;
-        float multiple = 1.1f;
-        for (int i = 0; i < player.transform.childCount; i++)
+        if(playerScript!= null)
         {
-            if (width < -1)
-            {
-                Renderer render = player.transform.GetChild(i).gameObject.GetComponent<Renderer>();
-
-                // 카메라는 무시
-                if (render != null)
-                {
-                    width = render.bounds.size.x * multiple;
-                }
-            }
-
-
-            // 플레이어를 기준으로 모든 카드를 펼침
-            // 짝수의 경우 카드 사이가 중앙으로 위치
-            // 홀수의 경우 카드가 중앙으로 위치
-            float offset = (diceValue % 2 == 0) ? (i - diceValue / 2 + 0.5f) : (i - diceValue / 2);
-            sequence.Join(player.transform.GetChild(i).DOLocalMoveX(width * offset, delay));
+            // 정리된 카드를 펼침
+            playerScript.GetSequnece_CardSpread(sequence, delay);
         }
+        else
+        {
+            Debug.LogAssertion("playerScript == null");
+            return;
+        }
+
 
         // 플레이어(Me)의 카드 배분이 끝났으면 자기 카드를 확인 할 수 있도록 만듬
-        if(player.layer == cardGamePlayManager.layerOfMe)
+        if (player.layer == cardGamePlayManager.layerOfMe)
         {
             //Debug.Log("내 카드 보기 활성화!");
-            sequence.AppendCallback(()=> cardGamePlayManager.cardGameView.cardScreenButton.Activate_Button());
+            sequence.AppendCallback(()=> 
+            {
+                cardGamePlayManager.cardGameView.cardScreenButton.Activate_Button();
+                cardGamePlayManager.cardButtonSet.InitCardButton(playerScript.closeBox.transform);
+            });
         }
 
-        // 모든 처리가 끝났으면 카드게임 매니저가 다음 순서의 플레이어를 실행하도록 요청
-        sequence.AppendCallback(cardGamePlayManager.NPC_Dice);
+        // 모든 처리가 끝났으면 카드게임 매니저가 게임세팅을 이어서 하도록 요청
+        sequence.AppendCallback(()=>cardGamePlayManager.GameSetting());
 
         sequence.SetLoops(1);
         sequence.Play();
     }
 
-    /*
-    public void CardDistribution(GameObject player, int diceValue)
-    {
-        float delay = 0.5f;
-        DG.Tweening.Sequence sequence = DG.Tweening.DOTween.Sequence();
-
-        int count = 20;
-
-        // 한장씩 꺼내어 플레이어한테 분배
-        for (int i = 0; i < count; i++)
-        {
-            // 플레이어 배분 순서
-            int PlayerOrder = i % 4;
-
-            // 플레이어마다 갖는 카드의 배분 순서
-            int PlayerCardNumber = i / 4;
-
-            Transform child = transform.GetChild(0);
-
-            // 카드를 플레이어의 자식객체로 설정
-            child.SetParent(Players[PlayerOrder].transform);
-
-            // 스케일 초기화
-            child.localScale = Vector3.one * transform.localScale.x;
-
-            // 만약 배분받은 플레이어가 나 자신이라면 자식객체도 같은 레이어를 사용
-            if (Players[PlayerOrder].layer == layerOfMe)
-            {
-                Debug.Log($"레이어 설정 : {Players[PlayerOrder].layer}");
-                child.gameObject.layer = layerOfMe;
-            }
-
-            // 각 카드를 플레이어한테 분배
-            sequence.AppendCallback(() => child.position += Vector3.up * 5);
-            sequence.Append(
-                child.DOMove(child.parent.position + Vector3.up * PlayerCardNumber, delay)
-                );
-
-            // 플레이어 방향에 맞게 카드를 회전
-            Vector3 targetRotation = child.parent.rotation.eulerAngles;
-            sequence.Join(
-                child.DORotate(targetRotation, delay, RotateMode.WorldAxisAdd)
-                );
-        }
-
-        // 카드배분 후 잠시 기다림
-        sequence.AppendInterval(delay);
-
-        float width = float.MinValue;
-        float multiple = 1.2f;
-        // 각 플레이어가 받은 카드를 펼치기
-        sequence.AppendInterval(1);
-        for (int i = 0; i < Players.Length; i++)
-        {
-            for (int i = 0; i < Players[i].transform.childCount; i++)
-            {
-                if (width < -1)
-                {
-                    Renderer render = Players[i].transform.GetChild(i).gameObject.GetComponent<Renderer>();
-
-                    // 카메라는 무시
-                    if (render != null)
-                    {
-                        width = render.bounds.size.x * multiple;
-                    }
-                }
-
-                // 플레이어를 기준으로 모든 플레이어가 동시에 5개를 펼침
-                sequence.Join(Players[i].transform.GetChild(i).DOLocalMoveX(width * (i - 2), delay));
-            }
-        }
-
-        if (endCallback != null)
-        {
-            sequence.AppendCallback(() => endCallback());
-        }
-
-        sequence.SetLoops(1);
-        sequence.Play();
-    }
-    */
 
     // 카드의 위치를 설정하는 함수
     private void SetCardPositions()

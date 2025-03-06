@@ -10,6 +10,7 @@ public class CardGameView : MonoBehaviour
     public GameObject PlayerInterface;
     public CardScreenButton cardScreenButton;
     public DiceButton diceButton;
+    public SelectCompleteButton selectCompleteButton;
 
     public GameObject SubScreen_Card;
     public GameObject StartButton;
@@ -43,19 +44,10 @@ public class CardGameView : MonoBehaviour
             Debug.LogAssertion($"cardGamePlayManager == null ");
     }
 
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.W))
-        {
-            Debug.LogWarning("테스트");
-            StartGameButton();
-        }
-    }
 
-    // 시작버튼 콜백
-    public void StartGameButton()
+    public void StartGame()
     {
-        // 게임 시작 누를 시 필요없는 인터페이스 비활성화
+        
         Sequence sequence = DOTween.Sequence();
 
         // dotween이 끝난후 복귀할 스케일 저장
@@ -64,6 +56,7 @@ public class CardGameView : MonoBehaviour
         // dotween 애니메이션 시간
         float delay = 0.5f;
 
+        // 게임 시작 누를 시 필요없는 인터페이스 비활성화
         // 화면에서 버튼의 크기를 완전히 줄인다음 실제 크기로 복귀와 동시에 비활성화
         sequence.Append(StartButton.transform.DOScale(Vector3.zero, delay));
         sequence.AppendCallback(()=>StartButton.transform.localScale = scaleOrigin);
@@ -79,6 +72,9 @@ public class CardGameView : MonoBehaviour
         // 인터페이스 활성화
         sequence.AppendCallback(() => PlayerInterfaceOnOff());
         diceButton.Activate_Button();
+
+        // 세팅 초기화
+        cardGamePlayManager.InitGame();
     }
 
     // 백버튼 콜백
@@ -111,23 +107,39 @@ public class CardGameView : MonoBehaviour
         }
     }
 
-    // 버튼 콜백
-    public void CardScrrenButton()
+
+    public float GetSequnce_CardScrrenOpen(Sequence sequence)
     {
         float delay = 1.0f;
+        float returnDelay = 0;
 
         // 스크린을 센터로 불러오는 경우
-        if(isCardScreenInCenter == false)
+        if (isCardScreenInCenter == false)
         {
             isCardScreenInCenter = true;
-            SubScreen_Card.transform.DOMove(CenterPos, delay);
+            cardScreenButton.SetButtonCallback(cardScreenButton.subScreenClose);
+            sequence.Append(SubScreen_Card.transform.DOMove(CenterPos, delay));
+            returnDelay += delay;
         }
 
+        return returnDelay;
+    }
+
+    public float GetSequnce_CardScrrenClose(Sequence sequence)
+    {
+        float delay = 1.0f;
+        float returnDelay = 0;
+
         // 스크린을 밖으로 빼는 경우
-        else if(isCardScreenInCenter == true)
+        if (isCardScreenInCenter == true)
         {
             isCardScreenInCenter = false;
-            SubScreen_Card.transform.DOMove(CardScreen_OutOfMainScreenPos, delay);
+            cardScreenButton.SetButtonCallback(cardScreenButton.subScreenOpen);
+            sequence.Append(SubScreen_Card.transform.DOMove(CardScreen_OutOfMainScreenPos, delay));
+            returnDelay += delay;
         }
+
+        return returnDelay;
     }
+
 }

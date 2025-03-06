@@ -171,5 +171,7 @@ namespace PublicSet
         public string cardName { get; set; }
         public eCardType cardType { get; set; }
         public int cardValue { get; set; }
+
+        public bool isFaceDown;
     }
 }

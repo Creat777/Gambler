@@ -8,23 +8,8 @@ public class BackGroundMusic : GameAudio
     //public AudioClip bossMusic;
     public static BackGroundMusic Instance { get; private set; }
 
-    void MakeSingleTone()
-    {
-        if (Instance == null)
-        {
-            Instance = this; // 스크립트 컴포넌트
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-    }
-
     private void Awake()
     {
-        MakeSingleTone();
         volumeKey = "BackGroundMusic";
     }
     void Start()

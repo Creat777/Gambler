@@ -46,7 +46,10 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
             if (instance == null)
             {
                 instance = this as T; // this 객체를 타입 T로 변환하려고 시도하며, 변환이 실패하면 예외를 던지지 않고 null을 반환
-                DontDestroyOnLoad(gameObject);
+
+                // 최상위 객체에만 의미가 있으니
+                if(transform.root == transform)
+                    DontDestroyOnLoad(gameObject);
             }
             else if (instance != this)
             {
