@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class CasinoView : MonoBehaviour
 {
-    public GameObject CardGameView;
+    
     public void StartDealerDialogue()
     {
         TextWindowView textViewScript = GameManager.Connector.textWindowView.GetComponent<TextWindowView>();
@@ -16,12 +16,5 @@ public class CasinoView : MonoBehaviour
         }
     }
 
-    public void StartOnleOneLives()
-    {
-        
-        CallbackManager.Instance.BlackViewProcess(2.0f,
-            () => GameManager.Connector.MainCanvas_script.CloseAllOfView(),
-            () => CardGameView.SetActive(true)
-            );
-    }
+    
 }

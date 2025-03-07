@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class PlayerEtc : CardGamePlayerBase
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void SelectStartCard()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        for (int i = 0; i <Cards.Count; i++)
+        {
+            TrumpCardDefault card = Cards[i].GetComponent<TrumpCardDefault>();
+            if(card != null)
+            {
+                card.TrySelectThisCard(this);
+            }
+        }
     }
 }

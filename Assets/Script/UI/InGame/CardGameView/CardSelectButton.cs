@@ -13,7 +13,7 @@ public class CardSelectButton : MonoBehaviour
     public Button button;
 
     // 스크립트 편집
-
+    private CardButtonSet parent;
     
 
     public GameObject ButtonToCard {  get; private set; }
@@ -51,7 +51,7 @@ public class CardSelectButton : MonoBehaviour
         if(trumpCardDefault != null)
         {
             ButtonToCard = card;
-            UnselectThisCard();
+            //UnselectThisCard();
         }
         else
         {
@@ -98,12 +98,31 @@ public class CardSelectButton : MonoBehaviour
             // 카드 선택여부를 확인
             if (trumpCardScript != null)
             {
+                if(parent == null)
+                {
+                    parent = transform.parent.GetComponent<CardButtonSet>();
+                }
 
-                trumpCardScript.SelectThisCard();
+                if (parent != null)
+                {
+                    if(trumpCardScript.TrySelectThisCard(parent.playerMe))
+                    {
+                        // 버튼 전환
+                        image.color = new Color(0.5f, 0.5f, 0.5f, 1.0f);
+                        SetCardButtonCallback(UnselectThisCard);
+                    }
+                    else
+                    {
+                        CantSelectThisCard();
+                        return;
+                    }
+                }
+                else
+                {
+                    Debug.LogAssertion($"{transform.parent.name}의 CardButtonSet == null");
+                }
 
-                // 버튼 전환
-                image.color = new Color(0.5f, 0.5f, 0.5f, 1.0f);
-                SetCardButtonCallback(UnselectThisCard);
+                
             }
             else
             {
@@ -125,17 +144,27 @@ public class CardSelectButton : MonoBehaviour
                 trumpCardScript = ButtonToCard.GetComponent<TrumpCardDefault>();
             }
 
-            
-
             // 카드 선택여부를 확인
             if (trumpCardScript != null)
             {
+                if (parent == null)
+                {
+                    parent = transform.parent.GetComponent<CardButtonSet>();
+                }
 
-                trumpCardScript.UnselectThisCard();
+                if (parent != null)
+                {
+                    trumpCardScript.UnselectThisCard(parent.playerMe);
 
-                // 버튼 전환
-                image.color = Color.white;
-                SetCardButtonCallback(SelectThisCard);            }
+                    // 버튼 전환
+                    image.color = Color.white;
+                    SetCardButtonCallback(SelectThisCard);
+                }
+                else
+                {
+                    Debug.LogAssertion($"{transform.parent.name}의 CardButtonSet == null");
+                }
+            }
             else
             {
                 Debug.LogAssertion($"{ButtonToCard.name}의 TrumpCardDefault == null");

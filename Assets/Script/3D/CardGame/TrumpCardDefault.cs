@@ -40,21 +40,49 @@ public class TrumpCardDefault : MonoBehaviour
         return returnDelay;
     }
 
-    public void SelectThisCard()
+    private void CantSelectThisCard()
     {
+        // 화면에 메세지를 띄워야함
+        Debug.Log("현재 카드는 선택될 수 없음");
+    }
+
+    public bool TrySelectThisCard(CardGamePlayerBase player)
+    {
+        if(player == null)
+        {
+            Debug.Log($"{player.gameObject.name}의 {player.name} == null");
+            return false;
+        }
+
         if(trumpCardInfo != null)
         {
-            Debug.Log($"선택된 카드 : {trumpCardInfo.cardName}");
-            isSelected = true;
-        }
+            if(player.TryDownCountPerCardType(trumpCardInfo))
+            {
+                Debug.Log($"선택된 카드 : {trumpCardInfo.cardName}");
+                isSelected = true;
+                return true;
+            }
+            else
+            {
+                CantSelectThisCard();
+                return false;
+            }        }
         else
         {
-            Debug.LogAssertion("trumpCardInfo == null");
+            Debug.LogAssertion($"{gameObject.name}의 trumpCardInfo == null");
+            return false;
         }
     }
 
-    public void UnselectThisCard()
+    public void UnselectThisCard(CardGamePlayerBase player)
     {
+        if (player == null)
+        {
+            Debug.Log($"{player.gameObject.name}의 {player.name} == null");
+            return;
+        }
+
+        player.UpCountPerCardType(trumpCardInfo);
         Debug.Log($"선택 취소된 카드 : {trumpCardInfo.cardName}");
         isSelected = false;
     }

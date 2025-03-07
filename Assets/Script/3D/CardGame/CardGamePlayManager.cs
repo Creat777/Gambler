@@ -22,14 +22,24 @@ public class CardGamePlayManager : MonoBehaviour
         InitPlayer();
     }
 
-    public void InitGame()
+    public void EnterCardGame()
     {
-        cardGameView.diceButton.Activate_Button();
-        cardGameView.cardScreenButton.Deactivate_Button();
-        cardGameView.selectCompleteButton.SetButtonCallback(cardGameView.selectCompleteButton.CompleteCardSelect);
-        cardGameView.selectCompleteButton.Deactivate_Button();
-
+        for (int i = 0; i < players.Length; i++)
+        {
+            if(players[i].CompareTag("Player"))
+            {
+                Debug.Log("플레이어의 코인을 연동");
+                players[i].SetCoin(PlayManager.Instance.currentPlayerStatus.money);
+            }
+            else
+            {
+                Debug.Log("컴퓨터한테 랜덤한 코인을 증정");
+                players[i].SetCoin();
+            }
+        }
     }
+
+    
 
     public void InitPlayer()
     {
@@ -65,6 +75,26 @@ public class CardGamePlayManager : MonoBehaviour
         }
 
         // 주사위를 다 돌렸는데 이 함수에 진입했다면 다음 처리를 진행해줌
+
+        // 컴퓨터가 자동으로 카드를 고르도록 만듬
+        foreach (CardGamePlayerBase player in players)
+        {
+            // 플레이어는 카드를 직접 고르니 다음으로 넘어감
+            if(player.CompareTag("Player"))
+            {
+                continue;
+            }
+
+            PlayerEtc computer =  player.gameObject.GetComponent<PlayerEtc>();
+
+            if (computer != null)
+            {
+                computer.SelectStartCard();
+            }
+
+        }
+
+        // 플레이어(me)가 카드 선택을 완료하는 버튼을 활성화
         cardGameView.selectCompleteButton.Activate_Button();
 
 

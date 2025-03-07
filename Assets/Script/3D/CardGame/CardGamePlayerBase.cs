@@ -9,6 +9,8 @@ public abstract class CardGamePlayerBase : MonoBehaviour
     public GameObject closeBox;
     public GameObject openBox;
     public List<Transform> Cards;
+    public int coin;
+
 
     public bool diceDone {  get; private set; }
     public int myDiceValue { get; private set; }
@@ -21,6 +23,25 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         foreach (eCardType type in Enum.GetValues(typeof(eCardType)))
         {
             cardCountPerType.Add(type, 0);
+        }
+    }
+
+    /// <summary>
+    /// 플레이어는 가지고 있는 액수를 등록해야함,
+    /// 컴퓨터는 매개변수를 입력하지 않음
+    /// </summary>
+    /// <param name="value"> 컴퓨터의 경우 랜덤값으로 지정됨 </param>
+    public void SetCoin(int value = int.MinValue)
+    {
+        // 컴퓨터의 경우
+        if (value == int.MinValue)
+        {
+            int randomValue = UnityEngine.Random.Range(100, 500);
+            coin = randomValue;
+        }
+        else
+        {
+            coin = value;
         }
     }
 
@@ -44,7 +65,21 @@ public abstract class CardGamePlayerBase : MonoBehaviour
     {
         card.SetParent(transform);
         Cards.Add(card);
+        TrumpCardDefault cardScript = card.GetComponent<TrumpCardDefault>();
+        if (cardScript != null) UpCountPerCardType(cardScript.trumpCardInfo);
+        else
+        {
+            Debug.LogAssertion($"{card.gameObject.name}의 스크립트가 존재하지 않음");
+            return;
+        }
         OrganizeCard(card);
+    }
+
+    public void UpCountPerCardType(cTrumpCardInfo cardInfo)
+    {
+        cardCountPerType[cardInfo.cardType]++;
+        Debug.Log($"{gameObject.name}에게 {cardInfo.cardName}카드 추가");
+        Debug.Log($"{gameObject.name}의 {cardInfo.cardType} 카드개수 : {cardCountPerType[cardInfo.cardType]}");
     }
 
     public void OrganizeCard(Transform card)
@@ -205,23 +240,20 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         return returnDelay;
     }
 
-    public void UpCountPerCardType(eCardType cardType)
+    public bool TryDownCountPerCardType(cTrumpCardInfo cardInfo)
     {
-        cardCountPerType[cardType]++;
-    }
-
-    public bool DownCountPerCardType(eCardType cardType)
-    {
-        if (cardCountPerType[cardType] > 0)
+        if (cardCountPerType[cardInfo.cardType] > 1)
         {
-            cardCountPerType[cardType]--;
+            cardCountPerType[cardInfo.cardType]--;
+            Debug.Log($"{gameObject.name}에게 {cardInfo.cardName}카드 제거");
+            Debug.Log($"{gameObject.name}의 {cardInfo.cardType.ToString()} 남은 카드 수 : {cardCountPerType[cardInfo.cardType]}");
             return true;
         }
         else
         {
+            Debug.Log($"{gameObject.name}의 {cardInfo.cardType.ToString()}의 남은 카드 수 : {cardCountPerType[cardInfo.cardType]}");
             Debug.Log("카드 개수를 줄일 수 없음");
             return false;
         }
-
     }
 }

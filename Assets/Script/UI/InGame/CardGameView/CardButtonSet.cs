@@ -7,6 +7,7 @@ public class CardButtonSet : MonoBehaviour
 {
     // 에디터 연결
     public GameObject cardButtonPrefab;
+    public PlayerMe playerMe;
 
     // 스크립트 편집
     

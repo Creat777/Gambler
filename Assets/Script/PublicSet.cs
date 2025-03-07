@@ -116,8 +116,8 @@ namespace PublicSet
         Joker,
         Spades,
         Clubs,
-        Diamonds,
-        Hearts
+        Hearts,
+        Diamonds
     }
 
     //Class

@@ -15,7 +15,7 @@ public class CardGameView : MonoBehaviour
     public GameObject SubScreen_Card;
     public GameObject StartButton;
 
-    public DeckOfCards DeckOfCards;
+    public DeckOfCards deckOfCards;
 
     // 스크립트 편집
     private bool isPlayerInterfaceInScreen;
@@ -28,12 +28,7 @@ public class CardGameView : MonoBehaviour
     {
         cardScreenButton.Deactivate_Button();
         diceButton.Deactivate_Button();
-    }
 
-
-
-    private void Start()
-    {
         isPlayerInterfaceInScreen = false;
         isCardScreenInCenter = false;
         CenterPos = transform.position;
@@ -42,6 +37,14 @@ public class CardGameView : MonoBehaviour
 
         if (cardGamePlayManager == null)
             Debug.LogAssertion($"cardGamePlayManager == null ");
+
+        // enable 실행 안되도록
+        gameObject.SetActive(false);
+    }
+
+    private void OnEnable()
+    {
+        InitTotalGame();
     }
 
 
@@ -63,10 +66,10 @@ public class CardGameView : MonoBehaviour
         sequence.AppendCallback(() => StartButton.SetActive(false));
 
         // 모든 카드를 덱의 자식객체로 전환
-        sequence.AppendCallback(() => DeckOfCards.ReturnAllOfCards());
+        sequence.AppendCallback(() => deckOfCards.ReturnAllOfCards());
 
         // 카드 셔플 하고 덱을 뷰의 가운데로 이동
-        sequence.AppendCallback(() => DeckOfCards.CardShuffle());
+        sequence.AppendCallback(() => deckOfCards.CardShuffle());
         sequence.AppendInterval(2f); // 카드가 중력으로 바닥에 떨어질때까지 기다림
 
         // 인터페이스 활성화
@@ -74,7 +77,21 @@ public class CardGameView : MonoBehaviour
         diceButton.Activate_Button();
 
         // 세팅 초기화
-        cardGamePlayManager.InitGame();
+        InitCurrentGame();
+    }
+
+    public void InitCurrentGame()
+    {
+        diceButton.Activate_Button();
+        cardScreenButton.Deactivate_Button();
+        selectCompleteButton.SetButtonCallback(selectCompleteButton.CompleteCardSelect);
+        selectCompleteButton.Deactivate_Button();
+    }
+
+    public void InitTotalGame()
+    {
+        cardGamePlayManager.EnterCardGame();
+        deckOfCards.SetCardPositions();
     }
 
     // 백버튼 콜백

@@ -22,11 +22,6 @@ public class DeckOfCards : MonoBehaviour
     private void Awake()
     {
         floorPos = floor.transform.position;
-
-        
-
-        // 처음에 위치 설정
-        SetCardPositions();
     }
 
     private void Start()
@@ -36,6 +31,9 @@ public class DeckOfCards : MonoBehaviour
 
         // 카드 초기화
         InitCards();
+
+        // 처음에 위치 설정
+        SetCardPositions();
     }
 
     private void InitCards()
@@ -139,21 +137,33 @@ public class DeckOfCards : MonoBehaviour
 
     public void ReturnAllOfCards()
     {
-        for (int i = 0; i < Players.Length; i++)
+        for (int i = 0; i < Cards.Length; i++)
         {
-            CardGamePlayerBase playerScript = Players[i].GetComponent<CardGamePlayerBase>();
-            if(playerScript != null)
+            // 레이어를 디폴트로 바꿔줌
+            if(Cards[i].layer != 0)
             {
-                ReturnAllOfCardFromCardBox(playerScript.openBox.transform);
-                ReturnAllOfCardFromCardBox(playerScript.closeBox.transform);
+                Cards[i].layer = 0;
             }
-            else
-            {
-                Debug.LogAssertion("플레이어 스크립트 없음");
-                return;
-            }
-            
+            // 카드를 회수하고 스케일 정정
+            Cards[i].transform.SetParent(transform, false);
+            Cards[i].transform.localScale = Vector3.one;
         }
+
+        //for (int i = 0; i < Players.Length; i++)
+        //{
+        //    CardGamePlayerBase playerScript = Players[i].GetComponent<CardGamePlayerBase>();
+        //    if(playerScript != null)
+        //    {
+        //        ReturnAllOfCardFromCardBox(playerScript.openBox.transform);
+        //        ReturnAllOfCardFromCardBox(playerScript.closeBox.transform);
+        //    }
+        //    else
+        //    {
+        //        Debug.LogAssertion("플레이어 스크립트 없음");
+        //        return;
+        //    }
+
+        //}
     }
 
     private void ReturnAllOfCardFromCardBox(Transform cardBox)
@@ -260,8 +270,9 @@ public class DeckOfCards : MonoBehaviour
 
 
     // 카드의 위치를 설정하는 함수
-    private void SetCardPositions()
+    public void SetCardPositions()
     {
+        ReturnAllOfCards();
         for (int i = 0; i < transform.childCount; i++)
         {
             // z축으로 카드 뒤집기

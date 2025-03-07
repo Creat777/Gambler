@@ -8,7 +8,7 @@ public class PlayManager : Singleton<PlayManager>
     private Text playerMoneyViewText; // 플레이어의 돈을 화면에 표시할 텍스트
 
 
-    struct PlayerStatus
+    public struct PlayerStatus
     {
         public int hp; // 체력
         public int agility; // 민첩성
@@ -23,7 +23,7 @@ public class PlayManager : Singleton<PlayManager>
     }
 
 
-    PlayerStatus currentPlayerStatus;
+    public PlayerStatus currentPlayerStatus;
 
 
     //public int current
