@@ -51,7 +51,7 @@ public class TrumpCardAnimaition : MonoBehaviour
 
             // 중력 다시 활성화
             sequence.AppendCallback(() => m_Rigidbody.useGravity = true);
-            sequence.AppendCallback(() => Debug.Log("애니메이션 정상적으로 수행 완료"));
+            //sequence.AppendCallback(() => Debug.Log("애니메이션 정상적으로 수행 완료"));
         }
         else
         {

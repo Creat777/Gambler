@@ -26,8 +26,8 @@ public class CardGameView : MonoBehaviour
 
     private void Awake()
     {
-        cardScreenButton.Deactivate_Button();
-        diceButton.Deactivate_Button();
+        cardScreenButton.TryDeactivate_Button();
+        diceButton.TryDeactivate_Button();
 
         isPlayerInterfaceInScreen = false;
         isCardScreenInCenter = false;
@@ -74,7 +74,7 @@ public class CardGameView : MonoBehaviour
 
         // 인터페이스 활성화
         sequence.AppendCallback(() => PlayerInterfaceOnOff());
-        diceButton.Activate_Button();
+        diceButton.TryActivate_Button();
 
         // 세팅 초기화
         InitCurrentGame();
@@ -82,10 +82,11 @@ public class CardGameView : MonoBehaviour
 
     public void InitCurrentGame()
     {
-        diceButton.Activate_Button();
-        cardScreenButton.Deactivate_Button();
-        selectCompleteButton.SetButtonCallback(selectCompleteButton.CompleteCardSelect);
-        selectCompleteButton.Deactivate_Button();
+        diceButton.TryActivate_Button();
+        cardScreenButton.TryDeactivate_Button();
+        selectCompleteButton.SetButtonCallback(selectCompleteButton.CompleteCardSelect_OnStartTime);
+        selectCompleteButton.TryDeactivate_Button();
+        selectCompleteButton.ChangeText(selectCompleteButton.onFirstButtonText);
     }
 
     public void InitTotalGame()

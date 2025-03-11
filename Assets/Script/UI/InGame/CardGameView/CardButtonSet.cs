@@ -10,11 +10,11 @@ public class CardButtonSet : MonoBehaviour
     public PlayerMe playerMe;
 
     // 스크립트 편집
-    
+    public List<CardSelectButton> cardSelectButtonList;
 
     private void Awake()
     {
-        
+        cardSelectButtonList = new List<CardSelectButton>();
     }
 
     public void InitCardButton(Transform cardsParent)
@@ -24,6 +24,7 @@ public class CardButtonSet : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+        cardSelectButtonList.Clear(); // 버튼을 참조하던 리스트도 초기화
 
         int cardCount = cardsParent.childCount;
 
@@ -37,11 +38,14 @@ public class CardButtonSet : MonoBehaviour
             obj.transform.SetParent(transform, false);
 
             // 버튼과 카드 연결
-            CardSelectButton script = obj.GetComponent<CardSelectButton>();
-            script.MappingButtonWithCard(card.gameObject);
+            CardSelectButton Buttonscript = obj.GetComponent<CardSelectButton>();
+            Buttonscript.MappingButtonWithCard(card.gameObject);
+
+            // 버튼을 리스트에 추가
+            cardSelectButtonList.Add(Buttonscript);
 
             // 이미지 설정
-            script.SetCardButtonImage(i);
+            Buttonscript.SetCardButtonImage(i);
 
             // 부모객체를 중심으로 위치 설정
             float width = obj.GetComponent<RectTransform>().sizeDelta.x;

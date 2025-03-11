@@ -3264,9 +3264,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45ebf1aa6d89c334c838fec46462f3c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardGamePlayManager: {fileID: 56950625}
   closeBox: {fileID: 1525758047}
   openBox: {fileID: 1819210713}
-  Cards: []
   coin: 0
 --- !u!1 &233661125
 GameObject:
@@ -6177,9 +6177,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 581efbce0f2d5b94b80abaeed380f779, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardGamePlayManager: {fileID: 56950625}
   closeBox: {fileID: 1796353149}
   openBox: {fileID: 1777781952}
-  Cards: []
   coin: 0
 --- !u!1 &444187724
 GameObject:
@@ -7802,7 +7802,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &645552829
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17511,9 +17511,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 581efbce0f2d5b94b80abaeed380f779, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardGamePlayManager: {fileID: 56950625}
   closeBox: {fileID: 542302068}
   openBox: {fileID: 619294492}
-  Cards: []
   coin: 0
 --- !u!1 &1364103804
 GameObject:
@@ -23071,6 +23071,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardButtonPrefab: {fileID: 8271593379251449287, guid: b557777ea40c51b468e122fb5869f20c, type: 3}
   playerMe: {fileID: 228719742}
+  cardSelectButtonList: []
 --- !u!1001 &1535697619
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -62209,9 +62210,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 581efbce0f2d5b94b80abaeed380f779, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardGamePlayManager: {fileID: 56950625}
   closeBox: {fileID: 85339432}
   openBox: {fileID: 2132645746}
-  Cards: []
   coin: 0
 --- !u!1 &1938805199
 GameObject:
@@ -76805,6 +76806,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardGamePlayManager: {fileID: 56950625}
+  playerMe: {fileID: 228719742}
+  cardButtonSet: {fileID: 1526324796}
+  textComp: {fileID: 8574676150255516913}
 --- !u!222 &8894730611555143066
 CanvasRenderer:
   m_ObjectHideFlags: 0

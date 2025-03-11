@@ -256,7 +256,7 @@ public class DeckOfCards : MonoBehaviour
             //Debug.Log("내 카드 보기 활성화!");
             sequence.AppendCallback(()=> 
             {
-                cardGamePlayManager.cardGameView.cardScreenButton.Activate_Button();
+                cardGamePlayManager.cardGameView.cardScreenButton.TryActivate_Button();
                 cardGamePlayManager.cardButtonSet.InitCardButton(playerScript.closeBox.transform);
             });
         }

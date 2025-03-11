@@ -65,7 +65,7 @@ public class DiceManager : MonoBehaviour
         // Player(Me)의 경우 한번만 버튼을 누를 수 있도록 설정
         if (currentPlayer.layer == LayerMask.NameToLayer("Me"))
         {
-            cardGamePlayManager.cardGameView.diceButton.Deactivate_Button();
+            cardGamePlayManager.cardGameView.diceButton.TryDeactivate_Button();
         }
 
         sequence.SetLoops(1);

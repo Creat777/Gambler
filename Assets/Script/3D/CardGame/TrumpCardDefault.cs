@@ -29,7 +29,7 @@ public class TrumpCardDefault : MonoBehaviour
         {
             trumpCardInfo.isFaceDown = false;
             gameObject.layer = 0;
-            transform.SetParent(newParent);
+            transform.SetParent(newParent); Debug.Log($"{trumpCardInfo.cardName}의 부모객체를 {newParent.gameObject.name}으로 변경");
             returnDelay += animationScript.GetSequnce_Animation_CardOpen(sequence);
         }
         else
@@ -46,44 +46,69 @@ public class TrumpCardDefault : MonoBehaviour
         Debug.Log("현재 카드는 선택될 수 없음");
     }
 
-    public bool TrySelectThisCard(CardGamePlayerBase player)
+    public bool TrySelectThisCard_OnStartTime(CardGamePlayerBase player)
     {
         if(player == null)
         {
             Debug.Log($"{player.gameObject.name}의 {player.name} == null");
             return false;
         }
-
-        if(trumpCardInfo != null)
-        {
-            if(player.TryDownCountPerCardType(trumpCardInfo))
-            {
-                Debug.Log($"선택된 카드 : {trumpCardInfo.cardName}");
-                isSelected = true;
-                return true;
-            }
-            else
-            {
-                CantSelectThisCard();
-                return false;
-            }        }
-        else
+        if(trumpCardInfo == null)
         {
             Debug.LogAssertion($"{gameObject.name}의 trumpCardInfo == null");
             return false;
         }
-    }
 
-    public void UnselectThisCard(CardGamePlayerBase player)
-    {
-        if (player == null)
+        if (player.TryDownCountPerCardType(trumpCardInfo))
         {
-            Debug.Log($"{player.gameObject.name}의 {player.name} == null");
-            return;
+            Debug.Log($"선택된 카드 : {trumpCardInfo.cardName}");
+            isSelected = true;
+            return true;
+        }
+        else
+        {
+            CantSelectThisCard();
+            return false;
         }
 
+    }
+    public bool TrySelectThisCard_OnPlayTime(CardGamePlayerBase player)
+    {
+        // 동일한 디버깅은 생략함
+
+        if(player.isSelectCard_ToPresent == false)
+        {
+            isSelected = true;
+            player.Set_isSelectCard_ToPresent(isSelected);
+            Debug.Log($"선택된 카드 : {trumpCardInfo.cardName}");
+            return isSelected;
+        }
+        else
+        {
+            Debug.Log($"{player.gameObject.name}은 이미 카드를 선택했음");
+            Debug.Log("해당 내용을 게임에서 알려줄 필요가 있음");
+            return false;
+        }
+    }
+
+    public void UnselectThisCard_OnStartTime(CardGamePlayerBase player)
+    {
         player.UpCountPerCardType(trumpCardInfo);
         Debug.Log($"선택 취소된 카드 : {trumpCardInfo.cardName}");
         isSelected = false;
+    }
+
+    public void UnselectThisCard_OnPlayTime(CardGamePlayerBase player)
+    {
+        if (player.isSelectCard_ToPresent == true)
+        {
+            isSelected = false;
+            player.Set_isSelectCard_ToPresent(isSelected);
+            Debug.Log($"선택 취소된 카드 : {trumpCardInfo.cardName}");
+        }
+        else
+        {
+            Debug.LogAssertion($"{player.gameObject.name}은 카드를 선택한 적이 없음");
+        }
     }
 }

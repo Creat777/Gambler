@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DiceButton : Deactivatable_Button_Base
+public class DiceButton : Deactivatable_ButtonBase
 {
     public CardGamePlayManager cardGamePlayManager;
 

@@ -6,13 +6,22 @@ using System;
 
 public abstract class CardGamePlayerBase : MonoBehaviour
 {
+    // 에디터
+    public CardGamePlayManager cardGamePlayManager;
     public GameObject closeBox;
     public GameObject openBox;
-    public List<Transform> Cards;
+
+    // 스크립트
+    public CardGamePlayerBase AttackTarget {  get; private set; }
+    public List<Transform> CardList {  get; private set; }
+    public List<TrumpCardDefault> openedCardList { get; private set; }
+    public List<TrumpCardDefault> closedCardList { get; private set; }
     public int coin;
 
-
+    
     public bool diceDone {  get; private set; }
+    public bool AttackDone { get; private set; }
+    public bool isSelectCard_ToPresent { get; private set; }
     public int myDiceValue { get; private set; }
     public Dictionary<eCardType, int> cardCountPerType { get; private set; }
 
@@ -24,6 +33,25 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         {
             cardCountPerType.Add(type, 0);
         }
+    }
+
+    public virtual void InitAttribute()
+    {
+        AttackTarget = null;
+
+        if (CardList == null) CardList = new List<Transform>();
+        else CardList.Clear();
+
+        if (openedCardList == null) openedCardList = new List<TrumpCardDefault>();
+        else openedCardList.Clear();
+
+        if (closedCardList == null) closedCardList = new List<TrumpCardDefault>();
+        else closedCardList.Clear();
+
+        diceDone = false;
+        AttackDone = false;
+        isSelectCard_ToPresent = false;
+        myDiceValue = 0;
     }
 
     /// <summary>
@@ -45,13 +73,6 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         }
     }
 
-    public virtual void InitAttribute()
-    {
-        Cards = new List<Transform>();
-        diceDone = false;
-        myDiceValue = 0;
-    }
-
     public virtual void SetDiceValue(int diceValue)
     {
         myDiceValue = diceValue;
@@ -61,10 +82,20 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         //    $"-> diceDone == {diceDone}");
     }
 
+    public virtual void SetAttackTarget(CardGamePlayerBase target)
+    {
+        AttackTarget = target;
+    }
+
+    public virtual void Set_isSelectCard_ToPresent(bool setValue)
+    {
+        isSelectCard_ToPresent = setValue;
+    }
+
     public void AddCard(Transform card)
     {
         card.SetParent(transform);
-        Cards.Add(card);
+        CardList.Add(card);
         TrumpCardDefault cardScript = card.GetComponent<TrumpCardDefault>();
         if (cardScript != null) UpCountPerCardType(cardScript.trumpCardInfo);
         else
@@ -78,6 +109,12 @@ public abstract class CardGamePlayerBase : MonoBehaviour
     public void UpCountPerCardType(cTrumpCardInfo cardInfo)
     {
         cardCountPerType[cardInfo.cardType]++;
+
+        if(gameObject.tag == "Player")
+        {
+            cardGamePlayManager.cardGameView.selectCompleteButton.CheckCompleteSelect_OnStartTime(cardCountPerType);
+        }
+
         Debug.Log($"{gameObject.name}에게 {cardInfo.cardName}카드 추가");
         Debug.Log($"{gameObject.name}의 {cardInfo.cardType} 카드개수 : {cardCountPerType[cardInfo.cardType]}");
     }
@@ -93,11 +130,31 @@ public abstract class CardGamePlayerBase : MonoBehaviour
             {
                 Debug.Log($"카드{cardScript.gameObject.name}는 뒤집혀 있음");
                 cardScript.transform.SetParent(closeBox.transform);
+
+                // 해당 카드가 리스트에 없으면 추가하고
+                if(closedCardList.Contains(cardScript) == false)
+                    closedCardList.Add(cardScript);
+
+                // 반대쪽 리스트에서 제거
+                if(openedCardList.Contains(cardScript))
+                {
+                    openedCardList.Remove(cardScript);
+                }
             }
             else
             {
                 Debug.Log($"카드{cardScript.gameObject.name}는 공개되어 있음");
                 cardScript.transform.SetParent(openBox.transform);
+
+                // 해당 카드가 리스트에 없으면 추가하고
+                if (openedCardList.Contains(cardScript) == false)
+                    openedCardList.Add(cardScript);
+
+                // 반대쪽 리스트에서 제거
+                if (closedCardList.Contains(cardScript))
+                {
+                    closedCardList.Remove(cardScript);
+                }
             }
         }
         else
@@ -204,7 +261,7 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         float returnDelay = 0;
 
         int num = 0;
-        foreach(Transform card in Cards)
+        foreach(Transform card in CardList)
         {
             TrumpCardDefault cardScript = card.GetComponent<TrumpCardDefault>();
             if(cardScript != null)
@@ -245,6 +302,13 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         if (cardCountPerType[cardInfo.cardType] > 1)
         {
             cardCountPerType[cardInfo.cardType]--;
+
+            // 플레이어가 TryDownCountPerCardType를 실행할 시 선택이 완료됐는지를 확인하고 버튼을 활성화함
+            if (gameObject.tag == "Player")
+            {
+                cardGamePlayManager.cardGameView.selectCompleteButton.CheckCompleteSelect_OnStartTime(cardCountPerType);
+            }
+            
             Debug.Log($"{gameObject.name}에게 {cardInfo.cardName}카드 제거");
             Debug.Log($"{gameObject.name}의 {cardInfo.cardType.ToString()} 남은 카드 수 : {cardCountPerType[cardInfo.cardType]}");
             return true;
@@ -256,4 +320,27 @@ public abstract class CardGamePlayerBase : MonoBehaviour
             return false;
         }
     }
+
+    // 실제플레이어와 컴퓨터에서 각각 재정의 될 수 있음
+    public virtual void AttackOtherPlayers(int currentOrder, List<CardGamePlayerBase> orderdPlayerList)
+    {
+        //Debug.Log("함수 수정 요함");
+
+        // 내 공격 끝내기
+        Debug.Log($"{gameObject.name}이 공격을 실행함");
+        AttackDone = true;
+
+        // 다음 플레이어한테 순서 넘기기
+        int nextOrder = currentOrder + 1;
+
+        if (nextOrder < orderdPlayerList.Count)
+        {
+            orderdPlayerList[nextOrder].AttackOtherPlayers(nextOrder, orderdPlayerList);
+            return;
+        }
+
+        // 모든 플레이어가 순서를 끝냈음을 확인
+        
+    }
+
 }

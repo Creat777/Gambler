@@ -1,16 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LoupeOnOffButton : Deactivatable_Button_Base
+public class LoupeOnOffButton : ImageOnOff_ButtonBase
 {
     public GameObject Loupe;
 
-    private Image image;
-
-    private void Awake()
-    {
-        image = GetComponent<Image>();
-    }
 
     private void Start()
     {
@@ -27,7 +21,7 @@ public class LoupeOnOffButton : Deactivatable_Button_Base
 
         // 버튼 전환
         Loupe.SetActive(true);
-        image.color = Color.white;
+        ChangeOnColor();
         SetButtonCallback(LoupeOff);
     }
 
@@ -40,7 +34,7 @@ public class LoupeOnOffButton : Deactivatable_Button_Base
         }
 
         Loupe.SetActive(false);
-        image.color = new Color(0.5f, 0.5f, 0.5f, 1.0f);
+        ChangeOffColor();
         SetButtonCallback(LoupeOn);
     }
 

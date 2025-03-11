@@ -1,9 +1,9 @@
 using DG.Tweening;
 using UnityEngine;
 
-public class CardScreenButton : Deactivatable_Button_Base
+public class CardScreenButton : Deactivatable_ButtonBase
 {
-    private void Awake()
+    private void Start()
     {
         SetButtonCallback(subScreenOpen);
     }
