@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      unfairNeko_0: 4279780898740308699
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

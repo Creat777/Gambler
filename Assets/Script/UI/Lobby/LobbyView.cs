@@ -45,11 +45,9 @@ public class LobbyView : MonoBehaviour
         // 게임 종료
         Application.Quit();
 
+#if UNITY_EDITOR
         // 에디터에서는 게임 종료 대신 실행 모드 종료
         UnityEditor.EditorApplication.isPlaying = false;
-        
-//#if UNITY_EDITOR
-
-//#endif
+#endif
     }
 }

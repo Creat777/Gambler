@@ -11,21 +11,19 @@ public class CardSelectButton : ImageOnOff_ButtonBase
     public Sprite[] sprites;
 
     // 스크립트 편집
-    private CardButtonSet parent;
-    
-
+    public CardButtonMemoryPool parent {  get; private set; }
     public GameObject ButtonToCard {  get; private set; }
     public TrumpCardDefault trumpCardScript { get; private set; }
 
-    private void Start()
+    // 메모리풀에서 꺼내질때마다 실행
+    private void OnEnable()
     {
-        Debug.LogWarning("카드 선택후 버튼이 재생성될 때 콜백 변경이 안되는 문제가 있음");
-        SetButtonCallback(SelectThisCard_OnStartTime);
+        ChangeOnColor();
     }
 
     public void SetCardButtonImage(int orderInHnad)
     {
-        Debug.Log($"{orderInHnad}번 카드의 버튼 생성예정");
+        //Debug.Log($"{orderInHnad}번 카드의 버튼 생성예정");
         if(image != null)
         {
             if(orderInHnad < sprites.Length)
@@ -60,13 +58,12 @@ public class CardSelectButton : ImageOnOff_ButtonBase
         
     }
 
-    public void CantSelectThisCard()
+    public void CantSelectThisCard(TrumpCardDefault trumpCardScript)
     {
-        Debug.Log("카드를 선택할 수 없습니다. 라는 문구가 나와야 됨");
+        Debug.Log($"카드{trumpCardScript.trumpCardInfo.cardName}를 선택할 수 없습니다. 라는 문구가 나와야 됨");
     }
 
-
-    public void SelectThisCard_OnStartTime()
+    private void CheckProperties()
     {
         if (ButtonToCard == null)
         {
@@ -78,15 +75,20 @@ public class CardSelectButton : ImageOnOff_ButtonBase
             Debug.LogAssertion("ButtonToCard == null");
             return;
         }
-
         if (parent == null)
         {
-            parent = transform.parent.GetComponent<CardButtonSet>();
+            parent = transform.parent.GetComponent<CardButtonMemoryPool>();
         }
+    }
+
+
+    public void SelectThisCard_OnGameSetting()
+    {
+        CheckProperties();
 
         if (parent != null)
         {
-            if (trumpCardScript.TrySelectThisCard_OnStartTime(parent.playerMe))
+            if (trumpCardScript.TrySelectThisCard_OnGameSetting(parent.playerMe))
             {
                 // 버튼 전환
                 ChangeOffColor();
@@ -94,7 +96,7 @@ public class CardSelectButton : ImageOnOff_ButtonBase
             }
             else
             {
-                CantSelectThisCard();
+                CantSelectThisCard(trumpCardScript);
                 return;
             }
         }
@@ -103,29 +105,9 @@ public class CardSelectButton : ImageOnOff_ButtonBase
             Debug.LogAssertion($"{transform.parent.gameObject.name}의 CardButtonSet == null");
         }
     }
-
-    public void SelectThisCard_OnPlayTime()
-    {
-        Debug.Log("함수 수정 요함");
-    }
-
     public void UnselectThisCard_OnStartTime()
     {
-        if (ButtonToCard == null)
-        {
-            Debug.LogAssertion($"{ButtonToCard.gameObject.name}의 trumpCardScript == null");
-            return;
-        }
-        if (trumpCardScript == null)
-        {
-            Debug.LogAssertion("ButtonToCard == null");
-            return;
-        }
-
-        if (parent == null)
-        {
-            parent = transform.parent.GetComponent<CardButtonSet>();
-        }
+        CheckProperties();
 
         if (parent != null)
         {
@@ -133,7 +115,7 @@ public class CardSelectButton : ImageOnOff_ButtonBase
 
             // 버튼 전환
             ChangeOnColor();
-            SetButtonCallback(SelectThisCard_OnStartTime);
+            SetButtonCallback(SelectThisCard_OnGameSetting);
         }
         else
         {
@@ -142,8 +124,35 @@ public class CardSelectButton : ImageOnOff_ButtonBase
 
     }
 
+    public void SelectThisCard_OnPlayTime()
+    {
+        CheckProperties();
+
+        if (trumpCardScript.TrySelectThisCard_OnPlayTime(parent.playerMe))
+        {
+            // 버튼 전환
+            ChangeOffColor();
+            SetButtonCallback(UnselectThisCard_OnPlayTime);
+
+            CardGamePlayManager.Instance.cardGameView.selectCompleteButton.TryActivate_Button();
+        }
+        else
+        {
+            CantSelectThisCard(trumpCardScript);
+            return;
+        }
+        
+    }
+
     public void UnselectThisCard_OnPlayTime()
     {
-        Debug.Log("함수 수정 요함");
+        CheckProperties();
+
+        trumpCardScript.UnselectThisCard_OnPlayTime(parent.playerMe);
+        // 버튼 전환
+        ChangeOnColor();
+        SetButtonCallback(SelectThisCard_OnPlayTime);
+
+        CardGamePlayManager.Instance.cardGameView.selectCompleteButton.TryDeactivate_Button();
     }
 }

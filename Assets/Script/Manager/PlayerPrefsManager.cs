@@ -1,7 +1,6 @@
 using PublicSet;
 using System;
 using System.Collections.Generic;
-using UnityEditor.Overlays;
 using UnityEngine;
 
 // 아이템을 저장하는 자료구조
@@ -284,12 +283,15 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
         return maxItemNumber;
     }
 
+#if UNITY_EDITOR
     private void Update()
     {
+
         if(Input.GetKeyDown(KeyCode.Escape))
         {
             PlayerPrefs.DeleteAll();
             Debug.Log("모든 저장된 데이터 삭제");
         }
     }
+#endif
 }

@@ -24,6 +24,13 @@ public class CardGameView : MonoBehaviour
     private Vector3 Interface_OutOfMainScreenPos;
     private Vector3 CardScreen_OutOfMainScreenPos;
 
+    public void InitAttribute()
+    {
+        selectCompleteButton.InitAttribute();
+        diceButton.TryActivate_Button();
+        cardScreenButton.TryDeactivate_Button();
+    }
+
     private void Awake()
     {
         cardScreenButton.TryDeactivate_Button();
@@ -44,7 +51,7 @@ public class CardGameView : MonoBehaviour
 
     private void OnEnable()
     {
-        InitTotalGame();
+        cardGamePlayManager.EnterCardGame();
     }
 
 
@@ -77,23 +84,10 @@ public class CardGameView : MonoBehaviour
         diceButton.TryActivate_Button();
 
         // 세팅 초기화
-        InitCurrentGame();
+        cardGamePlayManager.InitCurrentGame();
     }
 
-    public void InitCurrentGame()
-    {
-        diceButton.TryActivate_Button();
-        cardScreenButton.TryDeactivate_Button();
-        selectCompleteButton.SetButtonCallback(selectCompleteButton.CompleteCardSelect_OnStartTime);
-        selectCompleteButton.TryDeactivate_Button();
-        selectCompleteButton.ChangeText(selectCompleteButton.onFirstButtonText);
-    }
-
-    public void InitTotalGame()
-    {
-        cardGamePlayManager.EnterCardGame();
-        deckOfCards.SetCardPositions();
-    }
+    
 
     // 백버튼 콜백
     public void ReturnCasino()
@@ -145,6 +139,7 @@ public class CardGameView : MonoBehaviour
 
     public float GetSequnce_CardScrrenClose(Sequence sequence)
     {
+        Debug.Log("GetSequnce_CardScrrenClose 실행");
         float delay = 1.0f;
         float returnDelay = 0;
 

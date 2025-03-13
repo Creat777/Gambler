@@ -28,6 +28,7 @@ public class Loupe : MonoBehaviour
 #endif
     }
 
+#if UNITY_EDITOR
     // PC(에디터)용 마우스 입력 처리
     void HandleMouseInput()
     {
@@ -60,6 +61,7 @@ public class Loupe : MonoBehaviour
             subScreenLoupe.transform.position = subScreenOriginPos;
         }
     }
+#endif
 
     // 안드로이드 터치 입력 처리
     void HandleTouchInput()

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using PublicSet;
+using System;
 
 
 public class TextWindowView : MonoBehaviour
@@ -20,6 +21,7 @@ public class TextWindowView : MonoBehaviour
     bool isTypingReady;
     float typingDelay;
     int TextIndex;
+    public Coroutine currentCoroutine {  get; private set; }
     cTextScriptInfo textScriptData { get; set; }
     GameObject LastObject;
     eTextScriptFile currentTextFile;
@@ -189,8 +191,10 @@ public class TextWindowView : MonoBehaviour
         {
             textScriptData = textScriptDataList[TextIndex++];
             Speaker.text = textScriptData.speaker;
-            StartCoroutine(TypeDialogue(textScriptData.script));
 
+            // 코루틴을 안전하게 처리
+            StartReadText(TypeDialogue(textScriptData.script));
+            
             // 마지막 대화에서 다음 대화 이미지(화살표) 삭제
             if (TextIndex == textScriptDataList.Count)
                 arrowImageTrans.gameObject.SetActive(false);
@@ -213,6 +217,16 @@ public class TextWindowView : MonoBehaviour
 
     }
 
+    private void StartReadText(IEnumerator textRoutine)
+    {
+        if(currentCoroutine != null)
+        {
+            isTypingReady = true;
+            StopCoroutine(currentCoroutine);
+        }
+        currentCoroutine = StartCoroutine(textRoutine);
+    }
+
     public void TextIndexInit(int value)
     {
         TextIndex = value;
@@ -226,26 +240,27 @@ public class TextWindowView : MonoBehaviour
         if(dialogue.Contains("{Month}"))
         {
             dialogue = dialogue.Replace("{Month}", GameManager.Instance.Month.ToString());
-        }
-        if(dialogue.Contains("{Day}"))
-        {
-            dialogue = dialogue.Replace("{Day}", GameManager.Instance.Day.ToString());
-        }
-        if(dialogue.Contains("{d-Day}"))
-        {
-            int d_day = 31 - GameManager.Instance.Day;
-            if (d_day > 0)
+
+            if (dialogue.Contains("{Day}"))
             {
-                dialogue = dialogue.Replace("{d-Day}", d_day.ToString()+"일 이겠군");
+                dialogue = dialogue.Replace("{Day}", GameManager.Instance.Day.ToString());
             }
-            else if (d_day == 0)
+
+            if (dialogue.Contains("{d-Day}"))
             {
-                dialogue = dialogue.Replace("{d-Day}", "오늘이 마지막이겠군");
+                int d_day = 31 - GameManager.Instance.Day;
+                if (d_day > 0)
+                {
+                    dialogue = dialogue.Replace("{d-Day}", d_day.ToString() + "일 이겠군");
+                }
+                else if (d_day == 0)
+                {
+                    dialogue = dialogue.Replace("{d-Day}", "오늘이 마지막이겠군");
+                }
+
             }
-            
         }
         
-
         isTypingReady = false;
         textWindow.text = "";
         foreach (char letter in dialogue)
@@ -271,21 +286,6 @@ public class TextWindowView : MonoBehaviour
                 }
 
             }
-            //else // 타이핑 도중 화면을 클릭하면 타이핑을 없이 전체 문장을 보여줌
-            //{
-            //    //textWindow.text = dialogue;
-            //    //break;
-
-            //    // 줄바꿈 문제를 별도로 구별
-            //    if (letter == '_')
-            //    {
-            //        textWindow.text += '\n';
-            //    }
-            //    else
-            //    {
-            //        textWindow.text += letter;
-            //    }
-            //}
         }
         isTypingReady = true;
     }

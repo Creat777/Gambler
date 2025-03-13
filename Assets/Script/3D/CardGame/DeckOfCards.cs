@@ -1,5 +1,8 @@
 using DG.Tweening;
 using PublicSet;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DeckOfCards : MonoBehaviour
@@ -13,7 +16,7 @@ public class DeckOfCards : MonoBehaviour
     public GameObject[] Players;
 
     // 스크립트 편집
-    private GameObject[] Cards;
+    public GameObject[] Cards {  get; private set; }
     private Vector3 floorPos;
     
     private int PlayerCount;
@@ -139,8 +142,11 @@ public class DeckOfCards : MonoBehaviour
     {
         for (int i = 0; i < Cards.Length; i++)
         {
+            // 모든 카드를 활성화
+            Cards[i].SetActive(true);
+
             // 레이어를 디폴트로 바꿔줌
-            if(Cards[i].layer != 0)
+            if (Cards[i].layer != 0)
             {
                 Cards[i].layer = 0;
             }
@@ -149,21 +155,6 @@ public class DeckOfCards : MonoBehaviour
             Cards[i].transform.localScale = Vector3.one;
         }
 
-        //for (int i = 0; i < Players.Length; i++)
-        //{
-        //    CardGamePlayerBase playerScript = Players[i].GetComponent<CardGamePlayerBase>();
-        //    if(playerScript != null)
-        //    {
-        //        ReturnAllOfCardFromCardBox(playerScript.openBox.transform);
-        //        ReturnAllOfCardFromCardBox(playerScript.closeBox.transform);
-        //    }
-        //    else
-        //    {
-        //        Debug.LogAssertion("플레이어 스크립트 없음");
-        //        return;
-        //    }
-
-        //}
     }
 
     private void ReturnAllOfCardFromCardBox(Transform cardBox)
@@ -220,6 +211,12 @@ public class DeckOfCards : MonoBehaviour
             {
                 Debug.Log($"레이어 설정 : {player.layer}");
                 child.gameObject.layer = cardGamePlayManager.layerOfMe;
+
+                // 조커에 붙은 이미지도 레이어 변경 해줘야 서브카메라에 이미지를 담을 수 있음
+                if(child.transform.childCount != 0)
+                {
+                    child.transform.GetChild(0).gameObject.layer = cardGamePlayManager.layerOfMe;
+                }
             }
 
             // 카드를 플레이어한테 분배 Animaition
@@ -257,7 +254,7 @@ public class DeckOfCards : MonoBehaviour
             sequence.AppendCallback(()=> 
             {
                 cardGamePlayManager.cardGameView.cardScreenButton.TryActivate_Button();
-                cardGamePlayManager.cardButtonSet.InitCardButton(playerScript.closeBox.transform);
+                cardGamePlayManager.CardButtonMemoryPool.InitCardButton(playerScript.closeBox.transform);
             });
         }
 
@@ -268,6 +265,48 @@ public class DeckOfCards : MonoBehaviour
         sequence.Play();
     }
 
+
+    public void StartDisappearEffect()
+    {
+        float animationDuration = 0.5f;
+        float parentScale = transform.localScale.x;
+
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            GameObject obj = transform.GetChild(i).gameObject;
+
+            // 중력 끄기
+            Rigidbody rigid = obj.GetComponent<Rigidbody>();
+#if UNITY_EDITOR
+            if(rigid == null)
+            {
+                Debug.LogAssertion($"{obj.name}의 rigidBody가 없음");
+                return;
+            }
+#endif
+            rigid.useGravity = false;
+
+            // 이동
+            obj.transform.DOLocalMoveY(5f / parentScale, animationDuration);
+            obj.transform.DOLocalMoveZ(10f / parentScale, animationDuration).SetDelay(animationDuration);
+
+            // 화면에서 사라진 뒤 비활성화
+            StartCoroutine(CallbackSetDealy(
+                () => 
+                {
+                    rigid.useGravity = true; // 중력 활성화
+                    obj.SetActive(false);
+                }
+                , animationDuration *2)
+                );
+        }
+    }
+
+    IEnumerator CallbackSetDealy(Action callback,float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        callback();
+    }
 
     // 카드의 위치를 설정하는 함수
     public void SetCardPositions()

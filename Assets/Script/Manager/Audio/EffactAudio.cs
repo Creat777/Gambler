@@ -17,12 +17,13 @@ public class EffactAudio : GameAudio
 
     private void Update()
     {
+#if UNITY_EDITOR
         // 마우스 클릭을 감지
         if (Input.GetMouseButtonDown(0)) // 0은 좌클릭
         {
             playClick();
         }
-
+#endif
         // 모바일 터치도 감지
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {

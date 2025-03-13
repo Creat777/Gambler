@@ -92,6 +92,7 @@ public class GameManager : Singleton<GameManager>
         StageAnimation();
     }
 
+#if UNITY_EDITOR
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Q))
@@ -100,6 +101,7 @@ public class GameManager : Singleton<GameManager>
             CallbackManager.Instance.EnterCasino();
         }
     }
+#endif
 
 
     private void OnEnable()

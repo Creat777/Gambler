@@ -23,7 +23,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
             {
                 if (instance == null)
                 {
-                    Debug.LogWarning("싱글톤이 아직 생성되지 않았습니다.");
+                    Debug.LogWarning($"{typeof(T).Name}싱글톤이 아직 생성되지 않았습니다.");
                     return null;
                 }
                 // null이 아니면 그대로 참조
