@@ -63,56 +63,6 @@ public class IconView : MonoBehaviour
         */
     }
 
-    /*
-     * 
-    private void Init_IconToPopUpStateDict()
-    {
-        iconConditions = new Dictionary<eIcon, ePopUpState>();
-
-        foreach(eIcon icon in Enum.GetValues(typeof(eIcon)))
-        {
-            iconConditions.Add(icon, ePopUpState.Close);
-        }
-    }
-
-    private void ButtonOnClickUpdate(eIcon icon,Button button, UnityAction open, UnityAction close)
-    {
-        if (iconConditions[icon] == ePopUpState.Open)
-        {
-            // 열고나서 ButtonOnClickUpdate를 실행할때 다음은 클로즈를 버튼에 넣음
-            button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(close);
-        }
-        else if (iconConditions[icon] == ePopUpState.Close)
-        {
-            // 닫고나서 ButtonOnClickUpdate를 실행할 때 다음은 오픈을 버튼에 넣음
-            button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(open);
-        }
-    }
-
-    public void SetPopUpState(eIcon icon, ePopUpState state)
-    {
-        iconConditions[icon] = state;
-        PopUpView popUpView = GameManager.Connector.popUpView_Script;
-
-        switch (icon)
-        {
-            case eIcon.Inventory:
-                ButtonOnClickUpdate(eIcon.Inventory, inventory, popUpView.InventoryPopUpOpen, popUpView.InventoryPopUpClose);
-                break;
-
-            case eIcon.Quest:
-                ButtonOnClickUpdate(eIcon.Quest, quest, popUpView.QuestPopUpOpen, popUpView.QuestPopUpClose);
-                break;
-
-            case eIcon.Status: break;
-
-            case eIcon.Message: break;
-        }
-    }
-    */
-
     public void IconViewOpen()
     {
         IconViewProcess(CenterPos, true);
@@ -143,9 +93,6 @@ public class IconView : MonoBehaviour
         sequence.SetLoops(1);
         sequence.Play();
     }
-
-
-    
 
     public void IconUnLock(eIcon choice)
     {
@@ -188,10 +135,5 @@ public class IconView : MonoBehaviour
             Debug.LogWarning("IconUnLock의 매개변수 오류");
             return;
         }
-    }
-
-    IEnumerator ProcessDelay(float  delay)
-    {
-        yield return new WaitForSeconds(delay);
     }
 }

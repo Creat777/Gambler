@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class CardSelectButton : ImageOnOff_ButtonBase
+public class CardSelectButton : ImageChange_ButtonBase
 {
     // 에디터 연결
     public Sprite[] sprites;
@@ -18,7 +18,7 @@ public class CardSelectButton : ImageOnOff_ButtonBase
     // 메모리풀에서 꺼내질때마다 실행
     private void OnEnable()
     {
-        ChangeOnColor();
+        ChangeOn();
     }
 
     public void SetCardButtonImage(int orderInHnad)
@@ -91,7 +91,7 @@ public class CardSelectButton : ImageOnOff_ButtonBase
             if (trumpCardScript.TrySelectThisCard_OnGameSetting(parent.playerMe))
             {
                 // 버튼 전환
-                ChangeOffColor();
+                ChangeOff();
                 SetButtonCallback(UnselectThisCard_OnStartTime);
             }
             else
@@ -114,7 +114,7 @@ public class CardSelectButton : ImageOnOff_ButtonBase
             trumpCardScript.UnselectThisCard_OnStartTime(parent.playerMe);
 
             // 버튼 전환
-            ChangeOnColor();
+            ChangeOn();
             SetButtonCallback(SelectThisCard_OnGameSetting);
         }
         else
@@ -131,7 +131,7 @@ public class CardSelectButton : ImageOnOff_ButtonBase
         if (trumpCardScript.TrySelectThisCard_OnPlayTime(parent.playerMe))
         {
             // 버튼 전환
-            ChangeOffColor();
+            ChangeOff();
             SetButtonCallback(UnselectThisCard_OnPlayTime);
 
             CardGamePlayManager.Instance.cardGameView.selectCompleteButton.TryActivate_Button();
@@ -150,7 +150,7 @@ public class CardSelectButton : ImageOnOff_ButtonBase
 
         trumpCardScript.UnselectThisCard_OnPlayTime(parent.playerMe);
         // 버튼 전환
-        ChangeOnColor();
+        ChangeOn();
         SetButtonCallback(SelectThisCard_OnPlayTime);
 
         CardGamePlayManager.Instance.cardGameView.selectCompleteButton.TryDeactivate_Button();

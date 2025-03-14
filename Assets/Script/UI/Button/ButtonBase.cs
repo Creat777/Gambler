@@ -42,4 +42,20 @@ public abstract class ButtonBase : MonoBehaviour
             Debug.Log("button == null");
         }
     }
+
+    /// <summary>
+    /// 기존 콜백함수에 추가하는 함수
+    /// </summary>
+    /// <param name="callback"></param>
+    public void AddButtonCallback(UnityAction callback)
+    {
+        if (button != null)
+        {
+            button.onClick.AddListener(callback);
+        }
+        else
+        {
+            Debug.Log("button == null");
+        }
+    }
 }

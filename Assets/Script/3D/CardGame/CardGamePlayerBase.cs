@@ -343,6 +343,7 @@ public abstract class CardGamePlayerBase : MonoBehaviour
 
     // 실제플레이어와 컴퓨터에서 각각 재정의
     public abstract void AttackOtherPlayers(int currentOrder, List<CardGamePlayerBase> orderdPlayerList);
+    public abstract void AttackPanelProcess();
     public abstract void DefenceFromOtherPlayers(CardGamePlayerBase AttackerScript);
 
     public virtual bool TrySetAttackTarget(CardGamePlayerBase target)

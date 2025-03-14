@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class OnlyOneLives : MonoBehaviour
+public class OnlyOneLives : Deactivatable_ButtonBase
 {
-    public GameObject CardGameView;
+    public CardGameView CardGameView;
     public CardGamePlayManager cardGamePlayManager;
 
     // 버튼콜백
@@ -11,16 +11,17 @@ public class OnlyOneLives : MonoBehaviour
         if(CardGameView == null)
         {
             Debug.LogAssertion("CardGameView == null");
+            return;
         }
         if(cardGamePlayManager == null)
         {
             Debug.LogAssertion("PlayManager == null");
+            return;
         }
-
 
         CallbackManager.Instance.BlackViewProcess(2.0f,
             () => GameManager.Connector.MainCanvas_script.CloseAllOfView(),
-            () => CardGameView.SetActive(true)
+            () => CardGameView.gameObject.SetActive(true)
             );
         
     }

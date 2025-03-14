@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryPopUp : PopUp
+public class InventoryPopUp : PopUpBase
 {
     public sItem currentClickItem; // 현재 클릭한 아이템
 

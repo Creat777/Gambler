@@ -5,14 +5,27 @@ using UnityEngine;
 
 public class PlayerMe : CardGamePlayerBase
 {
+    //에디터 연결
+    [SerializeField] private SelectCompleteButton selectCompleteButton;
+    public SelectCompleteButton m_SelectCompleteButton
+    {
+        get 
+        {
+            if (m_SelectCompleteButton == null)
+            {
+                Debug.LogAssertion("SelectCompleteButton 연결안됨");
+                return null;
+            }
+            return selectCompleteButton;
+        }
+    }
     public bool isCompleteSelect_OnGameSetting {  get; private set; }
     public bool isCompleteSelect_OnPlayTime { get; private set; }
-    public bool isButtonClicked { get; private set; }
+    
     
     public void InitAttribute_PlayerMe()
     {
         isCompleteSelect_OnGameSetting = false;
-        isButtonClicked = false;
         isCompleteSelect_OnPlayTime = false;
     }
 
@@ -25,34 +38,28 @@ public class PlayerMe : CardGamePlayerBase
     {
         isCompleteSelect_OnPlayTime = setValue;
     }
-    public void Set_BoolButtonClick_True()
-    {
-        isButtonClicked = true;
-    }
+    
 
 
     public override void AttackOtherPlayers(int currentOrder, List<CardGamePlayerBase> orderdPlayerList)
     {
-        StartCoroutine(WaitForButtonClick());
-    }
+        // 버튼 클릭시 콜백을 추가
+        m_SelectCompleteButton.AddButtonCallback(CoroutineManager.Instance.SetBool_isButtonClicked_True);
 
-    IEnumerator WaitForButtonClick()
+        // 해당 버튼콜백이 실행되면 다음의 콜백이 실행됨
+        StartCoroutine(CoroutineManager.Instance.WaitForButtonClick(AttackPanelProcess));
+    }
+    public override void AttackPanelProcess()
     {
-        Debug.Log("버튼 클릭 대기 중...");
-
-        // 버튼이 클릭될 때까지 대기
-        yield return new WaitUntil(() => isButtonClicked);
-
-        // 다음번에 또 클릭될 수 있도록 함
-        isButtonClicked = false;
-
-        Debug.Log("버튼이 클릭됨! 다음 로직 실행");
-
-        // 이후 게임 진행 로직
+        throw new System.NotImplementedException();
     }
+
+    
 
     public override void DefenceFromOtherPlayers(CardGamePlayerBase AttackerScript)
     {
         
     }
+
+    
 }

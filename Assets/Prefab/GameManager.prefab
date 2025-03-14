@@ -145,6 +145,50 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &467710740781809383
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8668471788352297548}
+  - component: {fileID: 1265158963188376463}
+  m_Layer: 0
+  m_Name: CoroutineManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8668471788352297548
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 467710740781809383}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1861339401939184162}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1265158963188376463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 467710740781809383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6e9d4228175e594fafa482c9d3805a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1566385885687064777
 GameObject:
   m_ObjectHideFlags: 0
@@ -423,6 +467,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1e57b2af80df3b4680ca67ad93a440a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentPlayerSaveItemKey: 
 --- !u!1 &6838472869166136666
 GameObject:
   m_ObjectHideFlags: 0
@@ -458,6 +503,7 @@ Transform:
   - {fileID: 3064120667387505815}
   - {fileID: 366644105232989912}
   - {fileID: 2355556602582664949}
+  - {fileID: 8668471788352297548}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7211249329805676858
@@ -474,11 +520,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultGamespeed: 5
   maxStage: 3
+  currentSaveKey: 0
   currentScene: 0
   currentMap: 0
   currentStage: 0
   month: 12
-  day: 0
+  day: 1
 --- !u!1 &8202754553376829560
 GameObject:
   m_ObjectHideFlags: 0

@@ -106,6 +106,9 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
                 playersList[i].SetCoin();
             }
         }
+
+
+        cardGameView.playerInterface.InitInterface();
     }
 
     public void ChangeGameProgress(bool isIncrease, eCardGameProgress progress = eCardGameProgress.None)
@@ -174,8 +177,10 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
             diceManager.RotateDice(playersList[i].gameObject);
             return; // 주사위를 한번 돌렸으면 함수를 종료
         }
-
         // 주사위를 다 돌렸는데 이 함수에 진입했다면 다음 처리를 진행해줌
+
+        // Interface 변경
+        cardGameView.playerInterface.ChangeInterfaceNext();
 
         // 필요없어진 카드덱을 제거
         deckOfCards.StartDisappearEffect();

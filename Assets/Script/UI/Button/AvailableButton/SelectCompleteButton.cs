@@ -187,7 +187,7 @@ public class SelectCompleteButton : Deactivatable_ButtonBase
 
     public void CompleteCardSelect_OnPlayTime()
     {
-        playerMe.Set_BoolButtonClick_True();
+
         Debug.Log("함수 수정 요함");
     }
 }

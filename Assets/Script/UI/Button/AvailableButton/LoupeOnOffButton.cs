@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LoupeOnOffButton : ImageOnOff_ButtonBase
+public class LoupeOnOffButton : ImageChange_ButtonBase
 {
     public GameObject Loupe;
 
@@ -21,7 +21,7 @@ public class LoupeOnOffButton : ImageOnOff_ButtonBase
 
         // 버튼 전환
         Loupe.SetActive(true);
-        ChangeOnColor();
+        ChangeOn();
         SetButtonCallback(LoupeOff);
     }
 
@@ -34,7 +34,7 @@ public class LoupeOnOffButton : ImageOnOff_ButtonBase
         }
 
         Loupe.SetActive(false);
-        ChangeOffColor();
+        ChangeOff();
         SetButtonCallback(LoupeOn);
     }
 

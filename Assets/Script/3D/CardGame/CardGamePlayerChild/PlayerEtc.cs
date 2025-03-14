@@ -26,8 +26,6 @@ public class PlayerEtc : CardGamePlayerBase
         do{
             randomPlayerIndex = Random.Range(0, playerList.Count);
         } while (TrySetAttackTarget(playerList[randomPlayerIndex]) == false); // 세팅에 실패했으면 반복
-
-        Debug.Log($"공격 대상 : {AttackTarget}");
     }
 
     public void SelectCard_OnPlayTime()
@@ -56,12 +54,8 @@ public class PlayerEtc : CardGamePlayerBase
         Sequence sequence = DOTween.Sequence();
         float returnDelay;
 
-        // 컴퓨터가 상대를 지목하여 타격하는 애니메이션(시퀀스)
-        /*
-            공격패널 등장
-            해당 플레이어의 이미지에서 지목된 플레이어의 이미지를 타격하는 애니메이션 수행
-            확인이 되었으면 자동으로 현재 패널 닫힘
-        */
+        // 컴퓨터는 상대를 지목하여 타격하는 애니메이션(시퀀스)포함
+        AttackPanelProcess();
 
         // 카드를 제시하는 애니메이션
 
@@ -79,6 +73,15 @@ public class PlayerEtc : CardGamePlayerBase
         sequence.SetLoops(1);
         sequence.Play();
         Debug.Log($"애니메이션 시간 : {returnDelay}");
+    }
+
+    public override void AttackPanelProcess()
+    {
+        /*
+            공격패널 등장
+            해당 플레이어의 이미지에서 지목된 플레이어의 이미지를 타격하는 애니메이션 수행
+            확인이 되었으면 자동으로 현재 패널 닫힘
+        */
     }
 
     public override void DefenceFromOtherPlayers(CardGamePlayerBase AttackerScript)

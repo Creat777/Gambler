@@ -6,8 +6,8 @@ using DG.Tweening;
 public class CardGameView : MonoBehaviour
 {
     // 에디터 연결
+    public PlayerInterface_CardGame playerInterface;
     public CardGamePlayManager cardGamePlayManager;
-    public GameObject PlayerInterface;
     public CardScreenButton cardScreenButton;
     public DiceButton diceButton;
     public SelectCompleteButton selectCompleteButton;
@@ -18,10 +18,10 @@ public class CardGameView : MonoBehaviour
     public DeckOfCards deckOfCards;
 
     // 스크립트 편집
-    private bool isPlayerInterfaceInScreen;
+    
     private bool isCardScreenInCenter;
     private Vector3 CenterPos;
-    private Vector3 Interface_OutOfMainScreenPos;
+    
     private Vector3 CardScreen_OutOfMainScreenPos;
 
     public void InitAttribute()
@@ -33,20 +33,18 @@ public class CardGameView : MonoBehaviour
 
     private void Awake()
     {
-        cardScreenButton.TryDeactivate_Button();
-        diceButton.TryDeactivate_Button();
-
-        isPlayerInterfaceInScreen = false;
         isCardScreenInCenter = false;
         CenterPos = transform.position;
-        Interface_OutOfMainScreenPos = PlayerInterface.transform.position;
+        
         CardScreen_OutOfMainScreenPos = SubScreen_Card.transform.position;
 
         if (cardGamePlayManager == null)
             Debug.LogAssertion($"cardGamePlayManager == null ");
+    }
 
-        // enable 실행 안되도록
-        gameObject.SetActive(false);
+    private void Start()
+    {
+        
     }
 
     private void OnEnable()
@@ -57,8 +55,10 @@ public class CardGameView : MonoBehaviour
 
     public void StartGame()
     {
-        
         Sequence sequence = DOTween.Sequence();
+
+        // 인터페이스 초기화
+        playerInterface.returnInterface();
 
         // dotween이 끝난후 복귀할 스케일 저장
         Vector3 scaleOrigin = StartButton.transform.localScale;
@@ -80,11 +80,14 @@ public class CardGameView : MonoBehaviour
         sequence.AppendInterval(2f); // 카드가 중력으로 바닥에 떨어질때까지 기다림
 
         // 인터페이스 활성화
-        sequence.AppendCallback(() => PlayerInterfaceOnOff());
+        playerInterface.GetSequnce_InterfaceOn(sequence);
         diceButton.TryActivate_Button();
 
         // 세팅 초기화
         cardGamePlayManager.InitCurrentGame();
+
+        sequence.SetLoops(1);
+        sequence.Play();
     }
 
     
@@ -102,22 +105,7 @@ public class CardGameView : MonoBehaviour
         endCallback();
     }
 
-    private void PlayerInterfaceOnOff()
-    {
-        float delay = 1.0f;
-
-        if (isPlayerInterfaceInScreen == false)
-        {
-            isPlayerInterfaceInScreen = true;
-            PlayerInterface.transform.DOMove(CenterPos, delay);
-        }
-
-        else if (isPlayerInterfaceInScreen == true)
-        {
-            isPlayerInterfaceInScreen = false;
-            PlayerInterface.transform.DOMove(Interface_OutOfMainScreenPos, delay);
-        }
-    }
+    
 
 
     public float GetSequnce_CardScrrenOpen(Sequence sequence)

@@ -10,6 +10,10 @@ public abstract class Deactivatable_ButtonBase : ButtonBase
     /// </summary>
     public virtual bool TryDeactivate_Button()
     {
+
+        if (button == null)
+            InitDefault();
+
         if (button != null)
         {
             button.interactable = false;
@@ -27,7 +31,7 @@ public abstract class Deactivatable_ButtonBase : ButtonBase
         }
         else
         {
-            Debug.Log("button == null");
+            Debug.LogAssertion($"{gameObject.name}의 button == null");
             return false;
         }
     }
@@ -37,6 +41,15 @@ public abstract class Deactivatable_ButtonBase : ButtonBase
     /// </summary>
     public virtual bool TryActivate_Button()
     {
+        if (button == null)
+            InitDefault();
+
+        if (gameObject.activeSelf == false)
+        {
+            Debug.Log($"{gameObject.name}은 활성화되지 않았음");
+            return false;
+        }
+
         if (button != null)
         {
             button.interactable = true;
@@ -44,7 +57,7 @@ public abstract class Deactivatable_ButtonBase : ButtonBase
         }
         else
         {
-            Debug.Log("button == null");
+            Debug.LogAssertion($"{gameObject.name}의 button == null");
             return false;
         }
     }

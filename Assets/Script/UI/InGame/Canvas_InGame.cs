@@ -57,7 +57,6 @@ public class Canvas_InGame : MonoBehaviour
             () => interfaceView.SetActive(true)
 
             );
-        
     }
 
     
