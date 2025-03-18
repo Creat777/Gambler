@@ -6,7 +6,7 @@ public class OnlyOneLives : Deactivatable_ButtonBase
     public CardGamePlayManager cardGamePlayManager;
 
     // 버튼콜백
-    public void StartOnleOneLives()
+    public void StartOnlyOneLives()
     {
         if(CardGameView == null)
         {

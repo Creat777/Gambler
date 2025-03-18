@@ -174,4 +174,14 @@ namespace PublicSet
 
         public bool isFaceDown;
     }
+
+    public class cOnlyOneLives_PlayerInfo
+    {
+        public int playerIndex { get; set; }
+        public string PlayerName { get; set; }
+        public string PlayerAge { get; set; }
+        public string PlayerClan { get; set; }
+        public string PlayerFeature { get; set; }
+    }
+
 }

@@ -46,12 +46,7 @@ public class PlayerMe : CardGamePlayerBase
         // 버튼 클릭시 콜백을 추가
         m_SelectCompleteButton.AddButtonCallback(CoroutineManager.Instance.SetBool_isButtonClicked_True);
 
-        // 해당 버튼콜백이 실행되면 다음의 콜백이 실행됨
-        StartCoroutine(CoroutineManager.Instance.WaitForButtonClick(AttackPanelProcess));
-    }
-    public override void AttackPanelProcess()
-    {
-        throw new System.NotImplementedException();
+        // DOTO 상대를 지목하여 대화를 시작
     }
 
     

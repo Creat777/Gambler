@@ -54,12 +54,10 @@ public class PlayerEtc : CardGamePlayerBase
         Sequence sequence = DOTween.Sequence();
         float returnDelay;
 
-        // 컴퓨터는 상대를 지목하여 타격하는 애니메이션(시퀀스)포함
-        AttackPanelProcess();
+        // DOTO 컴퓨터는 상대를 지목하여 대화를 시작
 
         // 카드를 제시하는 애니메이션
-
-        returnDelay = GetSequnce_PresentAttackCard(sequence, true);
+        returnDelay = GetSequnce_PresentCard(sequence, true);
         
 
         // 내 공격 끝내기
@@ -67,22 +65,14 @@ public class PlayerEtc : CardGamePlayerBase
         AttackDone = true;
 
         // 상대 수비 시작
+        sequence.AppendInterval(2f);
         sequence.AppendCallback(()=>AttackTarget.DefenceFromOtherPlayers(this));
-
-        sequence.AppendInterval(1f);
+        
         sequence.SetLoops(1);
         sequence.Play();
         Debug.Log($"애니메이션 시간 : {returnDelay}");
     }
 
-    public override void AttackPanelProcess()
-    {
-        /*
-            공격패널 등장
-            해당 플레이어의 이미지에서 지목된 플레이어의 이미지를 타격하는 애니메이션 수행
-            확인이 되었으면 자동으로 현재 패널 닫힘
-        */
-    }
 
     public override void DefenceFromOtherPlayers(CardGamePlayerBase AttackerScript)
     {
@@ -93,12 +83,13 @@ public class PlayerEtc : CardGamePlayerBase
         float returnDelay;
 
         // 카드를 제시하는 애니메이션
-        returnDelay = GetSequnce_PresentAttackCard(sequence, false);
+        returnDelay = GetSequnce_PresentCard(sequence, false);
 
         // 내 수비 끝내기
         Debug.Log($"{gameObject.name}이 수비를 실행함");
 
         // 양쪽 카드를 오픈
+        sequence.AppendInterval(2.0f);
         sequence.AppendCallback(()=> CardGamePlayManager.Instance.CardOpenAtTheSameTime(AttackerScript, this));
 
 

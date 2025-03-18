@@ -22,7 +22,7 @@ public abstract class CardGamePlayerBase : MonoBehaviour
     public Dictionary<eCardType, int> cardCountPerType { get; protected set; } // 게임 세팅을 위해 플레이어가 갖고있는 각 문양의 카드 숫자
 
 
-    public int coin {  get; protected set; }
+    public int coin;
 
     
     public bool diceDone {  get; private set; }
@@ -343,7 +343,6 @@ public abstract class CardGamePlayerBase : MonoBehaviour
 
     // 실제플레이어와 컴퓨터에서 각각 재정의
     public abstract void AttackOtherPlayers(int currentOrder, List<CardGamePlayerBase> orderdPlayerList);
-    public abstract void AttackPanelProcess();
     public abstract void DefenceFromOtherPlayers(CardGamePlayerBase AttackerScript);
 
     public virtual bool TrySetAttackTarget(CardGamePlayerBase target)
@@ -361,7 +360,7 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         }
     }
 
-    public float GetSequnce_PresentAttackCard(Sequence sequence, bool isAttack)
+    public float GetSequnce_PresentCard(Sequence sequence, bool isAttack)
     {
         float returnDelay = 0;
         float delay = 0.5f;

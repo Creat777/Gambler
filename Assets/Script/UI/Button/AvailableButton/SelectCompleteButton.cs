@@ -114,6 +114,7 @@ public class SelectCompleteButton : Deactivatable_ButtonBase
         Debug.Log($"애니메이션 총 시간 : {returnDelay}");
 
         // 모든 플레이어가 카드 정리를 끝냈으면 본게임에 진입하여 공격을 시작
+        sequence.AppendInterval(2.0f);
         sequence.AppendCallback(
             ()=>
             {

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 553a5a328b498774f8e85a44fec7fbb7
+guid: c19fbf5703eb5ea4ca1a6c1e49653ccf
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3385415037828575978
-    second: panda_0
+      213: 6241289757269209712
+    second: 2_woman1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -109,17 +109,30 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: panda_0
+      name: 2_woman1_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 505
-        height: 401
+        width: 682
+        height: 512
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 61d46f4b5f69401d0800000000000000
-      internalID: -3385415037828575978
+      spriteID: 072b05a67f38d9650800000000000000
+      internalID: 6241289757269209712
       vertices: []
       indices: 
       edges: []
@@ -147,8 +160,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      panda_0: -3385415037828575978
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

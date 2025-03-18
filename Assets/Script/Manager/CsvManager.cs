@@ -9,14 +9,18 @@ using PublicSet;
 
 public class CsvManager : Singleton<CsvManager>
 {
-    // Project파일을 에디터로 연결
+    // 에디터
     [SerializeField] private ItemTable itemPlusInfoTable;
 
-    // csv파일 저장을 위한 배열
+    // 스크립트
+    // 상호작용 객체 자료구조
     private List<cTextScriptInfo>[,] InteractableInfoFiles;
 
-    // 아이템을 시리얼 번호로 검색
+    // 아이템 객체 자료구조
     private Dictionary<eItemSerialNumber, cItemInfo> ItemInfoDict;
+
+    // OnlyOneLives PlayerInfo 자료구조
+    private List<cOnlyOneLives_PlayerInfo> OnlyOneLives_PlayerInfoList;
 
     public List<cTextScriptInfo> GetTextScript(eTextScriptFile eCsv, eStage eStage)
     {
@@ -28,12 +32,17 @@ public class CsvManager : Singleton<CsvManager>
         return ItemInfoDict[eSerialNumber];
     }
 
-
+    public List<cOnlyOneLives_PlayerInfo> GetPlayerInfoList()
+    {
+        return OnlyOneLives_PlayerInfoList;
+    }
 
     protected override void Awake()
     {
         base.Awake();
         NewCsvStorage();
+
+        TotalCsvProCess();
     }
     
     private void NewCsvStorage()
@@ -55,6 +64,9 @@ public class CsvManager : Singleton<CsvManager>
 
         // 아이템 관련
         ItemInfoDict = new Dictionary<eItemSerialNumber, cItemInfo>();
+
+        // OnlyOneLives 플레이어 정보 관련
+        OnlyOneLives_PlayerInfoList = new List<cOnlyOneLives_PlayerInfo>();
     }
     
 
@@ -73,13 +85,14 @@ public class CsvManager : Singleton<CsvManager>
         }
     }
 
-    private void Start()
+    public void TotalCsvProCess()
     {
-        PrecessCsvOfTextScript();
-        PrecessCsvOfItem();
+        ProcessCsvOfTextScript();
+        ProcessCsvOfItem();
+        ProcessCsvOfOnlyOneLives_PlayerInfo();
     }
 
-    private void PrecessCsvOfTextScript()
+    private void ProcessCsvOfTextScript()
     {
         // 상호작용 객체에 대한 csv
         string path = "CSV/TextScript/";
@@ -87,7 +100,7 @@ public class CsvManager : Singleton<CsvManager>
         
     }
 
-    private void PrecessCsvOfItem()
+    private void ProcessCsvOfItem()
     {
         string fileNamePath = "CSV/Item/Item";
 
@@ -220,6 +233,8 @@ public class CsvManager : Singleton<CsvManager>
                             }
                             break;
 
+                        default: Debug.LogAssertion($"{field}는 잘못된 항목에 위치함");
+                            break;
                     }
                     field_num++;
                 }
@@ -270,6 +285,59 @@ public class CsvManager : Singleton<CsvManager>
 
             //Debug.Log($"csv Item({ItemInfoDict[serail].name}) 프린트 생략");
             //PrintProperties(ItemInfoDict[serail]);
+        }
+    }
+
+    private void ProcessCsvOfOnlyOneLives_PlayerInfo()
+    {
+        string fileNamePath = "CSV/OnlyOneLives/PlayerInfo";
+
+        // 데이터 처리
+        LoadCsv<cOnlyOneLives_PlayerInfo>(
+            fileNamePath,
+            (row, plyaerInfo) =>
+            {
+                // 저장공간을 할당받지 못한 경우
+                if (plyaerInfo == null) return;
+
+                int intField = 0;
+
+                int field_num = 0;
+                // 각 행의 처리 시작
+                foreach (string field in row)
+                {
+                    switch (field_num)
+                    {
+                        // 처리된 데이터를 넣을 Stage를 저장
+                        case 0: 
+                            if(int.TryParse(field, out intField))
+                            {
+                                plyaerInfo.playerIndex = intField; break;
+                            }
+                            else
+                            {
+                                Debug.LogAssertion($"{field}는 정수가 아님");
+                            }
+                            break;
+
+                        case 1: plyaerInfo.PlayerName = field; break;
+                        case 2: plyaerInfo.PlayerAge = field; break;
+                        case 3: plyaerInfo.PlayerClan = field; break;
+                        case 4: plyaerInfo.PlayerFeature = field; break;
+                    }
+                    field_num++;
+                }
+
+                OnlyOneLives_PlayerInfoList.Add( plyaerInfo );
+
+                
+            }
+            );
+
+        // 처리된 데이터의 확인
+        foreach (var row in OnlyOneLives_PlayerInfoList)
+        {
+            PrintProperties(row);
         }
     }
 
@@ -405,7 +473,7 @@ public class CsvManager : Singleton<CsvManager>
 
     
 
-    public void LoadCsv<T>(string resourceName, Action<List<string>, T> RowCallBack) where T : new()
+    public void LoadCsv<T>(string resourceName, Action<List<string>, T> RowCallback) where T : new()
         // where T : new() : 제네릭 타입 T가 매개변수 없는 기본 생성자를 가진 클래스여야 한다는 조건을 의미
     {
         List<List<string>> csvData = new List<List<string>>();
@@ -441,7 +509,7 @@ public class CsvManager : Singleton<CsvManager>
                 //Debug.Log($"{row_num} 행");
                 T info = new T();
 
-                RowCallBack(row, info); // 전달된 델리게이트 실행
+                RowCallback(row, info); // 전달된 델리게이트 실행
                 row_num++;
             }
         }

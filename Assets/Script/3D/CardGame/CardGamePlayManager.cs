@@ -51,6 +51,8 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         }
     }
 
+    public PopUpView popUpView;
+
     // 스크립트 편집
     public eCardGameProgress currentProgress { get; private set; }
     public ePlayerTurnState currentPlayerTurn {  get; private set; }
@@ -97,17 +99,17 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         {
             if(playersList[i].CompareTag("Player"))
             {
-                Debug.Log("플레이어의 코인을 연동");
+                //Debug.Log("플레이어의 코인을 연동");
                 playersList[i].SetCoin(PlayManager.Instance.currentPlayerStatus.money);
             }
             else
             {
-                Debug.Log($"컴퓨터{gameObject.name}한테 랜덤한 코인을 증정");
+                //Debug.Log($"컴퓨터{gameObject.name}한테 랜덤한 코인을 증정");
                 playersList[i].SetCoin();
             }
         }
 
-
+        popUpView.gameAssistantPopUp_OnlyOneLives.InitGameAssistant();
         cardGameView.playerInterface.InitInterface();
     }
 

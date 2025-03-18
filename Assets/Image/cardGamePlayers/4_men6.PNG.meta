@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: aa50dc284f82fe646924360f82f93d79
+guid: f41f18b4abeed4344ad273d8f1ef8ebb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4279780898740308699
-    second: unfairNeko_0
+      213: 8578027317569514189
+    second: 4_men6_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -109,17 +109,30 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: unfairNeko_0
+      name: 4_men6_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 900
-        height: 900
+        width: 1000
+        height: 750
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bda0be95d06d46b30800000000000000
-      internalID: 4279780898740308699
+      spriteID: dcae351a5664b0770800000000000000
+      internalID: 8578027317569514189
       vertices: []
       indices: 
       edges: []
@@ -147,8 +160,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      unfairNeko_0: 4279780898740308699
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 48b4228acd9f92e439007e063c814acf
+guid: caa6f36d99597c54e92935f7cc809671
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3672151320351729412
-    second: whiteDog_0
+      213: -4270619542717963571
+    second: 5_men7_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -109,17 +109,30 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: whiteDog_0
+      name: 5_men7_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 740
-        height: 556
+        width: 392
+        height: 432
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cf814fc74d5e90dc0800000000000000
-      internalID: -3672151320351729412
+      spriteID: dc264711726bbb4c0800000000000000
+      internalID: -4270619542717963571
       vertices: []
       indices: 
       edges: []
@@ -147,8 +160,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      whiteDog_0: -3672151320351729412
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
