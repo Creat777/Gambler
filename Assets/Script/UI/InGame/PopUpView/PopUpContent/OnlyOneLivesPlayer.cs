@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class OnlyOneLivesPlayer : MonoBehaviour
 {
     // 에디터
-    public Sprite[] PlayerSpriteArr;
     public Image PlayerImage;
 
     // TextBoxFrame
@@ -42,31 +41,23 @@ public class OnlyOneLivesPlayer : MonoBehaviour
         //SaveTemplate();
     }
 
-    // 에디터로 설정한 템플릿을 저장
-    //private void SaveTemplate()
-    //{
-    //    cTemplate.PlayerName = PlayerName.text;
-    //    cTemplate.PlayerAge = PlayerAge.text;
-    //    cTemplate.PlayerBalance = PlayerBalance.text;
-    //    //
-    //    cTemplate.PlayerClan = PlayerClan.text;
-    //    cTemplate.PlayerFeature = PlayerFeature.text;
-    //    cTemplate.CurrentPosition = CurrentPosition.text;
-    //    cTemplate.SelectAsTarget = SelectAsTarget_Label.text;
-    //}
-
-    public void InitPlayerInfo(PlayerEtc inputPlayer, int clockwiseOrder , cOnlyOneLives_PlayerInfo playerInfo)
+    public void InitPlayerInfo(PlayerEtc inputPlayer, int clockwiseOrder , cCharacterInfo playerInfo)
     {
         // 한번 설정되지 변하지 않는 값
         player = inputPlayer;
+
+        // 객체 이름 변경
+        gameObject.name = $"{playerInfo.CharacterName}_Info";
+
+        // 이미지 변경
+        TryChangePortraitImage(playerInfo.CharaterIndex);
+
+        // text 변경
+        PlayerName.text = PlayerTemplate.PlayerName + playerInfo.CharacterName;
+        PlayerAge.text = PlayerTemplate.PlayerAge + playerInfo.CharacterAge;
         //
-        gameObject.name = $"{playerInfo.playerIndex}번 객체 + {playerInfo.PlayerName}";
-        PlayerImage.sprite = PlayerSpriteArr[playerInfo.playerIndex];
-        PlayerName.text = PlayerTemplate.PlayerName + playerInfo.PlayerName;
-        PlayerAge.text = PlayerTemplate.PlayerAge + playerInfo.PlayerAge;
-        //
-        PlayerClan.text = PlayerTemplate.PlayerClan + playerInfo.PlayerClan;
-        PlayerFeature.text = PlayerTemplate.PlayerFeature + playerInfo.PlayerFeature;
+        PlayerClan.text = PlayerTemplate.PlayerClan + playerInfo.CharacterClan;
+        PlayerFeature.text = PlayerTemplate.PlayerFeature + playerInfo.CharacterFeature;
         
         switch(clockwiseOrder)
         {
@@ -76,8 +67,25 @@ public class OnlyOneLivesPlayer : MonoBehaviour
             default: Debug.LogWarning("잘못된 값"); break;
         }
 
-        // 실시간으로 변하는 값
+        // 여러번 호출되는 함수
         PlayerBalanceUpdate();
+    }
+
+    public bool TryChangePortraitImage(eCharacter characterIndex)
+    {
+        bool isSueccessed = false;
+        Sprite sprite = PortraitResource.Instance.TryGetPortraitImage(characterIndex, out isSueccessed);
+        if (isSueccessed)
+        {
+            PlayerImage.sprite = sprite;
+            Debug.Log("이미지 전환 성공");
+        }
+        else
+        {
+            Debug.LogAssertion("이미지 전환 실패");
+        }
+
+        return isSueccessed;
     }
 
     private void PlayerBalanceUpdate()

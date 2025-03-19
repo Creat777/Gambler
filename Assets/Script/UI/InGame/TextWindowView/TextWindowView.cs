@@ -13,6 +13,7 @@ public class TextWindowView : MonoBehaviour
     // 에디터에서 연결
     public Text textWindow;
     public Text Speaker;
+    public PortraitImage portraitImage;
     private List<cTextScriptInfo> textScriptDataList;
     public RectTransform arrowImageTrans;
     public GameObject selectionView;
@@ -97,7 +98,7 @@ public class TextWindowView : MonoBehaviour
         if (textScriptDataList.Count >= 1)
         {
             // selection이 없으면
-            if (textScriptData.eSelect == eSelection.NoneExist)
+            if (textScriptData.hasSelection == eHasSelection.yes)
             {
                 // 타이핑이 끝난경우 다음 타이핑을 시작
                 if (isTypingReady)
@@ -113,7 +114,7 @@ public class TextWindowView : MonoBehaviour
             }
 
             // selection이 있으면
-            else if (textScriptData.eSelect == eSelection.Exist)
+            else if (textScriptData.hasSelection == eHasSelection.No)
             {
                 // 타이핑이 끝난 경우 selectionView를 활성화
                 if (isTypingReady)
@@ -122,10 +123,10 @@ public class TextWindowView : MonoBehaviour
                     SelectionView selectionView_Script = selectionView.GetComponent<SelectionView>();
 
                     // 셀렉션 스크립트 부여 및 콜백 등록
-                    for (int i = 0; i < textScriptData.selection.Count && i < textScriptData.callback.Count; i++)
+                    for (int i = 0; i < textScriptData.selectionScript.Count && i < textScriptData.SelectionCallback.Count; i++)
                     {
 
-                        selectionView_Script.RegisterButtonClick_Selection(i, textScriptData.selection[i], textScriptData.callback[i]);
+                        selectionView_Script.RegisterButtonClick_Selection(i, textScriptData.selectionScript[i], textScriptData.SelectionCallback[i]);
                     }
                 }
                 // 타이핑이 안끝났으면 타이핑을 끝내기
@@ -190,7 +191,8 @@ public class TextWindowView : MonoBehaviour
         if (TextIndex < textScriptDataList.Count)
         {
             textScriptData = textScriptDataList[TextIndex++];
-            Speaker.text = textScriptData.speaker;
+            Speaker.text = CsvManager.Instance.GetCharacterInfo(textScriptData.characterEnum).CharacterName;
+            portraitImage.TryChangePortraitImage(textScriptData.characterEnum);
 
             // 코루틴을 안전하게 처리
             StartReadText(TypeDialogue(textScriptData.script));
@@ -204,9 +206,15 @@ public class TextWindowView : MonoBehaviour
         // 텍스트가 다 끝난경우
         if (TextIndex >= textScriptDataList.Count)
         {
+            if(textScriptData.hasEndCallback == eHasEndCallback.yes)
+            {
+                textScriptData.endCallback();
+            }
             Debug.Log($"현재 실행된 문자열의 개수 == {textScriptDataList.Count}");
             CallbackManager.Instance.TextWindowPopUp_Close();
 
+
+            Debug.LogAssertion("Doto => csv파일에 텍스트가 끝난경우 실행할 콜백여부 조건을 추가하기");
             if (currentTextFile == eTextScriptFile.PlayerMonologue
                 && GameManager.Instance.currentStage == eStage.Stage1)
             {
@@ -310,7 +318,7 @@ public class TextWindowView : MonoBehaviour
     public void SkipText()
     {
         // 현재 텍스트에 셀렉션이 있으면
-        if (textScriptData.eSelect == eSelection.Exist)
+        if (textScriptData.hasSelection == eHasSelection.No)
         {
             // 타이핑 종료
             isTypingReady = true;
@@ -339,7 +347,7 @@ public class TextWindowView : MonoBehaviour
                 return;
             }
         }
-        while (textScriptData.eSelect == eSelection.NoneExist);
+        while (textScriptData.hasSelection == eHasSelection.yes);
 
         // PrintText에서도 다음인덱스의 데이터를 받기때문에 인덱스의 숫자를 1 줄임
         TextIndex--;

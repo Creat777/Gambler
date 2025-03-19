@@ -13,14 +13,23 @@ public class CsvManager : Singleton<CsvManager>
     [SerializeField] private ItemTable itemPlusInfoTable;
 
     // 스크립트
+    // OnlyOneLives PlayerInfo 자료구조
+    private Dictionary<eCharacter,cCharacterInfo> CharacterInfoDict;
+
     // 상호작용 객체 자료구조
     private List<cTextScriptInfo>[,] InteractableInfoFiles;
 
     // 아이템 객체 자료구조
     private Dictionary<eItemSerialNumber, cItemInfo> ItemInfoDict;
 
-    // OnlyOneLives PlayerInfo 자료구조
-    private List<cOnlyOneLives_PlayerInfo> OnlyOneLives_PlayerInfoList;
+    public Dictionary<eCharacter, cCharacterInfo> GetCharacterInfoDict()
+    {
+        return CharacterInfoDict;
+    }
+    public cCharacterInfo GetCharacterInfo(eCharacter characterEnum)
+    {
+        return CharacterInfoDict[characterEnum];
+    }
 
     public List<cTextScriptInfo> GetTextScript(eTextScriptFile eCsv, eStage eStage)
     {
@@ -32,10 +41,7 @@ public class CsvManager : Singleton<CsvManager>
         return ItemInfoDict[eSerialNumber];
     }
 
-    public List<cOnlyOneLives_PlayerInfo> GetPlayerInfoList()
-    {
-        return OnlyOneLives_PlayerInfoList;
-    }
+    
 
     protected override void Awake()
     {
@@ -66,7 +72,7 @@ public class CsvManager : Singleton<CsvManager>
         ItemInfoDict = new Dictionary<eItemSerialNumber, cItemInfo>();
 
         // OnlyOneLives 플레이어 정보 관련
-        OnlyOneLives_PlayerInfoList = new List<cOnlyOneLives_PlayerInfo>();
+        CharacterInfoDict = new Dictionary<eCharacter, cCharacterInfo>();
     }
     
 
@@ -87,9 +93,9 @@ public class CsvManager : Singleton<CsvManager>
 
     public void TotalCsvProCess()
     {
+        ProcessCsvOfCharacterInfo(); // 캐릭터 정보가 로딩된 후에 TextCsv처리가 가능함
         ProcessCsvOfTextScript();
         ProcessCsvOfItem();
-        ProcessCsvOfOnlyOneLives_PlayerInfo();
     }
 
     private void ProcessCsvOfTextScript()
@@ -288,17 +294,17 @@ public class CsvManager : Singleton<CsvManager>
         }
     }
 
-    private void ProcessCsvOfOnlyOneLives_PlayerInfo()
+    private void ProcessCsvOfCharacterInfo()
     {
-        string fileNamePath = "CSV/OnlyOneLives/PlayerInfo";
+        string fileNamePath = "CSV/Character/CharacterInfo";
 
         // 데이터 처리
-        LoadCsv<cOnlyOneLives_PlayerInfo>(
+        LoadCsv<cCharacterInfo>(
             fileNamePath,
-            (row, plyaerInfo) =>
+            (row, CharacterInfo) =>
             {
                 // 저장공간을 할당받지 못한 경우
-                if (plyaerInfo == null) return;
+                if (CharacterInfo == null) return;
 
                 int intField = 0;
 
@@ -312,7 +318,14 @@ public class CsvManager : Singleton<CsvManager>
                         case 0: 
                             if(int.TryParse(field, out intField))
                             {
-                                plyaerInfo.playerIndex = intField; break;
+                                if(Enum.IsDefined(typeof(eCharacter), intField))
+                                {
+                                    CharacterInfo.CharaterIndex = (eCharacter)intField; break;
+                                }
+                                else
+                                {
+                                    Debug.LogAssertion($"{intField}는 eCharacter에 정의되지 않았음");
+                                }
                             }
                             else
                             {
@@ -320,22 +333,28 @@ public class CsvManager : Singleton<CsvManager>
                             }
                             break;
 
-                        case 1: plyaerInfo.PlayerName = field; break;
-                        case 2: plyaerInfo.PlayerAge = field; break;
-                        case 3: plyaerInfo.PlayerClan = field; break;
-                        case 4: plyaerInfo.PlayerFeature = field; break;
+                        case 1: CharacterInfo.CharacterName = field; break;
+                        case 2: CharacterInfo.CharacterAge = field; break;
+                        case 3: CharacterInfo.CharacterClan = field; break;
+                        case 4: CharacterInfo.CharacterFeature = field; break;
                     }
                     field_num++;
                 }
 
-                OnlyOneLives_PlayerInfoList.Add( plyaerInfo );
-
-                
+                // Character 딕셔너리에 삽입
+                if (CharacterInfoDict.ContainsKey(CharacterInfo.CharaterIndex) == false)
+                {
+                    CharacterInfoDict.Add(CharacterInfo.CharaterIndex, CharacterInfo);
+                }
+                else
+                {
+                    CharacterInfoDict[CharacterInfo.CharaterIndex] = CharacterInfo;
+                }
             }
             );
 
         // 처리된 데이터의 확인
-        foreach (var row in OnlyOneLives_PlayerInfoList)
+        foreach (var row in CharacterInfoDict)
         {
             PrintProperties(row);
         }
@@ -375,6 +394,7 @@ public class CsvManager : Singleton<CsvManager>
         }
     }
 
+
     public void LoadTextCsv(string path, int fileEnum)
     {
         if ((eTextScriptFile)fileEnum == eTextScriptFile.None) return;
@@ -385,6 +405,8 @@ public class CsvManager : Singleton<CsvManager>
                 if (info == null) return;
 
                 eStage stage = eStage.None;
+
+                int intField = 0;
                 int field_num = 0;
                 foreach (string field in row)
                 {
@@ -393,7 +415,7 @@ public class CsvManager : Singleton<CsvManager>
                     {
                         // 처리된 데이터를 넣을 Stage를 저장
                         case 0:
-                            if (int.TryParse(field, out int intField))
+                            if (int.TryParse(field, out intField))
                             {
                                 switch (intField)
                                 {
@@ -417,18 +439,17 @@ public class CsvManager : Singleton<CsvManager>
                             }
                             break;
 
-                        case 1: info.speaker = field; break;
-                        case 2: info.script = field; break;
-                        case 3: 
-                            if(int.TryParse(field, out int intField2)) // 문자열을 정수형으로 캐스팅
+                        // 캐릭터 인덱스 처리
+                        case 1:
+                            if (int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
                             {
-                                if (Enum.IsDefined(typeof(eSelection), intField2)) // 정수값이 enum에 정의되었는지 확인
+                                if (Enum.IsDefined(typeof(eCharacter), intField)) // 정수값이 enum에 정의되었는지 확인
                                 {
-                                    info.eSelect = (eSelection)intField2;
+                                    info.characterEnum = (eCharacter)intField;
                                 }
                                 else
                                 {
-                                    Debug.LogWarning($"{intField2}는 {typeof(eSelection).Name}에 정의되지 않았음");
+                                    Debug.LogWarning($"{intField}는 {typeof(eCharacter).Name}에 정의되지 않았음");
                                 }
                             }
                             else
@@ -436,21 +457,91 @@ public class CsvManager : Singleton<CsvManager>
                                 Debug.LogWarning($"{field}는 정수값이 아닙니다.");
                             }
                             break;
-                        default:
-                            // 선택지가 존재하는 경우에만
-                            if (info.eSelect == eSelection.Exist)
+
+                        // 캐릭터의 다이얼로그아이콘 인덱스 처리
+                        case 2:
+                            if (int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
                             {
-                                if((field_num % 2) == 0)
+                                info.DialogueIconIndex = intField;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"{field}는 정수값이 아닙니다.");
+                            }
+                            break;
+                        // 스크립트 처리
+                        case 3: info.script = field; break;
+
+                        // 엔드콜백 처리
+                        case 4:
+                            if (int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
+                            {
+                                if (Enum.IsDefined(typeof(eHasEndCallback), intField)) // 정수값이 enum에 정의되었는지 확인
+                                {
+                                    info.hasEndCallback = (eHasEndCallback)intField;
+                                }
+                                else
+                                {
+                                    Debug.LogWarning($"{intField}는 {typeof(eHasEndCallback).Name}에 정의되지 않았음");
+                                }
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"{field}는 정수값이 아닙니다.");
+                            }
+                            break;
+                        // 엔드콜백이 존재하는 경우만(기본값 NO)
+                        case 5:
+                            if(info.hasEndCallback == eHasEndCallback.yes)
+                            {
+                                if (int.TryParse(field, out intField))
+                                {
+                                    info.SelectionCallback.Add(CallbackManager.Instance.CallBackList_Text(intField));
+                                }
+                                else
+                                {
+                                    Debug.LogAssertion($"{field}는 정수로 파스할 수 없음");
+                                }
+                            }
+                            break;
+
+                        // 선택지 처리
+                        case 6: 
+                            if(int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
+                            {
+                                if (Enum.IsDefined(typeof(eHasSelection), intField)) // 정수값이 enum에 정의되었는지 확인
+                                {
+                                    info.hasSelection = (eHasSelection)intField;
+                                }
+                                else
+                                {
+                                    Debug.LogWarning($"{intField}는 {typeof(eHasSelection).Name}에 정의되지 않았음");
+                                }
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"{field}는 정수값이 아닙니다.");
+                            }
+                            break;
+                        // 선택지가 존재하는 경우에만(기본값 NO)
+                        default:
+                            if (info.hasSelection == eHasSelection.yes)
+                            {
+                                if((field_num % 2) == 1)
                                 {
                                     // 선택지 스크립트
-                                    info.selection.Add(field);
+                                    info.selectionScript.Add(field);
                                 }
                                 else
                                 {
                                     // 선택지에 따른 처리
                                     if (int.TryParse(field, out int intField3))
                                     {
-                                        info.callback.Add(CallbackManager.Instance.CallBackList_Selection(intField3));
+                                        info.SelectionCallback.Add(CallbackManager.Instance.CallBackList_Text(intField3));
+                                    }
+                                    else
+                                    {
+                                        Debug.LogAssertion($"{field}는 정수로 파스할 수 없음");
                                     }
                                 }
                             }
@@ -470,8 +561,6 @@ public class CsvManager : Singleton<CsvManager>
             }
             );
     }
-
-    
 
     public void LoadCsv<T>(string resourceName, Action<List<string>, T> RowCallback) where T : new()
         // where T : new() : 제네릭 타입 T가 매개변수 없는 기본 생성자를 가진 클래스여야 한다는 조건을 의미

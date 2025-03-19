@@ -8,15 +8,12 @@ public class GameAssistantPopUp_OnlyOneLives : PopUpBase
     public PlayerEtc[] players;
 
     // 스크립트
-    private List<cOnlyOneLives_PlayerInfo> playerInfoList;
     private List<int> SelectedIndex;
 
     private void CheckList()
     {
         if (SelectedIndex == null) SelectedIndex = new List<int>();
         else SelectedIndex.Clear();
-
-        if (playerInfoList == null) playerInfoList = CsvManager.Instance.GetPlayerInfoList();
 
         if(ActiveObjList == null) ActiveObjList = new List<GameObject> ();
 
@@ -46,12 +43,12 @@ public class GameAssistantPopUp_OnlyOneLives : PopUpBase
             {
                 do // 유일한 인덱스를 선택
                 {
-                    playerIndex = Random.Range(0, playerInfoList.Count);
+                    playerIndex = Random.Range((int)(eCharacter.KangDoYun), (int)(eCharacter.OhJinSoo)+1);
                 } while (SelectedIndex.Contains(playerIndex));
                 SelectedIndex.Add(playerIndex);
 
                 // 해당 인덱스로 정보를 초기화
-                playerPanelScript.InitPlayerInfo(players[i], i, playerInfoList[playerIndex]);
+                playerPanelScript.InitPlayerInfo(players[i], i, CsvManager.Instance.GetCharacterInfo((eCharacter)playerIndex));
             }
             
             else Debug.LogAssertion("잘못된 프리팹");

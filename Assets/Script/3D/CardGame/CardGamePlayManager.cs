@@ -214,7 +214,10 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
     {
         // 각 카드를 동시에 오픈
         Sequence sequence = DOTween.Sequence();
-        AttackerScript.PresentedCardScript.GetSequnce_TryCardOpen(sequence, AttackerScript);
+
+        Sequence appendSequence = DOTween.Sequence();
+        AttackerScript.PresentedCardScript.GetSequnce_TryCardOpen(appendSequence, AttackerScript);
+        sequence.Append(appendSequence);
 
         Sequence joinSequnce = DOTween.Sequence();
         DefenderScript.PresentedCardScript.GetSequnce_TryCardOpen(joinSequnce, DefenderScript);

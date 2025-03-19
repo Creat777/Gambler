@@ -85,7 +85,7 @@ public class CallbackManager : Singleton<CallbackManager>
     }
 
     // csv에서 인덱스만으로 함수를 선택할 수있도록 만듬
-    public UnityAction CallBackList_Selection(int index)
+    public UnityAction CallBackList_Text(int index)
     {
         // csv선택지에서 자유롭게 콜백함수를 고를 수 있음
         switch (index)

@@ -70,7 +70,7 @@ public class PlayerEtc : CardGamePlayerBase
         
         sequence.SetLoops(1);
         sequence.Play();
-        Debug.Log($"애니메이션 시간 : {returnDelay}");
+        //Debug.Log($"애니메이션 시간 : {returnDelay}");
     }
 
 
@@ -96,6 +96,6 @@ public class PlayerEtc : CardGamePlayerBase
         sequence.AppendInterval(1f);
         sequence.SetLoops(1);
         sequence.Play();
-        Debug.Log($"애니메이션 시간 : {returnDelay}");
+        //Debug.Log($"애니메이션 시간 : {returnDelay}");
     }
 }

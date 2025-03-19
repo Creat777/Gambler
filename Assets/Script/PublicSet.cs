@@ -67,6 +67,25 @@ namespace PublicSet
         None,
     }
 
+    public enum eCharacter
+    {
+        None,
+        Narration,
+
+        Player,
+        MunDuckBea,
+        Caesar,
+
+        KangDoYun,
+        SeoJiHoo,
+        LeeHaRin,
+        ChoiGeonWoo,
+        YoonChaeYoung,
+        ParkMinSeok,
+        JangSeoYoon,
+        OhJinSoo
+    }
+
     public enum eItemSerialNumber
     {
         None,
@@ -90,10 +109,15 @@ namespace PublicSet
         EatMeal
     }
 
-    public enum eSelection
+    public enum eHasEndCallback
     {
-        NoneExist,
-        Exist
+        No,
+        yes
+    }
+    public enum eHasSelection
+    {
+        No,
+        yes
     }
 
 
@@ -124,16 +148,23 @@ namespace PublicSet
     public class cTextScriptInfo
     {
 
-        public string speaker { get; set; }
+        public eCharacter characterEnum { get; set; }
+        public int DialogueIconIndex { get; set; }
         public string script { get; set; }
-        public eSelection eSelect { get; set; }
-        public List<string> selection { get; set; }
-        public List<UnityAction> callback { get; set; }
+        public eHasEndCallback hasEndCallback { get; set; }
+        public UnityAction endCallback { get; set; }
+        public eHasSelection hasSelection { get; set; }
+        public List<string> selectionScript { get; set; }
+        public List<UnityAction> SelectionCallback { get; set; }
 
         public cTextScriptInfo()
         {
-            selection = new List<string>();
-            callback = new List<UnityAction>();
+            characterEnum = eCharacter.None;
+            hasEndCallback = eHasEndCallback.No;
+            endCallback = null;
+            hasSelection = eHasSelection.No;
+            selectionScript = new List<string>();
+            SelectionCallback = new List<UnityAction>();
         }
     }
 
@@ -175,13 +206,13 @@ namespace PublicSet
         public bool isFaceDown;
     }
 
-    public class cOnlyOneLives_PlayerInfo
+    public class cCharacterInfo
     {
-        public int playerIndex { get; set; }
-        public string PlayerName { get; set; }
-        public string PlayerAge { get; set; }
-        public string PlayerClan { get; set; }
-        public string PlayerFeature { get; set; }
+        public eCharacter CharaterIndex { get; set; }
+        public string CharacterName { get; set; }
+        public string CharacterAge { get; set; }
+        public string CharacterClan { get; set; }
+        public string CharacterFeature { get; set; }
     }
 
 }
