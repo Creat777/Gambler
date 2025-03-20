@@ -4,6 +4,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using PublicSet;
+using UnityEditor.SceneManagement;
 
 
 
@@ -14,31 +15,43 @@ public class CsvManager : Singleton<CsvManager>
 
     // 스크립트
     // OnlyOneLives PlayerInfo 자료구조
-    private Dictionary<eCharacter,cCharacterInfo> CharacterInfoDict;
+    private Dictionary<eCharacterType,cCharacterInfo> CharacterInfo_Dict;
 
-    // 상호작용 객체 자료구조
-    private List<cTextScriptInfo>[,] InteractableInfoFiles;
+    // TextList를 저장하기위한 자료구조
+    // 접근법 : TextInfoDicts[eTextScriptFile.None][eStage.None]
+    private Dictionary<eTextScriptFile , Dictionary<eStage, List<cTextScriptInfo>>> TextScriptInfo_2dDict;
 
     // 아이템 객체 자료구조
-    private Dictionary<eItemSerialNumber, cItemInfo> ItemInfoDict;
+    private Dictionary<eItemType, cItemInfo> ItemInfo_Dict;
 
-    public Dictionary<eCharacter, cCharacterInfo> GetCharacterInfoDict()
+    public Dictionary<eCharacterType, cCharacterInfo> GetCharacterInfoDict()
     {
-        return CharacterInfoDict;
+        return CharacterInfo_Dict;
     }
-    public cCharacterInfo GetCharacterInfo(eCharacter characterEnum)
+    public cCharacterInfo GetCharacterInfo(eCharacterType characterEnum)
     {
-        return CharacterInfoDict[characterEnum];
-    }
-
-    public List<cTextScriptInfo> GetTextScript(eTextScriptFile eCsv, eStage eStage)
-    {
-        return InteractableInfoFiles[(int)eCsv,(int)eStage];
+        return CharacterInfo_Dict[characterEnum];
     }
 
-    public cItemInfo GetItemInfo(eItemSerialNumber eSerialNumber)
+    public List<cTextScriptInfo> GetTextScript(eTextScriptFile File, eStage Stage)
     {
-        return ItemInfoDict[eSerialNumber];
+        // 해당 스테이지에 출력할 텍스트가 있으면 가져오고
+        if (TextScriptInfo_2dDict[File][Stage].Count !=0)
+        {
+            return TextScriptInfo_2dDict[File][Stage];
+        }
+
+        //그렇지 않으면 디폴트값(0)의 텍스트를 가져옴
+        else
+        {
+            return TextScriptInfo_2dDict[File][eStage.Defualt];
+        }
+        
+    }
+
+    public cItemInfo GetItemInfo(eItemType eSerialNumber)
+    {
+        return ItemInfo_Dict[eSerialNumber];
     }
 
     
@@ -53,26 +66,28 @@ public class CsvManager : Singleton<CsvManager>
     
     private void NewCsvStorage()
     {
-        // 스테이지 개수
-        int StageCount = Enum.GetValues(typeof(eStage)).Length;
+        // OnlyOneLives 플레이어 정보 관련
+        CharacterInfo_Dict = new Dictionary<eCharacterType, cCharacterInfo>();
 
-        // 파일개수에서 None은 제외
-
-        // 상호작용 관련
-        int textScriptFileCount = Enum.GetValues(typeof(eTextScriptFile)).Length - 1;
-        InteractableInfoFiles = new List<cTextScriptInfo>[textScriptFileCount, StageCount];
-
-        for(int i = 0; i < InteractableInfoFiles.Length; i++)
+        // text 관련
+        // 전체 딕트 메모리 확보
+        TextScriptInfo_2dDict = new Dictionary<eTextScriptFile, Dictionary<eStage, List<cTextScriptInfo>>>();
+        foreach(eTextScriptFile file in Enum.GetValues(typeof(eTextScriptFile)))
         {
-            InteractableInfoFiles[i / StageCount, i% StageCount]
-                = new List<cTextScriptInfo>();
+            // 파일키에 저장될 메모리 확보
+            TextScriptInfo_2dDict.Add(file, new Dictionary<eStage, List<cTextScriptInfo>>());
+
+            foreach(eStage stage in Enum.GetValues(typeof(eStage)))
+            {
+                // 스테이지키에 저장될 메모리 확보
+                TextScriptInfo_2dDict[file].Add(stage, new List<cTextScriptInfo>());
+            }
         }
 
         // 아이템 관련
-        ItemInfoDict = new Dictionary<eItemSerialNumber, cItemInfo>();
+        ItemInfo_Dict = new Dictionary<eItemType, cItemInfo>();
 
-        // OnlyOneLives 플레이어 정보 관련
-        CharacterInfoDict = new Dictionary<eCharacter, cCharacterInfo>();
+        
     }
     
 
@@ -100,10 +115,33 @@ public class CsvManager : Singleton<CsvManager>
 
     private void ProcessCsvOfTextScript()
     {
-        // 상호작용 객체에 대한 csv
-        string path = "CSV/TextScript/";
-        ProcessScriptCsv<eTextScriptFile, cTextScriptInfo>(path, LoadTextCsv ,InteractableInfoFiles);
-        
+        string path = "CSV/TextScript/Interactable/";
+        foreach (eTextScriptFile eFileName in Enum.GetValues(typeof(eTextScriptFile)))
+        {
+            if(eFileName == eTextScriptFile.None) continue;
+
+            if(eFileName == eTextScriptFile.PlayerMonologue)
+            {
+                path = "CSV/TextScript/NoneInteractable/";
+            }
+
+            string FilePath = path + eFileName.ToString();
+
+            // 데이터 처리
+            LoadTextCsv(FilePath, eFileName);
+
+            // 처리된 데이터의 확인
+            foreach (eStage eStageEnum in Enum.GetValues(typeof(eStage)))
+            {
+                // 각 파일에서 행을 하나씩 뽑아서 데이터를 올바르게 처리했는지 확인
+                foreach (cTextScriptInfo info in TextScriptInfo_2dDict[eFileName][eStageEnum])
+                {
+                    //Debug.Log($"csv TextScript({(info as cTextScriptInfo).script}) 프린트 생략");
+                    //PrintProperties(info);
+                }
+
+            }
+        }
     }
 
     private void ProcessCsvOfItem()
@@ -127,13 +165,16 @@ public class CsvManager : Singleton<CsvManager>
                     {
                         // 처리된 데이터를 넣을 Stage를 저장
                         case 0:
-                            if (eItemSerialNumber.TryParse(field, out eItemSerialNumber enumField))
+                            if (eItemType.TryParse(field, out eItemType enumField))
                             {
                                 itemInfo.serialNumber = enumField;
                             }
                             else
                             {
-                                Debug.LogWarning($"[{field}]는 아이템 시리얼번호가 될 수 없음");
+                                if(field != "")
+                                {
+                                    Debug.LogWarning($"[{field}]는 아이템 시리얼번호가 될 수 없음");
+                                }
                             }
                             break;
 
@@ -170,37 +211,42 @@ public class CsvManager : Singleton<CsvManager>
 
                         // 소모성 여부
                         case 4:
-
-                            if (int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
+                            if(itemInfo.isAvailable)
                             {
-                                if (intField == 0)
+                                if (int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
                                 {
-                                    itemInfo.isConsumable = false;
-                                }
-                                else if (intField == 1)
-                                {
-                                    itemInfo.isConsumable = true;
+                                    if (intField == 0)
+                                    {
+                                        itemInfo.isConsumable = false;
+                                    }
+                                    else if (intField == 1)
+                                    {
+                                        itemInfo.isConsumable = true;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogWarning($"{intField}는 정의되지 않은 데이터");
+                                    }
                                 }
                                 else
                                 {
-                                    Debug.LogWarning($"{intField}는 정의되지 않은 데이터");
+                                    Debug.LogWarning($"{field}는 정수로 캐스팅 불가");
                                 }
-                            }
-                            else
-                            {
-                                Debug.LogWarning($"{field}는 정수로 캐스팅 불가");
                             }
                             break;
 
                             // 사용시 데이터
                         case 5:
-                            if (float.TryParse(field, out float floatField))
+                            if(itemInfo.isAvailable)
                             {
-                                itemInfo.value_Use = floatField;
-                            }
-                            else
-                            {
-                                Debug.LogWarning($"[{field}]는 사용값이 될 수 없음");
+                                if (float.TryParse(field, out float floatField))
+                                {
+                                    itemInfo.value_Use = floatField;
+                                }
+                                else
+                                {
+                                    Debug.LogWarning($"[{field}]는 사용값이 될 수 없음");
+                                }
                             }
                             break;
 
@@ -229,14 +275,18 @@ public class CsvManager : Singleton<CsvManager>
 
                             // 판매시 가격
                         case 7:
-                            if (int.TryParse(field, out int intField2))
+                            if(itemInfo.isForSale)
                             {
-                                itemInfo.value_Sale = intField2;
+                                if (int.TryParse(field, out int intField2))
+                                {
+                                    itemInfo.value_Sale = intField2;
+                                }
+                                else
+                                {
+                                    Debug.LogWarning($"[{field}]는 사용값이 될 수 없음");
+                                }
                             }
-                            else
-                            {
-                                Debug.LogWarning($"[{field}]는 사용값이 될 수 없음");
-                            }
+                            
                             break;
 
                         default: Debug.LogAssertion($"{field}는 잘못된 항목에 위치함");
@@ -246,13 +296,13 @@ public class CsvManager : Singleton<CsvManager>
                 }
 
                 // 아이템 딕셔너리에 삽입
-                if(ItemInfoDict.ContainsKey(itemInfo.serialNumber) == false)
+                if(ItemInfo_Dict.ContainsKey(itemInfo.serialNumber) == false)
                 {
-                    ItemInfoDict.Add(itemInfo.serialNumber, itemInfo);
+                    ItemInfo_Dict.Add(itemInfo.serialNumber, itemInfo);
                 }
                 else
                 {
-                    ItemInfoDict[itemInfo.serialNumber] = itemInfo;
+                    ItemInfo_Dict[itemInfo.serialNumber] = itemInfo;
                 }
                 
             }
@@ -261,12 +311,12 @@ public class CsvManager : Singleton<CsvManager>
         // 추가적인 데이터 처리
         foreach(ItemPlusInfo itemPlusInfo in itemPlusInfoTable.item_PlusInfoList)
         {
-            eItemSerialNumber serailNumber = itemPlusInfo.serialNumber;
+            eItemType serailNumber = itemPlusInfo.serialNumber;
 
             // 아이템에 해당하는 프리팹을 연결
-            if(ItemInfoDict.ContainsKey(serailNumber))
+            if(ItemInfo_Dict.ContainsKey(serailNumber))
             {
-                ItemInfoDict[serailNumber].itemPrefab = itemPlusInfo.itemPrefab;
+                ItemInfo_Dict[serailNumber].itemPrefab = itemPlusInfo.itemPrefab;
             }
             else
             {
@@ -274,20 +324,20 @@ public class CsvManager : Singleton<CsvManager>
             }
 
             // 사용 가능한 경우
-            if (ItemInfoDict[serailNumber].isAvailable)
+            if (ItemInfo_Dict[serailNumber].isAvailable)
             {
 
                 // 콜백리스트에서 아이템에 해당하는 콜백함수를 저장하도록 함
-                ItemInfoDict[serailNumber].itemCallback +=
-                    CallbackManager.Instance.CallBackList_Item_Quest(itemPlusInfo.itemCallbackIndex);
+                ItemInfo_Dict[serailNumber].itemCallback +=
+                    CallbackManager.Instance.CallBackList_Item(itemPlusInfo.itemCallbackIndex);
             }
 
         }
         
         // 처리된 데이터의 확인
-        foreach(eItemSerialNumber serail in Enum.GetValues(typeof(eItemSerialNumber)))
+        foreach(eItemType serail in Enum.GetValues(typeof(eItemType)))
         {
-            if (serail == eItemSerialNumber.None) continue;
+            if (serail == eItemType.None) continue;
 
             //Debug.Log($"csv Item({ItemInfoDict[serail].name}) 프린트 생략");
             //PrintProperties(ItemInfoDict[serail]);
@@ -318,9 +368,9 @@ public class CsvManager : Singleton<CsvManager>
                         case 0: 
                             if(int.TryParse(field, out intField))
                             {
-                                if(Enum.IsDefined(typeof(eCharacter), intField))
+                                if(Enum.IsDefined(typeof(eCharacterType), intField))
                                 {
-                                    CharacterInfo.CharaterIndex = (eCharacter)intField; break;
+                                    CharacterInfo.CharaterIndex = (eCharacterType)intField; break;
                                 }
                                 else
                                 {
@@ -342,69 +392,67 @@ public class CsvManager : Singleton<CsvManager>
                 }
 
                 // Character 딕셔너리에 삽입
-                if (CharacterInfoDict.ContainsKey(CharacterInfo.CharaterIndex) == false)
+                if (CharacterInfo_Dict.ContainsKey(CharacterInfo.CharaterIndex) == false)
                 {
-                    CharacterInfoDict.Add(CharacterInfo.CharaterIndex, CharacterInfo);
+                    CharacterInfo_Dict.Add(CharacterInfo.CharaterIndex, CharacterInfo);
                 }
                 else
                 {
-                    CharacterInfoDict[CharacterInfo.CharaterIndex] = CharacterInfo;
+                    CharacterInfo_Dict[CharacterInfo.CharaterIndex] = CharacterInfo;
                 }
             }
             );
 
         // 처리된 데이터의 확인
-        foreach (var row in CharacterInfoDict)
-        {
-            PrintProperties(row);
-        }
+        //foreach(eCharacter key in CharacterInfo_Dict.Keys)
+        //{
+        //    PrintProperties(CharacterInfo_Dict[key]);
+        //}
     }
 
-    private void ProcessScriptCsv<T_enum, T_class>(string path, Action<string, int> LoadCsv,
-        List<T_class>[,] CsvFileInfoPerStage) where T_enum : Enum
-    {
-        foreach (var eFileName in Enum.GetValues(typeof(T_enum)))
-        {
-            // 마지막 순서로 None이 있음
-            if ((int)eFileName == Enum.GetValues(typeof(T_enum)).Length - 1) continue;
+    //private void ProcessScriptCsv<T_enum, T_class>(string path, Action<string, int> LoadCsv,
+    //    Dictionary<eTextScriptFile, Dictionary<eStage, List<T_class>>> CsvFileInfoPerStage) where T_enum : Enum
+    //{
+    //    foreach (var eFileName in Enum.GetValues(typeof(T_enum)))
+    //    {
+    //        // 마지막 순서로 None이 있음
+    //        if ((int)eFileName == Enum.GetValues(typeof(T_enum)).Length - 1) continue;
 
-            string FilePath = path + eFileName.ToString();
-            int eFileCode = eFileName.GetHashCode();
+    //        string FilePath = path + eFileName.ToString();
+    //        int eFileCode = eFileName.GetHashCode();
 
-            // 데이터 처리
-            LoadCsv(FilePath, eFileCode);
+    //        // 데이터 처리
+    //        LoadCsv(FilePath, eFileCode);
 
-            // 처리된 데이터의 확인
-            foreach (var eStage in Enum.GetValues(typeof(eStage)))
-            {
-                int eStageCode = eStage.GetHashCode();
+    //        // 처리된 데이터의 확인
+    //        foreach (var eStage in Enum.GetValues(typeof(eStage)))
+    //        {
+    //            int eStageCode = eStage.GetHashCode();
 
-                // 정상적인 스테이지 코드의 경우만 실행
-                if(eStageCode != 0)
-                {
-                    // 각 파일에서 행을 하나씩 뽑아서 데이터를 올바르게 처리했는지 확인
-                    foreach (T_class info in CsvFileInfoPerStage[eFileCode, eStageCode])
-                    {
-                        //Debug.Log($"csv TextScript({(info as cTextScriptInfo).script}) 프린트 생략");
-                        //PrintProperties(info);
-                    }
-                }    
+    //            // 정상적인 스테이지 코드의 경우만 실행
+    //            if(eStageCode != 0)
+    //            {
+    //                // 각 파일에서 행을 하나씩 뽑아서 데이터를 올바르게 처리했는지 확인
+    //                foreach (T_class info in CsvFileInfoPerStage[eFileCode, eStageCode])
+    //                {
+    //                    //Debug.Log($"csv TextScript({(info as cTextScriptInfo).script}) 프린트 생략");
+    //                    //PrintProperties(info);
+    //                }
+    //            }    
                 
-            }
-        }
-    }
+    //        }
+    //    }
+    //}
 
 
-    public void LoadTextCsv(string path, int fileEnum)
+    public void LoadTextCsv(string path, eTextScriptFile fileEnum)
     {
-        if ((eTextScriptFile)fileEnum == eTextScriptFile.None) return;
-
         LoadCsv<cTextScriptInfo>(path,
             (row, info)=>
             {
                 if (info == null) return;
 
-                eStage stage = eStage.None;
+                int intStage = int.MinValue;
 
                 int intField = 0;
                 int field_num = 0;
@@ -415,27 +463,24 @@ public class CsvManager : Singleton<CsvManager>
                     {
                         // 처리된 데이터를 넣을 Stage를 저장
                         case 0:
+                            
                             if (int.TryParse(field, out intField))
                             {
-                                switch (intField)
+                                if(Enum.IsDefined(typeof(eStage), intField))
                                 {
-                                    case 1: 
-                                        //Debug.Log($"입력된 스테이지 코드 : {intField}"); 
-                                        stage = eStage.Stage1; break;
-                                    case 2: 
-                                        //Debug.Log($"입력된 스테이지 코드 : {intField}"); 
-                                        stage = eStage.Stage2; break;
-                                    case 3: 
-                                        //Debug.Log($"입력된 스테이지 코드 : {intField}"); 
-                                        stage = eStage.Stage3; break;
-                                    default: 
-                                        Debug.LogWarning($"{field}는 정의되지 않은 스테이지 코드"); 
-                                        break;
+                                    intStage = intField;
+                                }
+                                else
+                                {
+                                    Debug.LogAssertion($"{path}의 \"{field}\"는 eStage에 정의되지 않았음");
                                 }
                             }
                             else
                             {
-                                Debug.LogWarning($"[{field}]는 스테이지 코드값이 숫자가 아님");
+                                if(field != "")
+                                {
+                                    Debug.LogWarning($"파일{fileEnum.ToString()}의 [{field}]는 스테이지 코드값이 숫자가 아님");
+                                }
                             }
                             break;
 
@@ -443,13 +488,13 @@ public class CsvManager : Singleton<CsvManager>
                         case 1:
                             if (int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
                             {
-                                if (Enum.IsDefined(typeof(eCharacter), intField)) // 정수값이 enum에 정의되었는지 확인
+                                if (Enum.IsDefined(typeof(eCharacterType), intField)) // 정수값이 enum에 정의되었는지 확인
                                 {
-                                    info.characterEnum = (eCharacter)intField;
+                                    info.characterEnum = (eCharacterType)intField;
                                 }
                                 else
                                 {
-                                    Debug.LogWarning($"{intField}는 {typeof(eCharacter).Name}에 정의되지 않았음");
+                                    Debug.LogWarning($"파일{fileEnum.ToString()}의 [{intField}]는 {typeof(eCharacterType).Name}에 정의되지 않았음");
                                 }
                             }
                             else
@@ -466,7 +511,7 @@ public class CsvManager : Singleton<CsvManager>
                             }
                             else
                             {
-                                Debug.LogWarning($"{field}는 정수값이 아닙니다.");
+                                Debug.LogWarning($"파일{fileEnum.ToString()}의 {field}는 정수값이 아닙니다.");
                             }
                             break;
                         // 스크립트 처리
@@ -496,11 +541,11 @@ public class CsvManager : Singleton<CsvManager>
                             {
                                 if (int.TryParse(field, out intField))
                                 {
-                                    info.SelectionCallback.Add(CallbackManager.Instance.CallBackList_Text(intField));
+                                    info.endCallback = CallbackManager.Instance.CallBackList_Text(intField);
                                 }
                                 else
                                 {
-                                    Debug.LogAssertion($"{field}는 정수로 파스할 수 없음");
+                                    Debug.LogAssertion($"파일{fileEnum.ToString()}의 {field}는 정수로 파스할 수 없음");
                                 }
                             }
                             break;
@@ -527,23 +572,29 @@ public class CsvManager : Singleton<CsvManager>
                         default:
                             if (info.hasSelection == eHasSelection.yes)
                             {
-                                if((field_num % 2) == 1)
+                                // 비어있는경우 제외
+                                if (field.Length > 0)
                                 {
-                                    // 선택지 스크립트
-                                    info.selectionScript.Add(field);
-                                }
-                                else
-                                {
-                                    // 선택지에 따른 처리
-                                    if (int.TryParse(field, out int intField3))
+                                    if ((field_num % 2) == 1)
                                     {
-                                        info.SelectionCallback.Add(CallbackManager.Instance.CallBackList_Text(intField3));
+
+                                        // 선택지 스크립트
+                                        info.selectionScript.Add(field);
                                     }
                                     else
                                     {
-                                        Debug.LogAssertion($"{field}는 정수로 파스할 수 없음");
+                                        // 선택지에 따른 처리
+                                        if (int.TryParse(field, out intField))
+                                        {
+                                            info.SelectionCallback.Add(CallbackManager.Instance.CallBackList_Text(intField));
+                                        }
+                                        else
+                                        {
+                                            Debug.LogAssertion($"파일{fileEnum.ToString()}의 {field}는 정수로 파스할 수 없음");
+                                        }
                                     }
                                 }
+                                
                             }
                             break;
                     }
@@ -552,12 +603,11 @@ public class CsvManager : Singleton<CsvManager>
                 }
 
                 // 정의되지 않은 스테이지의 경우 무시
-                if(stage != eStage.None)
+                if(Enum.IsDefined(typeof(eStage), intStage)) // intStage는 새로 할당받지 않았으면 int.MinValue가 저장되어있음
                 {
                     // 각 행의 원소들을 처리한 후 스테이지별 csv파일에 삽입
-                    InteractableInfoFiles[fileEnum,(int)stage].Add(info);
+                    TextScriptInfo_2dDict[fileEnum][ (eStage)intStage].Add(info);
                 }
-                
             }
             );
     }

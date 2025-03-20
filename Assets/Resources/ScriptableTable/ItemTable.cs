@@ -14,7 +14,7 @@ using static UnityEngine.GraphicsBuffer;
 public class ItemPlusInfo
 {
     // 아이템 고유 번호
-    public eItemSerialNumber serialNumber;
+    public eItemType serialNumber;
 
     // 아이템 프리팹
     public GameObject itemPrefab;

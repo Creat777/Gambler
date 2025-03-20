@@ -1,7 +1,7 @@
 using UnityEngine;
 using PublicSet;
 
-public class QuestPopUp : PopUpBase
+public class QuestPopUp : PopUpBase<QuestPopUp>
 {
     private void OnEnable()
     {

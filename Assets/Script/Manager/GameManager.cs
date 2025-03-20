@@ -37,7 +37,7 @@ public class GameManager : Singleton<GameManager>
     public ePlayerSaveKey currentSaveKey;
     public eScene currentScene;
     public eMap currentMap;
-    public eStage currentStage;
+    public eStage currentStage { get; set; }
 
 
     [SerializeField] private int month = 12;
@@ -86,11 +86,7 @@ public class GameManager : Singleton<GameManager>
         isCasinoGameView = boolValue;
     }
 
-    public void NextStage()
-    {
-        currentStage++;
-        StageAnimation();
-    }
+    
 
 #if UNITY_EDITOR
     private void Update()
@@ -156,7 +152,12 @@ public class GameManager : Singleton<GameManager>
         currentStage = stageEnum;
     }
 
-    public void StageAnimation()
+    public void NextStage()
+    {
+        currentStage++;
+    }
+
+    public void PlaySequnce_StageAnimation()
     {
         Debug.Log("stage 애니메이션 시작");
 

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CardGameRulePopUp : PopUpBase
+public class CardGameRulePopUp : PopUpBase<CardGameRulePopUp>
 {
     void Start()
     {

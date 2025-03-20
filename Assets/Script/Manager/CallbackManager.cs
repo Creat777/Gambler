@@ -104,6 +104,7 @@ public class CallbackManager : Singleton<CallbackManager>
             case 11: return GotoUnknownIsland;
             case 12: return TellmeOneMoreTime;
             case 13: return EnterCasino;
+            case 14: return TutorialStart;
         }
 
         return TrashFuc;
@@ -183,11 +184,11 @@ public class CallbackManager : Singleton<CallbackManager>
             GameManager.Connector.box_Script.EmptyOutBox();
 
             // 박스에 들어있는 아이템들
-            PlayerPrefsManager.Instance.PlayerGetItem(eItemSerialNumber.Notice_Stage1);
-            PlayerPrefsManager.Instance.PlayerGetItem(eItemSerialNumber.TutorialQuest);
-            PlayerPrefsManager.Instance.PlayerGetItem(eItemSerialNumber.Meat);
-            PlayerPrefsManager.Instance.PlayerGetItem(eItemSerialNumber.Fish);
-            PlayerPrefsManager.Instance.PlayerGetItem(eItemSerialNumber.Egg);
+            PlayerPrefsManager.Instance.PlayerGetItem(eItemType.Notice_Stage1);
+            PlayerPrefsManager.Instance.PlayerGetItem(eItemType.TutorialQuest);
+            PlayerPrefsManager.Instance.PlayerGetItem(eItemType.Meat);
+            PlayerPrefsManager.Instance.PlayerGetItem(eItemType.Fish);
+            PlayerPrefsManager.Instance.PlayerGetItem(eItemType.Egg);
 
             TextWindowPopUp_Close();
 
@@ -268,7 +269,13 @@ public class CallbackManager : Singleton<CallbackManager>
             );
     }
 
+    // 14
+    public void TutorialStart()
+    {
+        GameManager.Instance.PlaySequnce_StageAnimation();
+    }
 
+    // 15
 
 
 
@@ -287,11 +294,11 @@ public class CallbackManager : Singleton<CallbackManager>
     /// </summary>
     /// <param name="index">값으로 콜백함수를 선택함</param>
     /// <returns> 버튼에 연결할 콜백함수 </returns>
-    public UnityAction CallBackList_Item_Quest(eItemCallback index)
+    public UnityAction CallBackList_Item(eItemCallback index)
     {
         switch (index)
         {
-            case eItemCallback.TutorialStart : return TutorialStart;
+            case eItemCallback.FirstQuest : return FirstQuest;
             case eItemCallback.EatMeal: return EatMeal;
 
             default: return TrashFuc;
@@ -299,10 +306,10 @@ public class CallbackManager : Singleton<CallbackManager>
     }
 
     
-    public void TutorialStart()
+    public void FirstQuest()
     {
         GameManager.Instance.NextStage();
-
+        GameManager.Instance.PlaySequnce_StageAnimation();
         GameManager.Connector.iconView_Script.IconUnLock(eIcon.Quest);
         Debug.Log("튜토리얼 시작");
     }

@@ -21,14 +21,14 @@ public class PortraitImage : MonoBehaviour
         rectTrans.sizeDelta = rectSize;
     }
 
-    public bool TryChangePortraitImage(eCharacter characterIndex)
+    public bool TryChangePortraitImage(eCharacterType characterIndex)
     {
         bool isSueccessed = false;
-        Sprite sprite = PortraitResource.Instance.TryGetPortraitImage(characterIndex, out isSueccessed);
+        Sprite sprite = PortraitImageResource.Instance.TryGetImage(characterIndex, out isSueccessed);
         if(isSueccessed)
         {
             image.sprite = sprite;
-            Debug.Log("이미지 전환 성공");
+            Debug.Log($"이미지 전환 성공, 사용된 이미지 : {sprite.name}");
         }
         else
         {

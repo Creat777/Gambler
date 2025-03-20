@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PopUpBase : MemoryPool_Queue
+public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
+    where T_Class : MonoBehaviour
 {
     // 에디터 연결
     public RectTransform contentTrans;

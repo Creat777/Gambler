@@ -71,10 +71,10 @@ public class OnlyOneLivesPlayer : MonoBehaviour
         PlayerBalanceUpdate();
     }
 
-    public bool TryChangePortraitImage(eCharacter characterIndex)
+    public bool TryChangePortraitImage(eCharacterType characterIndex)
     {
         bool isSueccessed = false;
-        Sprite sprite = PortraitResource.Instance.TryGetPortraitImage(characterIndex, out isSueccessed);
+        Sprite sprite = PortraitImageResource.Instance.TryGetImage(characterIndex, out isSueccessed);
         if (isSueccessed)
         {
             PlayerImage.sprite = sprite;

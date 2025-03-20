@@ -4,7 +4,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 
-public abstract class MemoryPool_Stack : Singleton<MemoryPool_Stack>
+public abstract class MemoryPool_Stack<T_Class> : Singleton<T_Class>
+    where T_Class : MonoBehaviour
 {
     public GameObject prefab;
 

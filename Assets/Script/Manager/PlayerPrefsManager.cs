@@ -7,7 +7,7 @@ using UnityEngine;
 public struct sItem
 {
     public int Id_inInventory; // 내가 소유하고 있는 아이템 번호
-    public eItemSerialNumber serialNumber; // 아이템 시리얼 번호 - 아이콘, 아이템의 능력치
+    public eItemType serialNumber; // 아이템 시리얼 번호 - 아이콘, 아이템의 능력치
 
     // 데이터 저장을 위해 string으로 변환
     public override string ToString()
@@ -21,7 +21,7 @@ public struct sItem
         string[] parts = data.Split(':');
         if (parts.Length == 2 &&
             int.TryParse(parts[0], out int id) &&
-            eItemSerialNumber.TryParse(parts[1], out eItemSerialNumber serial)
+            eItemType.TryParse(parts[1], out eItemType serial)
                 )
         {
             return new sItem(id, serial);
@@ -36,7 +36,7 @@ public struct sItem
     }
 
     // 생성자
-    public sItem(int id, eItemSerialNumber serail)
+    public sItem(int id, eItemType serail)
     {
         Id_inInventory = id;
         serialNumber = serail;
@@ -167,7 +167,7 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
     }
 
     // 새로운 아이템 정보를 저장하기 위한 함수
-    public void PlayerGetItem(eItemSerialNumber serialNum)
+    public void PlayerGetItem(eItemType serialNum)
     {
         int itemId = GetNewLastId();
 
@@ -188,7 +188,7 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
         //
     }
 
-    public void ItemSaveProcess(int itemId, eItemSerialNumber serialNum, Action<sItem> middleCallback, Action endCallback)
+    public void ItemSaveProcess(int itemId, eItemType serialNum, Action<sItem> middleCallback, Action endCallback)
     {
         // 기존 저장된 데이터를 불러오고
         LoadItems();

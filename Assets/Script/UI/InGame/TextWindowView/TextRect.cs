@@ -26,9 +26,9 @@ public class TextRect : MonoBehaviour
         float spaceBetweenPortraitAndThis = Mathf.Abs(rectTransform.anchoredPosition.x);
         float spaceBetweenSkipButtonAndTextWindow = Mathf.Abs(PortraitFrameRectTrans.anchoredPosition.x);
 
-        Debug.Log(spaceBetweenPortraitAndTextWindow);
-        Debug.Log(spaceBetweenPortraitAndThis);
-        Debug.Log(spaceBetweenSkipButtonAndTextWindow);
+        //Debug.Log(spaceBetweenPortraitAndTextWindow);
+        //Debug.Log(spaceBetweenPortraitAndThis);
+        //Debug.Log(spaceBetweenSkipButtonAndTextWindow);
 
         // y축은 고정됐으니 x축만 변경
         size.x = TextWindowRectTrans.rect.size.x // 전체 상자 크기

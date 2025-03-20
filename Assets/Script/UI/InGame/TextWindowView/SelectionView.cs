@@ -63,10 +63,6 @@ public class SelectionView : MonoBehaviour
             }
             
         }
-        //for (int j = 0; j < selection.Length; j++)
-        //{
-            
-        //}
     }
 
     // 선택지의 콜백함수 실행 후 셀렉션뷰는 비활성화됨

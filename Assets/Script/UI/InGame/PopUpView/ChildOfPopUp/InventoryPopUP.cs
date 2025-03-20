@@ -3,13 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryPopUp : PopUpBase
+public class InventoryPopUp : PopUpBase<InventoryPopUp>
 {
     public sItem currentClickItem; // 현재 클릭한 아이템
-
-    private void Awake()
-    {
-    }
 
     private void OnEnable()
     {

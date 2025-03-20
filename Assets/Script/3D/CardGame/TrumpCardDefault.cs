@@ -16,11 +16,11 @@ public class TrumpCardDefault : MonoBehaviour
 
     public void SetTrumpCard(cTrumpCardInfo value)
     {
-        Debug.Log($"SetTrumpCard실행, 인수 : {value}");
+        //Debug.Log($"SetTrumpCard실행, {gameObject.name}(객체이름) : {value.cardName}(설정된 카드 이름)");
         trumpCardInfo = value;
 
         // 제대로 데이터가 삽입되었는지 확인
-        CsvManager.Instance.PrintProperties(trumpCardInfo);
+        //CsvManager.Instance.PrintProperties(trumpCardInfo);
     }
 
     public float GetSequnce_TryCardOpen(Sequence sequence, CardGamePlayerBase playerScript)

@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using PublicSet;
 
-public class GameAssistantPopUp_OnlyOneLives : PopUpBase
+public class GameAssistantPopUp_OnlyOneLives : PopUpBase<GameAssistantPopUp_OnlyOneLives>
 {
     // 에디터
     public PlayerEtc[] players;
@@ -43,12 +43,12 @@ public class GameAssistantPopUp_OnlyOneLives : PopUpBase
             {
                 do // 유일한 인덱스를 선택
                 {
-                    playerIndex = Random.Range((int)(eCharacter.KangDoYun), (int)(eCharacter.OhJinSoo)+1);
+                    playerIndex = Random.Range((int)(eCharacterType.KangDoYun), (int)(eCharacterType.OhJinSoo)+1);
                 } while (SelectedIndex.Contains(playerIndex));
                 SelectedIndex.Add(playerIndex);
 
                 // 해당 인덱스로 정보를 초기화
-                playerPanelScript.InitPlayerInfo(players[i], i, CsvManager.Instance.GetCharacterInfo((eCharacter)playerIndex));
+                playerPanelScript.InitPlayerInfo(players[i], i, CsvManager.Instance.GetCharacterInfo((eCharacterType)playerIndex));
             }
             
             else Debug.LogAssertion("잘못된 프리팹");

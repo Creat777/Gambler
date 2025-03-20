@@ -60,7 +60,7 @@ public class TextWindowView : MonoBehaviour
         }
 
         // 상호작용을 위한 기본처리
-        InteractionProcess(textFileEnum);
+        DefaultProcess(textFileEnum);
 
         // 상호작용을 시작할때 즉시 스크립트가 출력되도록 만듬
         if (textScriptDataList != null)
@@ -98,7 +98,7 @@ public class TextWindowView : MonoBehaviour
         if (textScriptDataList.Count >= 1)
         {
             // selection이 없으면
-            if (textScriptData.hasSelection == eHasSelection.yes)
+            if (textScriptData.hasSelection == eHasSelection.No)
             {
                 // 타이핑이 끝난경우 다음 타이핑을 시작
                 if (isTypingReady)
@@ -114,7 +114,7 @@ public class TextWindowView : MonoBehaviour
             }
 
             // selection이 있으면
-            else if (textScriptData.hasSelection == eHasSelection.No)
+            else if (textScriptData.hasSelection == eHasSelection.yes)
             {
                 // 타이핑이 끝난 경우 selectionView를 활성화
                 if (isTypingReady)
@@ -125,8 +125,16 @@ public class TextWindowView : MonoBehaviour
                     // 셀렉션 스크립트 부여 및 콜백 등록
                     for (int i = 0; i < textScriptData.selectionScript.Count && i < textScriptData.SelectionCallback.Count; i++)
                     {
-
-                        selectionView_Script.RegisterButtonClick_Selection(i, textScriptData.selectionScript[i], textScriptData.SelectionCallback[i]);
+                        if (textScriptData.SelectionCallback[i] != null)
+                        {
+                            selectionView_Script.RegisterButtonClick_Selection(
+                                i, textScriptData.selectionScript[i], textScriptData.SelectionCallback[i]);
+                        }
+                        else
+                        {
+                            Debug.LogAssertion("셀렉션 콜백함수가 정의되지 않았음");
+                        }
+                        
                     }
                 }
                 // 타이핑이 안끝났으면 타이핑을 끝내기
@@ -138,8 +146,8 @@ public class TextWindowView : MonoBehaviour
         }
     }
 
-    // 상호작용을 위한 기본 처리
-    private void InteractionProcess(eTextScriptFile fileEnum)
+    // 텍스트 출력을 위한 기본 처리
+    private void DefaultProcess(eTextScriptFile fileEnum)
     {
         // 어떤파일인지 지시하지 않은 경우 ex) 상호작용파일
         if(fileEnum == eTextScriptFile.None)
@@ -208,18 +216,18 @@ public class TextWindowView : MonoBehaviour
         {
             if(textScriptData.hasEndCallback == eHasEndCallback.yes)
             {
-                textScriptData.endCallback();
+                if(textScriptData.endCallback !=null)
+                {
+                    textScriptData.endCallback();
+                }
+                else
+                {
+                    Debug.LogAssertion("엔드콜백이 정의되지 않았음");
+                }
+                
             }
             Debug.Log($"현재 실행된 문자열의 개수 == {textScriptDataList.Count}");
             CallbackManager.Instance.TextWindowPopUp_Close();
-
-
-            Debug.LogAssertion("Doto => csv파일에 텍스트가 끝난경우 실행할 콜백여부 조건을 추가하기");
-            if (currentTextFile == eTextScriptFile.PlayerMonologue
-                && GameManager.Instance.currentStage == eStage.Stage1)
-            {
-                GameManager.Instance.StageAnimation();
-            }
         }
 
 
@@ -318,7 +326,7 @@ public class TextWindowView : MonoBehaviour
     public void SkipText()
     {
         // 현재 텍스트에 셀렉션이 있으면
-        if (textScriptData.hasSelection == eHasSelection.No)
+        if (textScriptData.hasSelection == eHasSelection.yes)
         {
             // 타이핑 종료
             isTypingReady = true;
@@ -347,7 +355,7 @@ public class TextWindowView : MonoBehaviour
                 return;
             }
         }
-        while (textScriptData.hasSelection == eHasSelection.yes);
+        while (textScriptData.hasSelection == eHasSelection.No);
 
         // PrintText에서도 다음인덱스의 데이터를 받기때문에 인덱스의 숫자를 1 줄임
         TextIndex--;

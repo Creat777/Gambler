@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // 메모리풀이 싱글톤으로 정의되어있지만 해당 객체는 부모객체가 존재하기에 씬 이동시 파괴됨
-public class CardButtonMemoryPool : MemoryPool_Stack
+public class CardButtonMemoryPool : MemoryPool_Stack<CardButtonMemoryPool>
 {
     // 에디터 연결
     public PlayerMe playerMe;

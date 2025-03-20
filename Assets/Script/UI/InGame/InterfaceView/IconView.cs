@@ -12,7 +12,7 @@ using UnityEngine.InputSystem;
 public class IconView : MonoBehaviour
 {
     // 에디터 편집
-    public Transform CenterTrans;
+    public RectTransform rectTrans;
     public GameObject iconViewCloseButton;
     public float ViewOpenDelay;
 
@@ -24,8 +24,8 @@ public class IconView : MonoBehaviour
     public GameObject[] iconLock;
 
     // 스크립트 편집
-    private Vector3 CenterPos;
-    private Vector3 OutOpScreenPos;
+    private Vector2 Center_anchoredPos;
+    private Vector2 OutOfScreen_anchoredPos;
     bool isIconViewOpen;
 
     Dictionary<eIcon, ePopUpState> iconConditions;
@@ -36,15 +36,23 @@ public class IconView : MonoBehaviour
 
     private void Awake()
     {
-        CenterPos = CenterTrans.position;
-        OutOpScreenPos = transform.position;
-
         if (ViewOpenDelay < 0.1f)
         {
             ViewOpenDelay = 0.3f;
         }
+        SetPos();
+    }
 
-        //Init_IconToPopUpStateDict();
+    private void SetPos()
+    {
+        OutOfScreen_anchoredPos = rectTrans.rect.size;
+        OutOfScreen_anchoredPos.x = OutOfScreen_anchoredPos.x - OutOfScreen_anchoredPos.y;
+        OutOfScreen_anchoredPos.y = -(OutOfScreen_anchoredPos.y/2);
+
+        Center_anchoredPos = OutOfScreen_anchoredPos;
+        Center_anchoredPos.x = 0f;
+
+        rectTrans.anchoredPosition = OutOfScreen_anchoredPos;
     }
 
     
@@ -54,24 +62,17 @@ public class IconView : MonoBehaviour
     {
         PopUpView popUpView = GameManager.Connector.popUpView_Script;
 
-        /*
-        // 버튼 컴포넌트에 기본 실행 함수를 정리
-        ButtonOnClickUpdate(eIcon.Inventory, inventory, popUpView.InventoryPopUpOpen, popUpView.InventoryPopUpClose);
-        ButtonOnClickUpdate(eIcon.Quest, quest, popUpView.QuestPopUpOpen, popUpView.QuestPopUpClose);
-        ButtonClickUpdate(status, popUpView. , popUpView. );
-        ButtonClickUpdate(Message, popUpView. , popUpView.);
-        */
     }
 
     public void IconViewOpen()
     {
-        IconViewProcess(CenterPos, true);
+        IconViewProcess(Center_anchoredPos, true);
     }
 
 
     public void IconViewClose()
     {
-        IconViewProcess(OutOpScreenPos, false);
+        IconViewProcess(OutOfScreen_anchoredPos, false);
     }
 
     private void IconViewProcess(Vector3 tragetPos ,bool boolActive, Sequence sequencePlus = null)
@@ -81,7 +82,7 @@ public class IconView : MonoBehaviour
         Sequence sequence = DOTween.Sequence();
 
         // iconView가 움직이고 iconView의 온오프 버튼의 처리
-        sequence.Append(transform.DOMove(tragetPos, ViewOpenDelay))
+        sequence.Append(rectTrans.DOAnchorPos(tragetPos, ViewOpenDelay))
                 .AppendCallback(() => iconViewCloseButton.SetActive(boolActive));
 
         // 아이콘 뷰가 움직인 후 추가적인 처리가 필요하면 sequence에 추가
@@ -119,7 +120,7 @@ public class IconView : MonoBehaviour
                 if (isIconViewOpen == false)
                 {
                     // IconViewProcess 내부에서 sequence를 추가하여 트위닝 시작함
-                    IconViewProcess(CenterPos, true, sequence);
+                    IconViewProcess(Center_anchoredPos, true, sequence);
                     return;
                 }
                 // 아이콘이 닫혀있는 경우

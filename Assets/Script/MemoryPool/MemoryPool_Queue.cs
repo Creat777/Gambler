@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MemoryPool_Queue : Singleton<MemoryPool_Queue>
+public abstract class MemoryPool_Queue<T_Class> : Singleton<T_Class>
+    where T_Class : MonoBehaviour
 {
     public GameObject prefab;
 

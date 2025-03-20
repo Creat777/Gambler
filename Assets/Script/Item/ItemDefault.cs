@@ -3,13 +3,14 @@ using UnityEngine;
 
 public class ItemDefault : MonoBehaviour
 {
+
     sItem item;
     cItemInfo itemInfo;
 
     public sItem Item { get { return item; } }
     public cItemInfo ItemInfo { get { return itemInfo; } }
 
-    public void SaveItemData(int id, eItemSerialNumber serial)
+    public void SaveItemData(int id, eItemType serial)
     {
         item = new sItem(id, serial);
         itemInfo = CsvManager.Instance.GetItemInfo(item.serialNumber);

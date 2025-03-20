@@ -33,14 +33,16 @@ namespace PublicSet
 
     public enum eStage
     {
-        None,
+        Defualt, // 스테이지 상관없이 실행
         Stage1,
         Stage2,
-        Stage3
+        Stage3,
     }
 
     public enum eTextScriptFile
     {
+        None,
+        // --------------Interactable----------------
         // 실내
         Bed,
         Cabinet,
@@ -54,28 +56,36 @@ namespace PublicSet
         OutsideDoor,
         NPC_MunDuckBea_Acquaintance,
         NPC_MunDuckBea_Encounter,
-
+        
         // 카지노
         NPC_MunDuckBea_InCasino,
         NPC_Caesar,
         CasinoDoor,
-        CasinoDealer,
 
+        // -----------None Interactable--------------
         // 독백
         PlayerMonologue,
 
-        None,
+        // 카지노
+        CasinoDealer,
+
+        // OnlyOneLives
     }
 
-    public enum eCharacter
+    public enum eCharacterType
     {
         None,
-        Narration,
 
-        Player,
+        System = 101,
+        Narration ,
+        GameManager, // 게임진행자
+        Unknown = 404,
+
+        Player = 1001,
         MunDuckBea,
         Caesar,
 
+        CasinoDealer = 10001,
         KangDoYun,
         SeoJiHoo,
         LeeHaRin,
@@ -86,7 +96,7 @@ namespace PublicSet
         OhJinSoo
     }
 
-    public enum eItemSerialNumber
+    public enum eItemType
     {
         None,
 
@@ -102,10 +112,18 @@ namespace PublicSet
         Notice_Stage1 = 10001
     }
 
+    public enum eItemImage
+    {
+        Scroll = 1001,
+        Meat = 2001,
+        Fish = 2002,
+        Egg = 2003
+    }
+
     public enum eItemCallback
     {
         None,
-        TutorialStart,
+        FirstQuest,
         EatMeal
     }
 
@@ -148,7 +166,7 @@ namespace PublicSet
     public class cTextScriptInfo
     {
 
-        public eCharacter characterEnum { get; set; }
+        public eCharacterType characterEnum { get; set; }
         public int DialogueIconIndex { get; set; }
         public string script { get; set; }
         public eHasEndCallback hasEndCallback { get; set; }
@@ -159,7 +177,7 @@ namespace PublicSet
 
         public cTextScriptInfo()
         {
-            characterEnum = eCharacter.None;
+            characterEnum = eCharacterType.None;
             hasEndCallback = eHasEndCallback.No;
             endCallback = null;
             hasSelection = eHasSelection.No;
@@ -177,7 +195,7 @@ namespace PublicSet
     public class cItemInfo
     {
         // 기본정보
-        public eItemSerialNumber serialNumber { get; set; }
+        public eItemType serialNumber { get; set; }
         public string name { get; set; }
         public string description { get; set; }
 
@@ -190,10 +208,21 @@ namespace PublicSet
         public bool isForSale { get; set; }
         public int value_Sale { get; set; }
 
+        public cItemInfo()
+        {
+            isAvailable = false;
+            isConsumable = false;
+            value_Use = 0;
+            isForSale = false;
+            value_Sale = 0;
+        }
+
         // 스크립트에서 별도로 추가할 값들
         public GameObject itemPrefab { get; set; }
         public UnityAction itemCallback { get; set; }
+
         
+
     }
 
     public class cTrumpCardInfo
@@ -208,7 +237,7 @@ namespace PublicSet
 
     public class cCharacterInfo
     {
-        public eCharacter CharaterIndex { get; set; }
+        public eCharacterType CharaterIndex { get; set; }
         public string CharacterName { get; set; }
         public string CharacterAge { get; set; }
         public string CharacterClan { get; set; }
