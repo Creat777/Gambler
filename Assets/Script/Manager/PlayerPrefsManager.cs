@@ -7,12 +7,12 @@ using UnityEngine;
 public struct sItem
 {
     public int Id_inInventory; // 내가 소유하고 있는 아이템 번호
-    public eItemType serialNumber; // 아이템 시리얼 번호 - 아이콘, 아이템의 능력치
+    public eItemType type; // 아이템 시리얼 번호 - 아이콘, 아이템의 능력치
 
     // 데이터 저장을 위해 string으로 변환
     public override string ToString()
     {
-        return $"{Id_inInventory}:{serialNumber}";
+        return $"{Id_inInventory}:{type}";
     }
 
     // string으로 저장했던 정보를 사용가능한 데이터로 변환
@@ -39,14 +39,14 @@ public struct sItem
     public sItem(int id, eItemType serail)
     {
         Id_inInventory = id;
-        serialNumber = serail;
+        type = serail;
         return;
     }
 
     public sItem(sItem item)
     {
         Id_inInventory = item.Id_inInventory;
-        serialNumber = item.serialNumber;
+        type = item.type;
         return;
     }
 }
@@ -148,7 +148,7 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
     public void PlayerLoseItem(sItem item)
     {
         Debug.Log($"item {item.ToString()} 삭제 시도");
-        ItemSaveProcess(item.Id_inInventory, item.serialNumber,
+        ItemsDataSaveProcess(item.Id_inInventory, item.type,
             (sItem newItem) =>
             {
                 // 지금 입력된 아이템이 존재하는지 여부를 판단
@@ -167,11 +167,11 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
     }
 
     // 새로운 아이템 정보를 저장하기 위한 함수
-    public void PlayerGetItem(eItemType serialNum)
+    public void PlayerGetItem(eItemType itemType)
     {
         int itemId = GetNewLastId();
 
-        ItemSaveProcess(itemId, serialNum,
+        ItemsDataSaveProcess(itemId, itemType,
             (sItem newItem) =>
             {
                 // 지금 입력된 아이템이 존재하는지 여부를 판단
@@ -188,7 +188,7 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
         //
     }
 
-    public void ItemSaveProcess(int itemId, eItemType serialNum, Action<sItem> middleCallback, Action endCallback)
+    public void ItemsDataSaveProcess(int itemId, eItemType serialNum, Action<sItem> middleCallback, Action endCallback)
     {
         // 기존 저장된 데이터를 불러오고
         LoadItems();
@@ -210,7 +210,7 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
         endCallback();
 
         // 아이템에 변화가 생겼으니 인벤토리창을 새로고침
-        GameManager.Connector.popUpView_Script.inventoryPopUp.GetComponent<InventoryPopUp>().RefreshInventory();
+        GameManager.connector.popUpView_Script.inventoryPopUp.GetComponent<InventoryPopUp>().RefreshPopUp();
     }
 
     public HashSet<sItem> LoadItems()
@@ -233,7 +233,7 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
             sItem item = sItem.DataSplit(itemString);
 
             // 데이터가 잘못된경우 패스
-            if (item.Id_inInventory == 0 && item.serialNumber == 0)
+            if (item.Id_inInventory == 0 && item.type == 0)
             {
                 continue;
             }

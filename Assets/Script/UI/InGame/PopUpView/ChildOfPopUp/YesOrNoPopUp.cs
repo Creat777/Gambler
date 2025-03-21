@@ -6,7 +6,7 @@ public class YesOrNoPopUp : SimplePopUp
 {
     public Button YesButton;
     
-    public void AddYesButtonCallBack(UnityAction callback )
+    public void SetYesButtonCallBack(UnityAction callback )
     {
         YesButton.onClick.RemoveAllListeners();
         YesButton.onClick.AddListener( callback );

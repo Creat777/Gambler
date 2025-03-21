@@ -53,7 +53,7 @@ public class PlayManager : Singleton<PlayManager>
     /// </summary>
     private void PlayerMoneyUpdate()
     {
-        playerMoneyViewText = GameManager.Connector.playerMoneyView.transform.GetChild(1).gameObject.GetComponent<Text>();
+        playerMoneyViewText = GameManager.connector.playerMoneyView.transform.GetChild(1).gameObject.GetComponent<Text>();
         if(playerMoneyViewText != null)
         {
             playerMoneyViewText.text = "x"+currentPlayerStatus.money.ToString();

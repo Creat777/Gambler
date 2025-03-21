@@ -13,6 +13,7 @@ public class PortraitImageResource : ImageResourceBase<PortraitImageResource,eCh
     [SerializeField] private Sprite[] sCaesar;
 
     // 도박 캐릭터
+    [SerializeField] private Sprite[] sCasinoDealer;
     [SerializeField] private Sprite[] sKangDoYun;
     [SerializeField] private Sprite[] sSeoJiHoo;
     [SerializeField] private Sprite[] sLeeHaRin;
@@ -31,6 +32,7 @@ public class PortraitImageResource : ImageResourceBase<PortraitImageResource,eCh
         imageDict.Add(eCharacterType.MunDuckBea, sMunDuckBea);
         imageDict.Add(eCharacterType.Caesar, sCaesar);
 
+        imageDict.Add(eCharacterType.CasinoDealer, sCasinoDealer);
         imageDict.Add(eCharacterType.KangDoYun, sKangDoYun);
         imageDict.Add(eCharacterType.SeoJiHoo, sSeoJiHoo);
         imageDict.Add(eCharacterType.LeeHaRin, sLeeHaRin);

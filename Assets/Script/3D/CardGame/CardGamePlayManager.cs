@@ -109,7 +109,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
             }
         }
 
-        popUpView.gameAssistantPopUp_OnlyOneLives.InitGameAssistant();
+        popUpView.gameAssistantPopUp_OnlyOneLives.RefreshPopUp();
         cardGameView.playerInterface.InitInterface();
     }
 

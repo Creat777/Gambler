@@ -153,7 +153,7 @@ public class TextWindowView : MonoBehaviour
         if(fileEnum == eTextScriptFile.None)
         {
             // 플레이어의 레이캐스트에 걸리는 객체
-            GameObject curruntObject = GameManager.Connector.player.GetComponent<Player_MoveAndAnime>().hitObject;
+            GameObject curruntObject = GameManager.connector.player.GetComponent<Player_MoveAndAnime>().hitObject;
 
             if (curruntObject != null)
             {

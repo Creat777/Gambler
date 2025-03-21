@@ -35,7 +35,7 @@ public class InteractionView : MonoBehaviour
     public void StartInteraction()
     {
         CallbackManager.Instance.TextWindowPopUp_Open();
-        TextWindowView textView = GameManager.Connector.textWindowView.GetComponent<TextWindowView>();
+        TextWindowView textView = GameManager.connector.textWindowView.GetComponent<TextWindowView>();
         textView.StartTextWindow();
     }
 }

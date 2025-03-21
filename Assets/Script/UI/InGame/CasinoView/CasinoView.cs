@@ -6,7 +6,7 @@ public class CasinoView : MonoBehaviour
     
     public void StartDealerDialogue()
     {
-        TextWindowView textViewScript = GameManager.Connector.textWindowView.GetComponent<TextWindowView>();
+        TextWindowView textViewScript = GameManager.connector.textWindowView.GetComponent<TextWindowView>();
         if (textViewScript != null)
         {
             //Debug.Log("딜러 텍스트 시작");

@@ -1,4 +1,4 @@
-stage¹øÈ£,Character_Enum,DialogueIcon_Index,Script,"endCallback À¯¹«(1, 0)",endCallback ¹øÈ£,"selection À¯¹«(1, 0)",1¹ø ¼±ÅÃÁö,1¹ø ÄÝ¹éÇÔ¼ö,2¹ø ¼±ÅÃÁö,2¹ø ÄÝ¹éÇÔ¼ö
-0,1001,0,³Ê¹« ÇÇ°ïÇÏ´Ù,0,0,0,0,0,0,0
-0,1001,0,ÀÌÁ¦ ´«À» Á» ºÙÀÏ±î?,0,0,1,ÀÌ¸¸ ÀáÀÌ³ª ÀÚÀÚ,4,¾ÆÁ÷ ÇÒÀÏÀÌ ¸¹´Ù,1
-1,1001,0,Áö±Ý ÀáÀÌ ¿Ã °Å °°Áö´Â ¾Ê´Ù,0,0,0,0,0,0,0
+stageë²ˆí˜¸,Character_Enum,DialogueIcon_Index,Script,"endCallback ìœ ë¬´(1, 0)",endCallback ë²ˆí˜¸,"selection ìœ ë¬´(1, 0)",1ë²ˆ ì„ íƒì§€,1ë²ˆ ì½œë°±í•¨ìˆ˜,2ë²ˆ ì„ íƒì§€,2ë²ˆ ì½œë°±í•¨ìˆ˜
+0,1001,0,ë„ˆë¬´ í”¼ê³¤í•˜ë‹¤,0,0,0,0,0,0,0
+0,1001,0,ì´ì œ ëˆˆì„ ì¢€ ë¶™ì¼ê¹Œ?,0,0,1,ì´ë§Œ ìž ì´ë‚˜ ìžìž,4,ì•„ì§ í• ì¼ì´ ë§Žë‹¤,1
+1,1001,0,ì§€ê¸ˆ ìž ì´ ì˜¬ ê±° ê°™ì§€ëŠ” ì•Šë‹¤,0,0,0,0,0,0,0

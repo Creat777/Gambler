@@ -29,16 +29,16 @@ public class CallbackManager : Singleton<CallbackManager>
         isBlakcViewReady = false;
 
         // 대화창 끄고 일시정지
-        GameManager.Connector.textWindowView.SetActive(false);
+        GameManager.connector.textWindowView.SetActive(false);
         GameManager.Instance.Pause_theGame();
 
         // 먼저 화면가림막 활성화
-        GameManager.Connector.blackView.SetActive(true);
+        GameManager.connector.blackView.SetActive(true);
 
         // 화면이 검게 변했다가 다시 원상복귀됨
         if (blackViewImage == null)
         {
-            blackViewImage = GameManager.Connector.blackView.GetComponent<Image>();
+            blackViewImage = GameManager.connector.blackView.GetComponent<Image>();
         }
 
         // 시퀀스 생성
@@ -64,7 +64,7 @@ public class CallbackManager : Singleton<CallbackManager>
             () =>
             {
                 // 비활성화를 해야 화면 클릭이 가능함
-                GameManager.Connector.blackView.SetActive(false);
+                GameManager.connector.blackView.SetActive(false);
 
                 // 게임 지속
                 GameManager.Instance.Continue_theGame();
@@ -114,19 +114,19 @@ public class CallbackManager : Singleton<CallbackManager>
     // 0
     public virtual void TextWindowPopUp_Open()
     {
-        GameManager.Connector.textWindowView.SetActive(true);
-        GameManager.Connector.interfaceView.SetActive(false);
+        GameManager.connector.textWindowView.SetActive(true);
+        GameManager.connector.interfaceView.SetActive(false);
     }
 
     // 1
     public virtual void TextWindowPopUp_Close()
     {
-        GameManager.Connector.textWindowView.SetActive(false);
+        GameManager.connector.textWindowView.SetActive(false);
 
         // 카지노 게임뷰가 아닌 경우에만 인터페이스를 활성화
         if(GameManager.Instance.isCasinoGameView == false)
         {
-            GameManager.Connector.interfaceView.SetActive(true);
+            GameManager.connector.interfaceView.SetActive(true);
         }
         
     }
@@ -137,8 +137,8 @@ public class CallbackManager : Singleton<CallbackManager>
         float delay = 2.0f;
         // 암막 중에 실행될 처리를 람다함수로 전달
         BlackViewProcess(delay, 
-            () => GameManager.Connector.map_Script.ChangeMapTo(eMap.OutsideOfHouse), 
-            () => GameManager.Connector.interfaceView.SetActive(true)
+            () => GameManager.connector.map_Script.ChangeMapTo(eMap.OutsideOfHouse), 
+            () => GameManager.connector.interfaceView.SetActive(true)
         );
         
     }
@@ -149,8 +149,8 @@ public class CallbackManager : Singleton<CallbackManager>
         float delay = 2.0f;
         // 암막 중에 실행될 처리를 람다함수로 전달
         BlackViewProcess(delay,
-            () =>GameManager.Connector.map_Script.ChangeMapTo(eMap.InsideOfHouse),
-            () =>GameManager.Connector.interfaceView.SetActive(true)
+            () =>GameManager.connector.map_Script.ChangeMapTo(eMap.InsideOfHouse),
+            () =>GameManager.connector.interfaceView.SetActive(true)
         );
         
     }
@@ -181,7 +181,7 @@ public class CallbackManager : Singleton<CallbackManager>
         if(PlayerPrefsManager.Instance != null)
         {
             // false키에 "Interactable_Box_Empty"저장되어있음
-            GameManager.Connector.box_Script.EmptyOutBox();
+            GameManager.connector.box_Script.EmptyOutBox();
 
             // 박스에 들어있는 아이템들
             PlayerPrefsManager.Instance.PlayerGetItem(eItemType.Notice_Stage1);
@@ -192,7 +192,7 @@ public class CallbackManager : Singleton<CallbackManager>
 
             TextWindowPopUp_Close();
 
-            GameManager.Connector.iconView_Script.GetComponent<IconView>().IconUnLock(eIcon.Inventory);
+            GameManager.connector.iconView_Script.GetComponent<IconView>().IconUnLock(eIcon.Inventory);
         }
         
     }
@@ -200,7 +200,7 @@ public class CallbackManager : Singleton<CallbackManager>
     //6
     public virtual void TextHoldOn()
     {
-        TextWindowView textWindowView_Script = GameManager.Connector.textWindowView.GetComponent<TextWindowView>();
+        TextWindowView textWindowView_Script = GameManager.connector.textWindowView.GetComponent<TextWindowView>();
         textWindowView_Script.PrintText();
         return;
     }
@@ -221,7 +221,7 @@ public class CallbackManager : Singleton<CallbackManager>
     public virtual void GetGamblingCoin()
     {
         PlayManager.Instance.PlayerMoneyPlus(100);
-        GameManager.Connector.box_Script.FillUpBox();
+        GameManager.connector.box_Script.FillUpBox();
         TextHoldOn();
     }
 
@@ -233,8 +233,8 @@ public class CallbackManager : Singleton<CallbackManager>
         BlackViewProcess(delay,
             () =>
             {
-                GameManager.Connector.map_Script.ChangeMapTo(eMap.Casino);
-                GameManager.Connector.interfaceView.SetActive(true);
+                GameManager.connector.map_Script.ChangeMapTo(eMap.Casino);
+                GameManager.connector.interfaceView.SetActive(true);
             }
         );
     }
@@ -248,7 +248,7 @@ public class CallbackManager : Singleton<CallbackManager>
     // 12
     public virtual void TellmeOneMoreTime()
     {
-        GameManager.Connector.textWindowView.GetComponent<TextWindowView>().TextIndexInit(0);
+        GameManager.connector.textWindowView.GetComponent<TextWindowView>().TextIndexInit(0);
         TextHoldOn();
     }
 
@@ -260,11 +260,11 @@ public class CallbackManager : Singleton<CallbackManager>
         BlackViewProcess(delay,
             ()=>
             {
-                GameManager.Connector.MainCanvas_script.CasinoViewOpen();
+                GameManager.connector.MainCanvas_script.CasinoViewOpen();
             },
             ()=>  
             {
-                GameManager.Connector.MainCanvas_script.CasinoView.GetComponent<CasinoView>().StartDealerDialogue();
+                GameManager.connector.MainCanvas_script.CasinoView.GetComponent<CasinoView>().StartDealerDialogue();
             }
             );
     }
@@ -273,6 +273,7 @@ public class CallbackManager : Singleton<CallbackManager>
     public void TutorialStart()
     {
         GameManager.Instance.PlaySequnce_StageAnimation();
+        GameManager.connector.iconView_Script.IconUnLock(eIcon.Quest);
     }
 
     // 15
@@ -298,7 +299,7 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         switch (index)
         {
-            case eItemCallback.FirstQuest : return FirstQuest;
+            case eItemCallback.FirstQuest : return CasinoOpen;
             case eItemCallback.EatMeal: return EatMeal;
 
             default: return TrashFuc;
@@ -306,21 +307,19 @@ public class CallbackManager : Singleton<CallbackManager>
     }
 
     
-    public void FirstQuest()
+    public void CasinoOpen()
     {
         GameManager.Instance.NextStage();
         GameManager.Instance.PlaySequnce_StageAnimation();
-        GameManager.Connector.iconView_Script.IconUnLock(eIcon.Quest);
-        Debug.Log("튜토리얼 시작");
     }
 
     
     public void EatMeal()
     {
-        InventoryPopUp inven = GameManager.Connector.popUpView_Script.inventoryPopUp.GetComponent<InventoryPopUp>();
+        InventoryPopUp inven = GameManager.connector.popUpView_Script.inventoryPopUp.GetComponent<InventoryPopUp>();
         if (inven != null)
         {
-            cItemInfo itemInfo = CsvManager.Instance.GetItemInfo(inven.currentClickItem.serialNumber);
+            cItemInfo itemInfo = CsvManager.Instance.GetItemInfo(inven.currentClickItem.type);
             Debug.Log($"허기를 {itemInfo.value_Use.ToString()}만큼 회복했습니다.");
         }
         else

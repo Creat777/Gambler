@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
-public class ItemImageResource : ImageResourceBase<ItemImageResource,eItemImage>
+public class ItemImageResource : ImageResourceBase<ItemImageResource,eItemType>
 {
     [SerializeField] private Sprite[] sScroll;
     [SerializeField] private Sprite[] sMeat;
@@ -11,11 +11,12 @@ public class ItemImageResource : ImageResourceBase<ItemImageResource,eItemImage>
     [SerializeField] private Sprite[] sEgg;
     protected override void InitImageDict()
     {
-        imageDict = new Dictionary<eItemImage, Sprite[]>();
+        imageDict = new Dictionary<eItemType, Sprite[]>();
 
-        imageDict.Add(eItemImage.Scroll, sScroll);
-        imageDict.Add(eItemImage.Meat, sMeat);
-        imageDict.Add(eItemImage.Fish, sFish);
-        imageDict.Add(eItemImage.Egg, sEgg);
+        imageDict.Add(eItemType.TutorialQuest, sScroll);
+        imageDict.Add(eItemType.Meat, sMeat);
+        imageDict.Add(eItemType.Fish, sFish);
+        imageDict.Add(eItemType.Egg, sEgg);
+        imageDict.Add(eItemType.Notice_Stage1, sScroll);
     }
 }

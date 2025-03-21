@@ -49,9 +49,9 @@ public class CsvManager : Singleton<CsvManager>
         
     }
 
-    public cItemInfo GetItemInfo(eItemType eSerialNumber)
+    public cItemInfo GetItemInfo(eItemType itemType)
     {
-        return ItemInfo_Dict[eSerialNumber];
+        return ItemInfo_Dict[itemType];
     }
 
     
@@ -311,24 +311,24 @@ public class CsvManager : Singleton<CsvManager>
         // 추가적인 데이터 처리
         foreach(ItemPlusInfo itemPlusInfo in itemPlusInfoTable.item_PlusInfoList)
         {
-            eItemType serailNumber = itemPlusInfo.serialNumber;
+            eItemType itemType = itemPlusInfo.serialNumber;
 
             // 아이템에 해당하는 프리팹을 연결
-            if(ItemInfo_Dict.ContainsKey(serailNumber))
+            if(ItemInfo_Dict.ContainsKey(itemType))
             {
-                ItemInfo_Dict[serailNumber].itemPrefab = itemPlusInfo.itemPrefab;
+                ItemInfo_Dict[itemType].itemPrefab = itemPlusInfo.itemPrefab;
             }
             else
             {
-                Debug.LogAssertion($"serailNumber{serailNumber}는 딕셔너리 키에 없습니다.");
+                Debug.LogAssertion($"serailNumber{itemType}는 딕셔너리 키에 없습니다.");
             }
 
             // 사용 가능한 경우
-            if (ItemInfo_Dict[serailNumber].isAvailable)
+            if (ItemInfo_Dict[itemType].isAvailable)
             {
 
                 // 콜백리스트에서 아이템에 해당하는 콜백함수를 저장하도록 함
-                ItemInfo_Dict[serailNumber].itemCallback +=
+                ItemInfo_Dict[itemType].itemCallback +=
                     CallbackManager.Instance.CallBackList_Item(itemPlusInfo.itemCallbackIndex);
             }
 

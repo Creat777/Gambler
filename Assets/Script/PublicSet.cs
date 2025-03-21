@@ -112,14 +112,6 @@ namespace PublicSet
         Notice_Stage1 = 10001
     }
 
-    public enum eItemImage
-    {
-        Scroll = 1001,
-        Meat = 2001,
-        Fish = 2002,
-        Egg = 2003
-    }
-
     public enum eItemCallback
     {
         None,
@@ -141,9 +133,9 @@ namespace PublicSet
 
     public enum eIcon
     {
-        Inventory,
         Quest,
-        Status,
+        Inventory,
+        GameAssistance,
         Message
     }
 
@@ -220,8 +212,6 @@ namespace PublicSet
         // 스크립트에서 별도로 추가할 값들
         public GameObject itemPrefab { get; set; }
         public UnityAction itemCallback { get; set; }
-
-        
 
     }
 

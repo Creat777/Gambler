@@ -1,13 +1,8 @@
 using DG.Tweening;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using PublicSet;
 using UnityEngine.UI;
-using System;
-using UnityEngine.Events;
-using System.Threading;
-using System.Collections.Generic;
-using UnityEngine.InputSystem;
 
 public class IconView : MonoBehaviour
 {
@@ -16,22 +11,37 @@ public class IconView : MonoBehaviour
     public GameObject iconViewCloseButton;
     public float ViewOpenDelay;
 
-    public Button inventory;
     public Button quest;
-    public Button status;
-    public Button Message;
-    
-    public GameObject[] iconLock;
+    public Button inventory;
+    public Button gameAssistance;
+    public Button message;
+
+    public GameObject quest_Lock;
+    public GameObject inventory_Lock;
+    public GameObject gameAssistance_Lock;
+    public GameObject message_Lock;
 
     // 스크립트 편집
     private Vector2 Center_anchoredPos;
     private Vector2 OutOfScreen_anchoredPos;
     bool isIconViewOpen;
 
-    Dictionary<eIcon, ePopUpState> iconConditions;
-
-
-    
+    private Dictionary<eIcon, GameObject> _iconLockDict;
+    private Dictionary<eIcon, GameObject> iconLockDict
+    {
+        get
+        {
+            if (_iconLockDict == null)
+            {
+                _iconLockDict = new Dictionary<eIcon, GameObject>();
+                _iconLockDict.Add(eIcon.Quest, quest_Lock);
+                _iconLockDict.Add(eIcon.Inventory, inventory_Lock);
+                _iconLockDict.Add(eIcon.GameAssistance, gameAssistance_Lock);
+                _iconLockDict.Add(eIcon.Message, message_Lock);
+            }
+            return _iconLockDict;
+        }
+    }
 
 
     private void Awake()
@@ -60,7 +70,7 @@ public class IconView : MonoBehaviour
     
     private void Start()
     {
-        PopUpView popUpView = GameManager.Connector.popUpView_Script;
+        PopUpView popUpView = GameManager.connector.popUpView_Script;
 
     }
 
@@ -97,44 +107,37 @@ public class IconView : MonoBehaviour
 
     public void IconUnLock(eIcon choice)
     {
-        int choice_int = (int)choice;
-
-
-        if(eIcon.Inventory <= choice && choice <= eIcon.Message)
+        if(iconLockDict.ContainsKey(choice))
         {
-            if (iconLock[choice_int].activeSelf == false)
+            Sequence sequence = DOTween.Sequence();
+
+            Transform iconLockTrans = iconLockDict[choice].transform;
+            iconLockDict.Remove(choice);
+
+            sequence.Append(iconLockTrans.DOScale(Vector3.one * 2f, 0.3f))
+                    .Append(iconLockTrans.DOScale(Vector3.zero, 1f))
+                    .AppendCallback(() => { Destroy(iconLockTrans.gameObject); })
+                    .SetLoops(1);
+
+            // 아이콘이 닫혀있는 경우
+            if (isIconViewOpen == false)
             {
-                Debug.LogWarning($"{iconLock[choice_int]}가 이미 소멸했음");
+                // IconViewProcess 내부에서 sequence를 추가하여 트위닝 시작함
+                IconViewProcess(Center_anchoredPos, true, sequence);
                 return;
             }
-            if (choice_int < iconLock.Length)
+            // 아이콘이 열려있는 경우
+            else
             {
-                Sequence sequence = DOTween.Sequence();
-
-                sequence.Append(iconLock[choice_int].transform.DOScale(Vector3.one * 2f, 0.3f))
-                        .Append(iconLock[choice_int].transform.DOScale(Vector3.zero, 1f))
-                        .AppendCallback(() => { Destroy(iconLock[choice_int]); })
-                        .SetLoops(1);
-
-                // 아이콘이 닫혀있는 경우
-                if (isIconViewOpen == false)
-                {
-                    // IconViewProcess 내부에서 sequence를 추가하여 트위닝 시작함
-                    IconViewProcess(Center_anchoredPos, true, sequence);
-                    return;
-                }
-                // 아이콘이 닫혀있는 경우
-                else
-                {
-                    sequence.Play();
-                    return;
-                }
+                sequence.Play();
+                return;
             }
         }
         else
         {
-            Debug.LogWarning("IconUnLock의 매개변수 오류");
+            Debug.LogWarning($"{iconLockDict[choice]}가 이미 소멸했음");
             return;
         }
+        
     }
 }

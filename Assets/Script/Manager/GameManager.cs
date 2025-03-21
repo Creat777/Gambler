@@ -12,15 +12,15 @@ using System;
 public class GameManager : Singleton<GameManager>
 {
     // 싱글톤과 논싱글톤의 연결자
-    static private Connector connector;
-    static public Connector Connector
+    static private Connector _connector;
+    static public Connector connector
     {
         get { 
-            if(connector == null)
+            if(_connector == null)
             {
-                connector = GameObject.FindGameObjectWithTag("Connector").GetComponent<Connector>();
+                _connector = GameObject.FindGameObjectWithTag("Connector").GetComponent<Connector>();
             }
-            return connector;
+            return _connector;
         }
     }
 
@@ -125,8 +125,8 @@ public class GameManager : Singleton<GameManager>
 
     public void ProcessSceneView(bool isSceneLoad, Color startColor, Color targetColor, Action callback = null)
     {
-        Connector.blackView.SetActive(true);
-        Image blackViewImage = connector.blackView.GetComponent<Image>();
+        connector.blackView.SetActive(true);
+        Image blackViewImage = _connector.blackView.GetComponent<Image>();
         blackViewImage.color = startColor;
 
         Sequence sequence = DOTween.Sequence();
@@ -135,7 +135,7 @@ public class GameManager : Singleton<GameManager>
 
         if(isSceneLoad)
         {
-            sequence.AppendCallback(() => connector.blackView.SetActive(false));
+            sequence.AppendCallback(() => _connector.blackView.SetActive(false));
         }
         if (callback != null)
         {
@@ -162,15 +162,15 @@ public class GameManager : Singleton<GameManager>
         Debug.Log("stage 애니메이션 시작");
 
         // 이미지 활성화
-        Connector.StageView.SetActive(true);
+        connector.StageView.SetActive(true);
 
         // 이미지 색깔 초기화
-        Image stateViewImage = Connector.StageView.GetComponent<Image>();
+        Image stateViewImage = connector.StageView.GetComponent<Image>();
         Color colorBack = new Color(1,1,1,0);
         stateViewImage.color = colorBack;
 
         // 이미지 내부 텍스트 초기화
-        Text StageViewText = Connector.StageView.transform.GetChild(0).gameObject.GetComponent<Text>();
+        Text StageViewText = connector.StageView.transform.GetChild(0).gameObject.GetComponent<Text>();
         StageViewText.text = StageMessageDict[currentStage];
         StageViewText.color = Color.clear;
 
@@ -194,7 +194,7 @@ public class GameManager : Singleton<GameManager>
 
                 .AppendCallback(() =>
                 {
-                    Connector.StageView.SetActive(false);
+                    connector.StageView.SetActive(false);
                 })
 
                 .SetLoops(1);
@@ -212,7 +212,7 @@ public class GameManager : Singleton<GameManager>
         Month = 12;
         Day = 1;
 
-        Connector.map_Script.ChangeMapTo(eMap.InsideOfHouse);
+        connector.map_Script.ChangeMapTo(eMap.InsideOfHouse);
         ChangeStage(eStage.Stage1);
         SceneLoadView(
             () =>
@@ -225,7 +225,7 @@ public class GameManager : Singleton<GameManager>
     public void StartPlayerMonologue()
     {
         CallbackManager.Instance.TextWindowPopUp_Open();
-        TextWindowView textViewScript = Connector.textWindowView.GetComponent<TextWindowView>();
+        TextWindowView textViewScript = connector.textWindowView.GetComponent<TextWindowView>();
         if (textViewScript != null)
         {
             textViewScript.StartTextWindow(eTextScriptFile.PlayerMonologue);
@@ -238,7 +238,7 @@ public class GameManager : Singleton<GameManager>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // 씬넘어갈 시 기존 커넥터의 연결을 초기화
-        connector = null;
+        _connector = null;
 
         switch (scene.buildIndex)
         { 

@@ -6,12 +6,26 @@ public abstract class MemoryPool_Queue<T_Class> : Singleton<T_Class>
 {
     public GameObject prefab;
 
-    protected Queue<GameObject> memoryPool;
-
-
-    protected override void Awake()
+    // 비활성화된 목록의 관리
+    private Queue<GameObject> _memoryPool;
+    protected Queue<GameObject> memoryPool
     {
-        base.Awake();
+        get
+        {
+            if (_memoryPool == null) _memoryPool = new Queue<GameObject>();
+            return _memoryPool;
+        }
+    }
+
+    // 활성화된 목록의 관리
+    private List<GameObject> _ActiveObjList;
+    public List<GameObject> ActiveObjList 
+    {
+        get
+        {
+            if (_ActiveObjList == null) _ActiveObjList = new List<GameObject>();
+            return _ActiveObjList;
+        }
     }
 
     /// <summary>
@@ -20,9 +34,6 @@ public abstract class MemoryPool_Queue<T_Class> : Singleton<T_Class>
     /// <param name="size"></param>
     public virtual void InitializePool(int size)
     {
-        if (memoryPool == null) memoryPool = new Queue<GameObject>();
-        else memoryPool.Clear();
-
         for (int i = 0; i < size; i++)
             CreateNewObject(i);
     }
@@ -36,7 +47,6 @@ public abstract class MemoryPool_Queue<T_Class> : Singleton<T_Class>
             // 메모리풀의 대상을 메모리풀 안에서 관리함
             // 메모리풀이 donDestroy이면 객체도 donDestroy
             obj.transform.SetParent(transform, false);
-            obj.transform.SetSiblingIndex(0);
 
             obj.SetActive(false);
 
@@ -62,23 +72,17 @@ public abstract class MemoryPool_Queue<T_Class> : Singleton<T_Class>
     /// <returns></returns>
     public virtual GameObject GetObject(Vector3 position)
     {
-        if (memoryPool != null)
+        if (memoryPool.Count == 0)
         {
-            if (memoryPool.Count == 0)
-            {
-                CreateNewObject(transform.childCount);
-            }
+            CreateNewObject(transform.childCount);
+        }
 
-            GameObject obj = memoryPool.Dequeue();
-            obj.SetActive(true);
-            obj.transform.position = position;
-            return obj;
-        }
-        else
-        {
-            Debug.LogError("memoryPool == null");
-            return null;
-        }
+        GameObject obj = memoryPool.Dequeue();
+        obj.SetActive(true);
+        ActiveObjList.Add(obj);
+
+        obj.transform.position = position;
+        return obj;
     }
 
     /// <summary>
@@ -88,28 +92,32 @@ public abstract class MemoryPool_Queue<T_Class> : Singleton<T_Class>
     /// <returns></returns>
     public virtual GameObject GetObject()
     {
-        if (memoryPool != null)
+        if (memoryPool.Count == 0)
         {
-            if (memoryPool.Count == 0)
-            {
-                CreateNewObject(transform.childCount);
-            }
+            CreateNewObject(transform.childCount);
+        }
 
-            GameObject obj = memoryPool.Dequeue();
-            obj.SetActive(true);
-            return obj;
-        }
-        else
-        {
-            Debug.LogError("memoryPool == null");
-            return null;
-        }
+        GameObject obj = memoryPool.Dequeue();
+        obj.SetActive(true);
+        ActiveObjList.Add(obj);
+        return obj;
     }
-
 
     public virtual void ReturnObject(GameObject obj)
     {
+        Debug.Log($"반환되는 객체 : {obj.name}");
         obj.SetActive(false);
         memoryPool.Enqueue(obj);
+        ActiveObjList.Remove(obj);
+    }
+
+    public virtual void ReturnAllObject()
+    {
+        int activeObjCount = ActiveObjList.Count;
+        Debug.Log($"반환시작, 반환될 객체의 개수 : {ActiveObjList.Count}");
+        for (int i = 0; i < activeObjCount; i++)
+        {
+            ReturnObject(ActiveObjList[0]);
+        }
     }
 }
