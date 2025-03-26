@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class YesOrNoPopUp : SimplePopUp
+public class YesOrNoPopUp : SimplePopUpBase
 {
     public Button YesButton;
     

@@ -101,7 +101,7 @@ public class CardButtonMemoryPool : MemoryPool_Stack<CardButtonMemoryPool>
             Buttonscript.MappingButtonWithCard(card.gameObject);
 
             // 버튼의 콜백을 설정
-            if (CardGamePlayManager.Instance.currentProgress == eCardGameProgress.GameSetting)
+            if (CardGamePlayManager.Instance.currentProgress == eOOLProgress.num102_BeforeRotateDiceAndDistribution)
             {
                 Debug.Log("카드 선택버튼에 OnStartTime 콜백이 연결됨");
                 Buttonscript.SetButtonCallback(Buttonscript.SelectThisCard_OnGameSetting);

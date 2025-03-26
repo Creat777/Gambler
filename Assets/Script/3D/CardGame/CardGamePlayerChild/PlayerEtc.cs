@@ -45,10 +45,10 @@ public class PlayerEtc : CardGamePlayerBase
         Debug.Log($"사용된 카드 : {PresentedCardScript}");
     }
 
-    public override void AttackOtherPlayers(int currentOrder, List<CardGamePlayerBase> orderdPlayerList)
+    public override void AttackOtherPlayers(List<CardGamePlayerBase> PlayerList)
     {
         // 컴퓨터가 공격대상 및 사용할 카드를 선택
-        SelectTarget_OnPlayTime(orderdPlayerList);
+        SelectTarget_OnPlayTime(PlayerList);
         SelectCard_OnPlayTime();
 
         Sequence sequence = DOTween.Sequence();
@@ -66,7 +66,8 @@ public class PlayerEtc : CardGamePlayerBase
 
         // 상대 수비 시작
         sequence.AppendInterval(2f);
-        sequence.AppendCallback(()=>AttackTarget.DefenceFromOtherPlayers(this));
+        sequence.AppendCallback(CardGamePlayManager.Instance.NextProgress);
+        //(()=>AttackTarget.DefenceFromOtherPlayers(this));
         
         sequence.SetLoops(1);
         sequence.Play();
@@ -74,7 +75,7 @@ public class PlayerEtc : CardGamePlayerBase
     }
 
 
-    public override void DefenceFromOtherPlayers(CardGamePlayerBase AttackerScript)
+    public override void DeffenceFromOtherPlayers(CardGamePlayerBase AttackerScript)
     {
         // 수비에 사용할 카드를 선택
         SelectCard_OnPlayTime();

@@ -25,6 +25,7 @@ public class IconView : MonoBehaviour
     private Vector2 Center_anchoredPos;
     private Vector2 OutOfScreen_anchoredPos;
     bool isIconViewOpen;
+    float openDuration;
 
     private Dictionary<eIcon, GameObject> _iconLockDict;
     private Dictionary<eIcon, GameObject> iconLockDict
@@ -36,7 +37,7 @@ public class IconView : MonoBehaviour
                 _iconLockDict = new Dictionary<eIcon, GameObject>();
                 _iconLockDict.Add(eIcon.Quest, quest_Lock);
                 _iconLockDict.Add(eIcon.Inventory, inventory_Lock);
-                _iconLockDict.Add(eIcon.GameAssistance, gameAssistance_Lock);
+                _iconLockDict.Add(eIcon.GameAssistant, gameAssistance_Lock);
                 _iconLockDict.Add(eIcon.Message, message_Lock);
             }
             return _iconLockDict;
@@ -65,13 +66,25 @@ public class IconView : MonoBehaviour
         rectTrans.anchoredPosition = OutOfScreen_anchoredPos;
     }
 
-    
 
-    
+
+
     private void Start()
     {
         PopUpView popUpView = GameManager.connector.popUpView_Script;
 
+    }
+
+    private void FixedUpdate()
+    {
+        if(isIconViewOpen)
+        {
+            openDuration += Time.deltaTime;
+            if (openDuration > 5f)
+            {
+                IconViewClose();
+            }
+        }
     }
 
     public void IconViewOpen()
@@ -87,6 +100,8 @@ public class IconView : MonoBehaviour
 
     private void IconViewProcess(Vector3 tragetPos ,bool boolActive, Sequence sequencePlus = null)
     {
+        // 변수 초기화
+        openDuration = 0;
         isIconViewOpen = boolActive;
 
         Sequence sequence = DOTween.Sequence();
@@ -105,7 +120,7 @@ public class IconView : MonoBehaviour
         sequence.Play();
     }
 
-    public void IconUnLock(eIcon choice)
+    public bool TryIconUnLock(eIcon choice)
     {
         if(iconLockDict.ContainsKey(choice))
         {
@@ -124,19 +139,18 @@ public class IconView : MonoBehaviour
             {
                 // IconViewProcess 내부에서 sequence를 추가하여 트위닝 시작함
                 IconViewProcess(Center_anchoredPos, true, sequence);
-                return;
             }
             // 아이콘이 열려있는 경우
             else
             {
                 sequence.Play();
-                return;
             }
+            return true;
         }
         else
         {
-            Debug.LogWarning($"{iconLockDict[choice]}가 이미 소멸했음");
-            return;
+            Debug.Log($"{iconLockDict[choice]}가 이미 소멸했음");
+            return false;
         }
         
     }

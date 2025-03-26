@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SimplePopUp : MonoBehaviour
+public abstract class SimplePopUpBase : MonoBehaviour
 {
     public Text mainDescription;
 

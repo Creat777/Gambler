@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using PublicSet;
-using System;
 
 
 public class TextWindowView : MonoBehaviour
@@ -23,9 +22,8 @@ public class TextWindowView : MonoBehaviour
     float typingDelay;
     int TextIndex;
     public Coroutine currentCoroutine {  get; private set; }
-    cTextScriptInfo textScriptData { get; set; }
-    GameObject LastObject;
-    eTextScriptFile currentTextFile;
+    private cTextScriptInfo textScriptData { get; set; }
+    private eTextType currentTextType { get; set; }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Awake()
@@ -36,10 +34,9 @@ public class TextWindowView : MonoBehaviour
 
 
 
-
-    public void StartTextWindow( eTextScriptFile textFileEnum = eTextScriptFile.None)
+    private void TextViewStartProcess_FrontEnd()
     {
-        currentTextFile = textFileEnum;
+        if(gameObject.activeInHierarchy == false) gameObject.SetActive(true);
 
         // 셀렉션뷰가 처음부터 켜져있는 오류 방지
         if (selectionView.activeSelf == true) selectionView.SetActive(false);
@@ -56,12 +53,10 @@ public class TextWindowView : MonoBehaviour
 
             // 시작 텍스트 인덱스
             TextIndex = 0;
-
         }
-
-        // 상호작용을 위한 기본처리
-        DefaultProcess(textFileEnum);
-
+    }
+    private void TextViewStartProcess_BackEnd()
+    {
         // 상호작용을 시작할때 즉시 스크립트가 출력되도록 만듬
         if (textScriptDataList != null)
         {
@@ -74,6 +69,26 @@ public class TextWindowView : MonoBehaviour
         {
             Debug.LogWarning("textScriptDataList가 비어있음");
         }
+    }
+
+    public void StartTextWindow( eTextScriptFile textFileEnum = eTextScriptFile.None)
+    {
+        TextViewStartProcess_FrontEnd();
+
+        // 상호작용을 위한 기본처리
+        DefaultProcess(textFileEnum);
+
+        TextViewStartProcess_BackEnd();
+    }
+
+    public void StartTextWindow(eOOLProgress progress)
+    {
+        TextViewStartProcess_FrontEnd();
+
+        // 상호작용을 위한 기본처리
+        DefaultProcess(progress);
+
+        TextViewStartProcess_BackEnd();
 
     }
 
@@ -149,8 +164,11 @@ public class TextWindowView : MonoBehaviour
     // 텍스트 출력을 위한 기본 처리
     private void DefaultProcess(eTextScriptFile fileEnum)
     {
+        //현재 읽어오려는 텍스트타입 저장
+        currentTextType = eTextType.TextScriptFile;
+
         // 어떤파일인지 지시하지 않은 경우 ex) 상호작용파일
-        if(fileEnum == eTextScriptFile.None)
+        if (fileEnum == eTextScriptFile.None)
         {
             // 플레이어의 레이캐스트에 걸리는 객체
             GameObject curruntObject = GameManager.connector.player.GetComponent<Player_MoveAndAnime>().hitObject;
@@ -180,9 +198,6 @@ public class TextWindowView : MonoBehaviour
             {
                 Debug.LogWarning($"curruntObject : {curruntObject}");
             }
-
-            // 마지막 상호작용한 객체를 저장
-            LastObject = curruntObject;
         }
 
         // 파일 이름이 지시된 경우
@@ -191,6 +206,13 @@ public class TextWindowView : MonoBehaviour
             eStage currentStage = GameManager.Instance.currentStage;
             textScriptDataList = CsvManager.Instance.GetTextScript(fileEnum, currentStage);
         }
+    }
+    private void DefaultProcess(eOOLProgress progress)
+    {
+        //현재 읽어오려는 텍스트타입 저장
+        currentTextType = eTextType.OnlyOneLivesProgress;
+
+        textScriptDataList = CsvManager.Instance.GetTextScript(progress);
     }
 
     public void PrintText()
@@ -253,29 +275,55 @@ public class TextWindowView : MonoBehaviour
     IEnumerator TypeDialogue(string dialogue)
     {
         // 텍스트에서 변수 처리
-        if(dialogue.Contains("{Month}"))
+        if(currentTextType == eTextType.TextScriptFile)
         {
-            dialogue = dialogue.Replace("{Month}", GameManager.Instance.Month.ToString());
-
-            if (dialogue.Contains("{Day}"))
+            if (dialogue.Contains("{Month}"))
             {
-                dialogue = dialogue.Replace("{Day}", GameManager.Instance.Day.ToString());
-            }
+                dialogue = dialogue.Replace("{Month}", GameManager.Instance.Month.ToString());
 
-            if (dialogue.Contains("{d-Day}"))
-            {
-                int d_day = 31 - GameManager.Instance.Day;
-                if (d_day > 0)
+                if (dialogue.Contains("{Day}"))
                 {
-                    dialogue = dialogue.Replace("{d-Day}", d_day.ToString() + "일 이겠군");
-                }
-                else if (d_day == 0)
-                {
-                    dialogue = dialogue.Replace("{d-Day}", "오늘이 마지막이겠군");
+                    dialogue = dialogue.Replace("{Day}", GameManager.Instance.Day.ToString());
                 }
 
+                if (dialogue.Contains("{d-Day}"))
+                {
+                    int d_day = 31 - GameManager.Instance.Day;
+                    if (d_day > 0)
+                    {
+                        dialogue = dialogue.Replace("{d-Day}", d_day.ToString() + "일 이겠군");
+                    }
+                    else if (d_day == 0)
+                    {
+                        dialogue = dialogue.Replace("{d-Day}", "오늘이 마지막이겠군");
+                    }
+
+                }
             }
         }
+        else if(currentTextType == eTextType.OnlyOneLivesProgress)
+        {
+            if (dialogue.Contains("{ATTACKER}"))
+            {
+                dialogue = dialogue.Replace("{ATTACKER}", CardGamePlayManager.Instance.Attacker.characterInfo.CharacterName);
+            }
+
+            if (dialogue.Contains("{DEFENDER}"))
+            {
+                dialogue = dialogue.Replace("{DEFENDER}", CardGamePlayManager.Instance.Deffender.characterInfo.CharacterName);
+            }
+
+            if (dialogue.Contains("{JOKER}"))
+            {
+                dialogue = dialogue.Replace("{DEFENDER}", CardGamePlayManager.Instance.Joker.characterInfo.CharacterName);
+            }
+
+            if (dialogue.Contains("{VICTIM}"))
+            {
+                dialogue = dialogue.Replace("{DEFENDER}", CardGamePlayManager.Instance.Victim.characterInfo.CharacterName);
+            }
+        }
+        
         
         isTypingReady = false;
         textWindow.text = "";

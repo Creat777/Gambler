@@ -1,3 +1,4 @@
+using PublicSet;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -17,15 +18,18 @@ public class Connector : MonoBehaviour
     public GameObject textWindowView;
     public GameObject playerMoneyView;
 
+    public TextWindowView textWindowView_Script;
     public IconView iconView_Script;
     public PopUpView popUpView_Script;
-    public InteractionView interactionView_Script;
     public Joystick joystick_Script;
     public Map map_Script;
     public Box box_Script;
 
     void Start()
     {
-        GameManager.Instance.Join_In_Game();
+        if(GameManager.Instance.currentScene == eScene.InGame)
+        {
+            GameManager.Instance.Join_In_Game();
+        }
     }
 }

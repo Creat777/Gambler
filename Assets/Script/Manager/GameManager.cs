@@ -225,11 +225,9 @@ public class GameManager : Singleton<GameManager>
     public void StartPlayerMonologue()
     {
         CallbackManager.Instance.TextWindowPopUp_Open();
-        TextWindowView textViewScript = connector.textWindowView.GetComponent<TextWindowView>();
-        if (textViewScript != null)
-        {
-            textViewScript.StartTextWindow(eTextScriptFile.PlayerMonologue);
-        }
+
+        GameManager.connector.textWindowView_Script.StartTextWindow(eTextScriptFile.PlayerMonologue);
+
     }
 
 

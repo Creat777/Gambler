@@ -19,7 +19,7 @@ public class SelectCompleteButton : Deactivatable_ButtonBase
 
     public void InitAttribute()
     {
-        SetButtonCallback(CompleteCardSelect_OnGameSetting);
+        SetButtonCallback(CompleteCardSelect_ChooseCardsToReveal);
         TryDeactivate_Button();
         ChangeText(onFirstButtonText);
     }
@@ -45,7 +45,7 @@ public class SelectCompleteButton : Deactivatable_ButtonBase
     }
 
     // 실행하는 시점에서 컴퓨터는 이미 선택을 완료했어야함
-    public void CheckCompleteSelect_OnGameSetting(Dictionary<eCardType, int> cardCountPerType)
+    public void CheckCompleteSelect_OnChooseCardsToReveal(Dictionary<eCardType, int> cardCountPerType)
     {
         int enumLength = Enum.GetValues(typeof(eCardType)).Length;
         for (int i = 0; i < enumLength; i++)
@@ -69,7 +69,7 @@ public class SelectCompleteButton : Deactivatable_ButtonBase
         textComp.text = text;
     }
 
-    public void CompleteCardSelect_OnGameSetting()
+    public void CompleteCardSelect_ChooseCardsToReveal()
     {
         Debug.Log("CompleteCardSelect_OnStartTime 실행");
 
@@ -87,30 +87,22 @@ public class SelectCompleteButton : Deactivatable_ButtonBase
         sequence.AppendCallback(()=>ChangeText(onPlayButtonText));
 
         // 모든 플레이어의 선택카드를 확정하고 카드를 정리함
-        foreach (var player in cardGamePlayManager.playersList)
+        foreach (var player in cardGamePlayManager.playerList)
         {
             if (player.gameObject.tag == "Player")
             {
                 // 기존 카드버튼의 개수와 연결을 초기화
                 sequence.AppendCallback(() => cardButtonMemoryPool.InitCardButton(player.closeBox.transform));
             }
-            returnDelay += player.GetSequnce_CompleteSelectCard(sequence); // 여기서 카드의 부모객체가 변경됨 (close To open)
-            returnDelay += player.GetSequnece_CardSpread(sequence);
+            Sequence appendSequnce = DOTween.Sequence();
+            returnDelay += player.GetSequnce_CompleteSelectCard(appendSequnce); // 여기서 카드의 부모객체가 변경됨 (close To open)
+            sequence.Append(appendSequnce);
+
+            appendSequnce = DOTween.Sequence();
+            returnDelay += player.GetSequnece_CardSpread(appendSequnce);
+            sequence.Append(appendSequnce);
         }
 
-        // 컴퓨터의 경우 카드 정리가 끝나면 즉시 공격대상과 제시할 카드를 선택함
-        //foreach (var player in cardGamePlayManager.playersList)
-        //{
-        //    if (player.gameObject.tag == "Player")
-        //    {
-        //        continue;
-        //    }
-        //    sequence.AppendCallback(()=>
-        //    (player as PlayerEtc).SelectCardAndTarget_OnPlayTime(cardGamePlayManager.playersList)
-        //    );
-            
-        //}
-            
         Debug.Log($"애니메이션 총 시간 : {returnDelay}");
 
         // 모든 플레이어가 카드 정리를 끝냈으면 본게임에 진입하여 공격을 시작
@@ -119,21 +111,10 @@ public class SelectCompleteButton : Deactivatable_ButtonBase
             ()=>
             {
                 // 주사위값이 가장 큰 플레이어부터 시계순으로 공격 시작
-                List<CardGamePlayerBase> OrderedPlayerList = cardGamePlayManager.GetOrderedPlayerList();
+                Queue<CardGamePlayerBase> OrderedPlayerQueue = cardGamePlayManager.InitOrderedPlayerQueue();
 
-                // 공격할 대상이 있으면 실행
-                if (OrderedPlayerList.Count > 1)
-                {
-                    if (OrderedPlayerList[0] != null)
-                    { 
-                        OrderedPlayerList[0].AttackOtherPlayers(0, OrderedPlayerList); 
-                    }
-                    else
-                    {
-                        Debug.LogAssertion("List의 참조변수가 null참조");
-                    }
-                    
-                }
+                // 게임 진행도를 변경
+                CardGamePlayManager.Instance.NextProgress();
             });
 
         sequence.SetLoops(1);
@@ -145,15 +126,15 @@ public class SelectCompleteButton : Deactivatable_ButtonBase
         // 기존 선택완료버튼의 콜백을 변경
         SetButtonCallback(CompleteCardSelect_OnPlayTime);
 
-        // 게임 진행도를 변경
-        CardGamePlayManager.Instance.ChangeGameProgress(true);
+        
     }
 
     public override bool TryActivate_Button()
     {
         switch (CardGamePlayManager.Instance.currentProgress)
         {
-            case eCardGameProgress.GameSetting:
+            case eOOLProgress.num102_BeforeRotateDiceAndDistribution:
+            case eOOLProgress.num103_BeforeChooseCardsToReveal:
                 {
                     if (cardGamePlayManager.isCotributionCompleted && playerMe.isCompleteSelect_OnGameSetting)
                     {
@@ -165,9 +146,21 @@ public class SelectCompleteButton : Deactivatable_ButtonBase
                         return false;
                     }
                 }
-            case eCardGameProgress.PlayTime:
+            case eOOLProgress.num201_AttackTurnPlayer:
                 {
                     if(playerMe.isCompleteSelect_OnPlayTime)
+                    {
+                        button.interactable = true;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            case eOOLProgress.num301_DefenseTrun_Player:
+                {
+                    if (playerMe.isCompleteSelect_OnPlayTime)
                     {
                         button.interactable = true;
                         return true;

@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using DG.Tweening;
+using PublicSet;
 
 public class CardGameView : MonoBehaviour
 {
@@ -42,11 +43,6 @@ public class CardGameView : MonoBehaviour
             Debug.LogAssertion($"cardGamePlayManager == null ");
     }
 
-    private void Start()
-    {
-        
-    }
-
     private void OnEnable()
     {
         cardGamePlayManager.EnterCardGame();
@@ -81,11 +77,19 @@ public class CardGameView : MonoBehaviour
 
         // 인터페이스 활성화
         playerInterface.GetSequnce_InterfaceOn(sequence);
-        diceButton.TryActivate_Button();
 
-        // 세팅 초기화
-        cardGamePlayManager.InitCurrentGame();
+        sequence.AppendCallback(
+            () =>
+            {
+                // progress 전환
+                CardGamePlayManager.Instance.NextProgress();
 
+                // 세팅 초기화
+                CardGamePlayManager.Instance.InitCurrentGame();
+                diceButton.TryActivate_Button();
+                
+            });
+        
         sequence.SetLoops(1);
         sequence.Play();
     }

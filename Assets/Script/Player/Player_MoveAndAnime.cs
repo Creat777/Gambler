@@ -12,7 +12,7 @@ public enum StateCode
 public class Player_MoveAndAnime : MonoBehaviour
 {
     // 에디터 연결
-    [SerializeField] private InteractionView interactionView;
+    [SerializeField] private InteractionButton interactionButton;
     [SerializeField] private Joystick joystick;
 
     // 에디터 편집
@@ -85,12 +85,12 @@ public class Player_MoveAndAnime : MonoBehaviour
             hitObject = hit.collider.gameObject;
 
             //TempImage.transform.position = Camera.main.WorldToScreenPoint(hit.transform.position);
-            interactionView.InteractButton_On();
+            interactionButton.TryActivate_Button();
         }
         // 그렇지 않으면 상호작용 옵션을 끔
         else
         {
-            interactionView.InteractButton_Off();
+            interactionButton.TryDeactivate_Button();
         }
     }
 
@@ -115,8 +115,14 @@ public class Player_MoveAndAnime : MonoBehaviour
         // 이동 조건은 초기 joystickVec으로 하나 가해지는 힘은 curMoveVec을 사용
         if (joystick.Direction.magnitude >= 0.9f)
         {
-            Debug.Log($"addPulse 적용 -> 이동속도 : {moveSpeed}");
-            rigid.AddForce(curMoveVec * moveSpeed / 10, ForceMode2D.Impulse);
+            if(moveSpeed>1)
+            {
+                rigid.AddForce(curMoveVec * moveSpeed / 10, ForceMode2D.Impulse);
+            }
+            else
+            {
+                Debug.LogWarning($"addPulse 적용 -> 이동속도 : {moveSpeed}");
+            }
         }
 
 

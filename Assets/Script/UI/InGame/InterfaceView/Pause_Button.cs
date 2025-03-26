@@ -4,6 +4,8 @@ public class Pause_Button : MonoBehaviour
 {
     public GameObject PopUpView;
     public GameObject OptionPopUp;
+
+
     public void OptionPopUpOpen()
     {
         if(PopUpView == null)

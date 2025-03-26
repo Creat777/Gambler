@@ -85,7 +85,7 @@ public class CallbackManager : Singleton<CallbackManager>
     }
 
     // csv에서 인덱스만으로 함수를 선택할 수있도록 만듬
-    public UnityAction CallBackList_Text(int index)
+    public UnityAction CallBackList_DefaultText(int index)
     {
         // csv선택지에서 자유롭게 콜백함수를 고를 수 있음
         switch (index)
@@ -186,13 +186,10 @@ public class CallbackManager : Singleton<CallbackManager>
             // 박스에 들어있는 아이템들
             PlayerPrefsManager.Instance.PlayerGetItem(eItemType.Notice_Stage1);
             PlayerPrefsManager.Instance.PlayerGetItem(eItemType.TutorialQuest);
-            PlayerPrefsManager.Instance.PlayerGetItem(eItemType.Meat);
-            PlayerPrefsManager.Instance.PlayerGetItem(eItemType.Fish);
-            PlayerPrefsManager.Instance.PlayerGetItem(eItemType.Egg);
 
             TextWindowPopUp_Close();
 
-            GameManager.connector.iconView_Script.GetComponent<IconView>().IconUnLock(eIcon.Inventory);
+            GameManager.connector.iconView_Script.GetComponent<IconView>().TryIconUnLock(eIcon.Inventory);
         }
         
     }
@@ -273,7 +270,7 @@ public class CallbackManager : Singleton<CallbackManager>
     public void TutorialStart()
     {
         GameManager.Instance.PlaySequnce_StageAnimation();
-        GameManager.connector.iconView_Script.IconUnLock(eIcon.Quest);
+        GameManager.connector.iconView_Script.TryIconUnLock(eIcon.Quest);
     }
 
     // 15
@@ -282,10 +279,54 @@ public class CallbackManager : Singleton<CallbackManager>
 
 
 
+    public UnityAction CallbackList_OnlyOneLivesText(int index)
+    {
+        switch (index)
+        {
+            case 0 : return nextProgress;
+            case 10: return AttackPrgress;
+            case 11: return DeffenceProgress;
+            case 20: return DetermineResult;
+            case 21: return OnJokerWin;
+            case 22: return OnAttackerWin;
+            case 23: return OnDeffenderWin;
 
+            default: return TrashFuc;
+        }
+    }
 
+    public void nextProgress()
+    {
+        CardGamePlayManager.Instance.NextProgress();
+    }
 
+    public void AttackPrgress()
+    {
+        CardGamePlayManager.Instance.StartPlayerAttack();
+    }
 
+    public void DeffenceProgress()
+    {
+        CardGamePlayManager.Instance.StartPlayerDeffence();
+    }
+
+    public void DetermineResult()
+    {
+        CardGamePlayManager.Instance.DetermineTheResult();
+    }
+
+    public void OnJokerWin()
+    {
+        CardGamePlayManager.Instance.OnJokerAppear();
+    }
+    public void OnAttackerWin()
+    {
+        CardGamePlayManager.Instance.OnAttackSuccess();
+    }
+    public void OnDeffenderWin()
+    {
+        CardGamePlayManager.Instance.OnDefenceSuccess();
+    }
 
 
 

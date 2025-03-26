@@ -21,8 +21,13 @@ public class PlayerMe : CardGamePlayerBase
     }
     public bool isCompleteSelect_OnGameSetting {  get; private set; }
     public bool isCompleteSelect_OnPlayTime { get; private set; }
-    
-    
+
+    private void Start()
+    {
+        cCharacterInfo info = CsvManager.Instance.GetCharacterInfo(eCharacterType.Player);
+        SetCharacterInfo(info);
+    }
+
     public void InitAttribute_PlayerMe()
     {
         isCompleteSelect_OnGameSetting = false;
@@ -41,7 +46,7 @@ public class PlayerMe : CardGamePlayerBase
     
 
 
-    public override void AttackOtherPlayers(int currentOrder, List<CardGamePlayerBase> orderdPlayerList)
+    public override void AttackOtherPlayers(List<CardGamePlayerBase> playerList)
     {
         // 버튼 클릭시 콜백을 추가
         m_SelectCompleteButton.AddButtonCallback(CoroutineManager.Instance.SetBool_isButtonClicked_True);
@@ -51,7 +56,7 @@ public class PlayerMe : CardGamePlayerBase
 
     
 
-    public override void DefenceFromOtherPlayers(CardGamePlayerBase AttackerScript)
+    public override void DeffenceFromOtherPlayers(CardGamePlayerBase AttackerScript)
     {
         
     }

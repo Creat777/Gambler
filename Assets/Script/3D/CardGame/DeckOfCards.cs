@@ -2,7 +2,6 @@ using DG.Tweening;
 using PublicSet;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DeckOfCards : MonoBehaviour
@@ -55,9 +54,16 @@ public class DeckOfCards : MonoBehaviour
     {
         Debug.Log("ProcessCsvOfCard 실행 시작");
 
-        string fileNamePath = "CSV/TrumpCardInfo/CardsInfo";
+        //string path = "CSV/TrumpCardInfo/CardsInfo";
 
-        CsvManager.Instance.LoadCsv<cTrumpCardInfo>(fileNamePath,
+        string path = System.IO.Path.Combine("CSV","TrumpCardInfo","CardsInfo");
+
+        if (Application.platform == RuntimePlatform.Android)
+        {
+            path = System.IO.Path.Combine(Application.streamingAssetsPath, path);
+        }
+
+        CsvManager.Instance.LoadCsv<cTrumpCardInfo>(path,
             (row, trumpCardInfo) => // trumpCard는 컴포넌트로 쓰일 스크립트
             {
                 // 저장공간을 할당받지 못한 경우
@@ -277,13 +283,7 @@ public class DeckOfCards : MonoBehaviour
 
             // 중력 끄기
             Rigidbody rigid = obj.GetComponent<Rigidbody>();
-#if UNITY_EDITOR
-            if(rigid == null)
-            {
-                Debug.LogAssertion($"{obj.name}의 rigidBody가 없음");
-                return;
-            }
-#endif
+
             rigid.useGravity = false;
 
             // 이동

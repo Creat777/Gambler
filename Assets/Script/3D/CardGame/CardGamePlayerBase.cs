@@ -10,6 +10,7 @@ public abstract class CardGamePlayerBase : MonoBehaviour
     public CardGamePlayManager cardGamePlayManager;
     public GameObject closeBox;
     public GameObject openBox;
+    public cCharacterInfo characterInfo {  get; private set; }
 
     // 스크립트
 
@@ -84,6 +85,11 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         coin += value;
     }
 
+    public void SetCharacterInfo(cCharacterInfo info)
+    {
+        characterInfo = info;
+    }
+
     public virtual void SetDiceValue(int diceValue)
     {
         myDiceValue = diceValue;
@@ -131,7 +137,7 @@ public abstract class CardGamePlayerBase : MonoBehaviour
 
         if(gameObject.tag == "Player")
         {
-            cardGamePlayManager.cardGameView.selectCompleteButton.CheckCompleteSelect_OnGameSetting(cardCountPerType);
+            cardGamePlayManager.cardGameView.selectCompleteButton.CheckCompleteSelect_OnChooseCardsToReveal(cardCountPerType);
         }
 
         Debug.Log($"{gameObject.name}에게 {cardInfo.cardName}카드 추가");
@@ -326,7 +332,7 @@ public abstract class CardGamePlayerBase : MonoBehaviour
             // 플레이어가 TryDownCountPerCardType를 실행할 시 선택이 완료됐는지를 확인하고 버튼을 활성화함
             if (gameObject.tag == "Player")
             {
-                cardGamePlayManager.cardGameView.selectCompleteButton.CheckCompleteSelect_OnGameSetting(cardCountPerType);
+                cardGamePlayManager.cardGameView.selectCompleteButton.CheckCompleteSelect_OnChooseCardsToReveal(cardCountPerType);
             }
             
             Debug.Log($"{gameObject.name}에게 {cardInfo.cardName}카드 제거");
@@ -342,8 +348,8 @@ public abstract class CardGamePlayerBase : MonoBehaviour
     }
 
     // 실제플레이어와 컴퓨터에서 각각 재정의
-    public abstract void AttackOtherPlayers(int currentOrder, List<CardGamePlayerBase> orderdPlayerList);
-    public abstract void DefenceFromOtherPlayers(CardGamePlayerBase AttackerScript);
+    public abstract void AttackOtherPlayers(List<CardGamePlayerBase> PlayerList);
+    public abstract void DeffenceFromOtherPlayers(CardGamePlayerBase AttackerScript);
 
     public virtual bool TrySetAttackTarget(CardGamePlayerBase target)
     {
@@ -355,6 +361,7 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         else
         {
             AttackTarget = target;
+            CardGamePlayManager.Instance.SetDeffender(AttackTarget);
             Debug.Log($"{gameObject.name}의 공격 대상 : {target.gameObject.name}");
             return true;
         }

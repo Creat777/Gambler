@@ -10,7 +10,8 @@ public class PopUpView : MonoBehaviour
     // 아이콘 팝업
     public GameObject optionPopUp;
     public GameObject inventoryPopUp;
-    public GameObject questPopUp;
+    public GameObject questListPopUp;
+    public GameObject questContentPopUp;
     public GameAssistantPopUp_OnlyOneLives gameAssistantPopUp_OnlyOneLives;
 
     // 콜백팝업
@@ -46,12 +47,18 @@ public class PopUpView : MonoBehaviour
     }
 
     // 버튼 콜백
-    public void QuestPopUpOpen()
+    public void QuestListPopUpOpen()
     {
         gameObject.SetActive(true);
-        questPopUp.SetActive(true);
-        questPopUp.transform.SetAsLastSibling();
+        questListPopUp.SetActive(true);
+        questListPopUp.transform.SetAsLastSibling();
+    }
 
+    public void QuestContentPopUpOpen()
+    {
+        gameObject.SetActive(true);
+        questContentPopUp.SetActive(true);
+        questContentPopUp.transform.SetAsLastSibling();
     }
 
     public void GameAssistantPopUpOpen_OnlyOneLives()

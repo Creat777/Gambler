@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using PublicSet;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class GameAssistantPopUp_OnlyOneLives : PopUpBase<GameAssistantPopUp_OnlyOneLives>
 {
@@ -39,7 +38,9 @@ public class GameAssistantPopUp_OnlyOneLives : PopUpBase<GameAssistantPopUp_Only
                         SelectedIndex.Add(playerIndex);
 
                         // 해당 인덱스로 정보를 초기화
-                        playerPanelScript.InitPlayerInfo(players[i], i, CsvManager.Instance.GetCharacterInfo((eCharacterType)playerIndex));
+                        cCharacterInfo info = CsvManager.Instance.GetCharacterInfo((eCharacterType)playerIndex);
+                        players[i].SetCharacterInfo(info);
+                        playerPanelScript.InitPlayerInfo(players[i], i, info);
                     }
                     else Debug.LogAssertion("잘못된 프리팹");
                 }

@@ -11,6 +11,7 @@ TagManager:
   - CloseCard
   - OpenCard
   - Card
+  - Quest
   layers:
   - Default
   - TransparentFX

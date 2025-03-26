@@ -1,0 +1,2 @@
+id,Name(string),Description(string),end_condition`,reward_coin(int),reward_items(itemType),repeatable
+1,밖을 둘러보자,집 밖에 험상궂은 남자가 자리를 지키고있는 것 같다. 남자한테 말을 걸어서 어떻게 된 일인지 알아보자,0,0,0,0

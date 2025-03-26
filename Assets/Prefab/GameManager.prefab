@@ -200,7 +200,7 @@ GameObject:
   - component: {fileID: 5170974304902775817}
   - component: {fileID: 9024944267268366056}
   m_Layer: 0
-  m_Name: PortraitResource
+  m_Name: PortraitImageResource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -240,6 +240,8 @@ MonoBehaviour:
   - {fileID: 1208040086343421634, guid: b3120c7fa3627a347b641dab729d120b, type: 3}
   sCaesar:
   - {fileID: -7232521027535748977, guid: be17cab09090b144198e79a974088e9c, type: 3}
+  sCasinoDealer:
+  - {fileID: 21300000, guid: fcc556aeaae94434881ecdfde944665c, type: 3}
   sKangDoYun:
   - {fileID: -3787567608466063202, guid: 7db43feb46ba42a41aaf557013d7e620, type: 3}
   sSeoJiHoo:
@@ -410,6 +412,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2423113682381239552}
+  - component: {fileID: 3537759648354461661}
   m_Layer: 0
   m_Name: ItemImageResource
   m_TagString: Untagged
@@ -432,6 +435,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1861339401939184162}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3537759648354461661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1610303019328753907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65efad3867b00824c84278d63bf4f4ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultImage: {fileID: 21300000, guid: fcc556aeaae94434881ecdfde944665c, type: 3}
+  sScroll:
+  - {fileID: 21300000, guid: 60dbf6a31ffde4645b0ff2a518c88795, type: 3}
+  sMeat:
+  - {fileID: 21300000, guid: eab87f10d2afa594c92ed3d29451b618, type: 3}
+  sFish:
+  - {fileID: 21300000, guid: 78040fcc3a5ca0646b20e131d68b3660, type: 3}
+  sEgg:
+  - {fileID: 21300000, guid: 14c5c48283a8eeb4098db89eda4a48ff, type: 3}
 --- !u!1 &2771257999487631673
 GameObject:
   m_ObjectHideFlags: 0

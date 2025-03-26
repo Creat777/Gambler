@@ -39,6 +39,12 @@ namespace PublicSet
         Stage3,
     }
 
+    public enum eTextType
+    {
+        TextScriptFile,
+        OnlyOneLivesProgress
+    }
+
     public enum eTextScriptFile
     {
         None,
@@ -63,14 +69,54 @@ namespace PublicSet
         CasinoDoor,
 
         // -----------None Interactable--------------
-        // 독백
+        // 플레이어 혼잣말
         PlayerMonologue,
 
         // 카지노
         CasinoDealer,
-
-        // OnlyOneLives
     }
+
+    /// <summary>
+    /// == onlyOneLivesProgress
+    /// </summary>
+    public enum eOOLProgress
+    {
+        num101_BeforeStartGame = 101, // 게임에 대한 기본적인 설명을 하는 단계
+        num102_BeforeRotateDiceAndDistribution, // 주사위를 던지고 카드를 분배하는 단계
+        num103_BeforeChooseCardsToReveal, // 각 플레이어가 공개할 카드를 선택하는 단계
+        num104_OnChooseFirstPlayer, // 게임에서 첫 공격을 실행할 플레이어를 선택하는 단계
+
+        // 공격차례, computer의 경우 AttackTurn_Player를 스킵
+        num201_AttackTurnPlayer = 201,
+        num202_Attack,
+
+        // 수비차례, computer의 경우 DefenseTrun_Player를 스킵
+        num301_DefenseTrun_Player= 301,
+        num302_Defense,
+
+
+        // 공격, 방어를 진행한 후 카드를 동시에 오픈
+        num401_CardOpenAtTheSameTime = 401, 
+
+        // 결과 발표
+        num402_OnJokerAppear,
+        num403_OnAttackSuccess,
+        num404_OnDefenceSuccess,
+
+        num405_AfterSettlementOfAccounts,
+
+
+        num501_final = 501
+    }
+
+    public enum eCriteria
+    {
+        None = 0,
+        JokerWin,
+        AttakkerWin,
+        DeffenderWin
+    }
+
 
     public enum eCharacterType
     {
@@ -135,7 +181,7 @@ namespace PublicSet
     {
         Quest,
         Inventory,
-        GameAssistance,
+        GameAssistant,
         Message
     }
 
@@ -178,11 +224,6 @@ namespace PublicSet
         }
     }
 
-    //public class cPlayerMonologueInfo
-    //{
-    //    public string speaker { get; set; }
-    //    public string script { get; set; }
-    //}
 
     public class cItemInfo
     {

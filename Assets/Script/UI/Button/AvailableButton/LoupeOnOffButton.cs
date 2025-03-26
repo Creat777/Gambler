@@ -8,7 +8,7 @@ public class LoupeOnOffButton : ImageChange_ButtonBase
 
     private void Start()
     {
-        LoupeOn();
+        LoupeOff();
     }
 
     public void LoupeOn()

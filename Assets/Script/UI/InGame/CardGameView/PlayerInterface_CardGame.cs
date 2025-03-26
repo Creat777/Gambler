@@ -73,10 +73,8 @@ public class PlayerInterface_CardGame : MonoBehaviour
         sequence.Play();
     }
 
-    public void ChangeInterfaceNext()
+    public void GetSequnce_ChangeInterfaceNext(Sequence sequence)
     {
-        Sequence sequence = DOTween.Sequence();
-        
         // 인터페이스를 숨기고
         GetSequnce_InterfaceOff(sequence);
 
@@ -87,9 +85,6 @@ public class PlayerInterface_CardGame : MonoBehaviour
 
         // 다시 등장
         GetSequnce_InterfaceOn(sequence);
-
-        sequence.SetLoops(1);
-        sequence.Play();
     }
 
     public void GetSequnce_InterfaceOn(Sequence sequence)

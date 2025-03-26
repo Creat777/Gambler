@@ -1,9 +1,6 @@
-using PublicSet;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 /// <summary>
 /// 팝업창 관리를 위한 추상클래스
@@ -19,29 +16,26 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
 
 
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         ChangeContentRectTransform();
     }
 
-    private void Update()
-    {
-#if UNITY_EDITOR
-        if(Input.GetKeyUp(KeyCode.Space))
-        {
-            ChangeContentRectTransform();
-        }
-#endif
-    }
 
     private void InitAnchor()
     {
         contentTrans.anchorMin = new Vector2(0.5f, 1f);
         contentTrans.anchorMax = new Vector2(0.5f, 1f);
     }
+
+    private void InitGridRayout()
+    {
+        contentGrid.childAlignment = TextAnchor.MiddleCenter;
+    }
     protected virtual void ChangeContentRectTransform()
     {
         InitAnchor();
+        //InitGridRayout();
 
         if (contentGrid != null)
         {
@@ -68,6 +62,8 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
             contentTrans.sizeDelta = size;
 
             ScrollToTop();
+
+            Debug.Log("CONTENT 맞춤설정 완료");
 
         }
         else

@@ -4,7 +4,8 @@ using UnityEngine;
 public class Loupe : MonoBehaviour
 {
     // 에디터
-    public GameObject subScreenLoupe; // 서브스크린 UI (확대된 화면을 보여줌)
+    public RectTransform roupeBox;
+    public RectTransform subScreenLoupe; // 서브스크린 UI (확대된 화면을 보여줌)
     public const float holdTime = 0.3f; // 1초 이상 눌렀을 때 동작
 
     //스크립트
@@ -114,10 +115,49 @@ public class Loupe : MonoBehaviour
             transform.position = targetPos;
 
             // 서브스크린 활성화
-            subScreenLoupe.SetActive(true);
+            subScreenLoupe.gameObject.SetActive(true);
         }
 
-        
+        // 위쪽, 오른쪽의 경우 돋보기 박스가 화면을 벗어날 수 있음
+        switch(IsPivotInsideContainer(subScreenLoupe, roupeBox))
+        {
+            case 0: subScreenLoupe.pivot = Vector2.zero; break;
+            case 1: subScreenLoupe.pivot = new Vector2(1,0); break; // 우측을 벗어난 경우
+            case 2: subScreenLoupe.pivot = new Vector2(0, 1); break; // 상측을 벗어난 경우
+            case 3: subScreenLoupe.pivot = new Vector2(1, 1); break; // 우측, 상측을 모두 벗어난 경우
+        }
+
+    }
+
+    // targetRectTransform의 pivot이 containerRectTransform의 Rect 안에 있는지 확인
+    int IsPivotInsideContainer(RectTransform targetTrans, RectTransform containerTrans)
+    {
+        // targetRectTransform의 pivot 위치를 세계 좌표로 변환
+        Vector3 pivotWorldPosition = targetTrans.TransformPoint(targetTrans.pivot);
+
+        // containerRectTransform의 Rect 영역을 확인
+        Rect containerRect = containerTrans.rect;
+
+        // containerRectTransform의 세계 좌표를 얻기 위해, RectTransform의 위치와 크기 계산
+        Vector3 containerWorldPosition = containerTrans.position;
+
+        //// 정해진 박스의 우측만 벗어난 경우
+        //if (pivotWorldPosition.x > containerWorldPosition.x + containerRect.width / 2 && pivotWorldPosition.y <= containerWorldPosition.y + containerRect.height / 2)
+        //{
+        //    return 1;
+        //}
+        // 정해진 박스의 상측을 벗어난 경우
+        if (pivotWorldPosition.y > containerWorldPosition.y + containerRect.height / 2)
+        {
+            return 2;
+        }
+        //// 우측 상측 전부 벗어난 경우
+        //if (pivotWorldPosition.x > containerWorldPosition.x + containerRect.width / 2 && pivotWorldPosition.y > containerWorldPosition.y + containerRect.height / 2)
+        //{
+        //    return 3;
+        //}
+        // 돋보기로 화면을 보는데 문제가 없는 경우
+        return 0;
     }
 
     bool TryGetWorldPosition(Vector3 screenPos, out Vector3 worldPos)
