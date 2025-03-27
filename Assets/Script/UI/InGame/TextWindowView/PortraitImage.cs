@@ -28,7 +28,7 @@ public class PortraitImage : MonoBehaviour
         if(isSueccessed)
         {
             image.sprite = sprite;
-            Debug.Log($"이미지 전환 성공, 사용된 이미지 : {sprite.name}");
+            //Debug.Log($"이미지 전환 성공, 사용된 이미지 : {sprite.name}");
         }
         else
         {

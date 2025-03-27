@@ -25,6 +25,8 @@ public class CardGameView : MonoBehaviour
     
     private Vector3 CardScreen_OutOfMainScreenPos;
 
+    private Vector3 StartButtonScaleOrigin;
+
     public void InitAttribute()
     {
         selectCompleteButton.InitAttribute();
@@ -41,6 +43,8 @@ public class CardGameView : MonoBehaviour
 
         if (cardGamePlayManager == null)
             Debug.LogAssertion($"cardGamePlayManager == null ");
+
+        StartButtonScaleOrigin = StartButton.transform.localScale;
     }
 
     private void OnEnable()
@@ -56,17 +60,11 @@ public class CardGameView : MonoBehaviour
         // 인터페이스 초기화
         playerInterface.returnInterface();
 
-        // dotween이 끝난후 복귀할 스케일 저장
-        Vector3 scaleOrigin = StartButton.transform.localScale;
+        // start버튼 삭제
+        GetSequnce_StartButtonFadeOut(sequence);
 
-        // dotween 애니메이션 시간
-        float delay = 0.5f;
 
-        // 게임 시작 누를 시 필요없는 인터페이스 비활성화
-        // 화면에서 버튼의 크기를 완전히 줄인다음 실제 크기로 복귀와 동시에 비활성화
-        sequence.Append(StartButton.transform.DOScale(Vector3.zero, delay));
-        sequence.AppendCallback(()=>StartButton.transform.localScale = scaleOrigin);
-        sequence.AppendCallback(() => StartButton.SetActive(false));
+
 
         // 모든 카드를 덱의 자식객체로 전환
         sequence.AppendCallback(() => deckOfCards.ReturnAllOfCards());
@@ -94,23 +92,45 @@ public class CardGameView : MonoBehaviour
         sequence.Play();
     }
 
+    public void InitStartButton()
+    {
+        StartButton.transform.localScale = Vector3.zero;
+        StartButton.gameObject.SetActive(false);
+    }
     
+    public void GetSequnce_StartButtonFadeOut(Sequence sequence)
+    {
+        // dotween 애니메이션 시간
+        float delay = 0.5f;
+
+        // 게임 시작 누를 시 필요없는 인터페이스 비활성화
+        // 화면에서 버튼의 크기를 완전히 줄인다음 실제 크기로 복귀와 동시에 비활성화
+        sequence.Append(StartButton.transform.DOScale(Vector3.zero, delay));
+        sequence.AppendCallback(() => StartButton.SetActive(false));
+    }
+
+    public void PlaySequnce_StartButtonFadeIn()
+    {
+        Sequence sequence = DOTween.Sequence();
+        GetSequnce_StartButtonFadeIn(sequence);
+        sequence.SetLoops(1);
+        sequence.Play();
+    }
+    public void GetSequnce_StartButtonFadeIn(Sequence sequence)
+    {
+        // dotween 애니메이션 시간
+        float delay = 0.5f;
+
+        sequence.AppendCallback(() => StartButton.SetActive(true));
+        sequence.Append(StartButton.transform.DOScale(StartButtonScaleOrigin, delay));
+        
+    }
 
     // 백버튼 콜백
     public void ReturnCasino()
     {
         CallbackManager.Instance.EnterCasino();
     }
-
-    IEnumerator startDelay(Action startCallback, Action endCallback, float delay)
-    {
-        startCallback();
-        yield return new WaitForSeconds(delay);
-        endCallback();
-    }
-
-    
-
 
     public float GetSequnce_CardScrrenOpen(Sequence sequence)
     {

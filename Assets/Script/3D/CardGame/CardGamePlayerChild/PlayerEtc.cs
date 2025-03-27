@@ -23,9 +23,12 @@ public class PlayerEtc : CardGamePlayerBase
         int randomPlayerIndex;
 
         // 자신 이외의 다른 플레이어 찾기
-        do{
-            randomPlayerIndex = Random.Range(0, playerList.Count);
-        } while (TrySetAttackTarget(playerList[randomPlayerIndex]) == false); // 세팅에 실패했으면 반복
+        //do{
+        //    randomPlayerIndex = Random.Range(0, playerList.Count);
+        //} while (TrySetAttackTarget(playerList[randomPlayerIndex]) == false); // 세팅에 실패했으면 반복
+
+        Debug.Log("테스트용 상대선택");
+        TrySetAttackTarget(playerList[0]);
     }
 
     public void SelectCard_OnPlayTime()
@@ -40,63 +43,56 @@ public class PlayerEtc : CardGamePlayerBase
             randomCardIndex = Random.Range(0, closedCardList.Count);
             cardScript = closedCardList[randomCardIndex].GetComponent<TrumpCardDefault>();
         } while ((cardScript.TrySelectThisCard_OnPlayTime(this)) == false); // 세팅에 실패하면 반복
-        PresentedCardScript = cardScript;
+        TyrSetPresentedCard(cardScript);
 
         Debug.Log($"사용된 카드 : {PresentedCardScript}");
     }
 
+
+    
     public override void AttackOtherPlayers(List<CardGamePlayerBase> PlayerList)
     {
-        // 컴퓨터가 공격대상 및 사용할 카드를 선택
+        // 컴퓨터의 공격대상 선택
         SelectTarget_OnPlayTime(PlayerList);
+
+        // 공격에 사용할 카드 선택
         SelectCard_OnPlayTime();
 
-        Sequence sequence = DOTween.Sequence();
-        float returnDelay;
-
-        // DOTO 컴퓨터는 상대를 지목하여 대화를 시작
-
-        // 카드를 제시하는 애니메이션
-        returnDelay = GetSequnce_PresentCard(sequence, true);
-        
-
-        // 내 공격 끝내기
-        Debug.Log($"{gameObject.name}이 공격을 실행함");
-        AttackDone = true;
-
-        // 상대 수비 시작
-        sequence.AppendInterval(2f);
-        sequence.AppendCallback(CardGamePlayManager.Instance.NextProgress);
-        //(()=>AttackTarget.DefenceFromOtherPlayers(this));
-        
-        sequence.SetLoops(1);
-        sequence.Play();
-        //Debug.Log($"애니메이션 시간 : {returnDelay}");
+        // 모두 완료되었으면 애니메이션 실행후 다음으로 진행
+        PlaySequnce_PresentCard(true);
     }
-
 
     public override void DeffenceFromOtherPlayers(CardGamePlayerBase AttackerScript)
     {
         // 수비에 사용할 카드를 선택
         SelectCard_OnPlayTime();
 
-        Sequence sequence = DOTween.Sequence();
-        float returnDelay;
-
-        // 카드를 제시하는 애니메이션
-        returnDelay = GetSequnce_PresentCard(sequence, false);
-
-        // 내 수비 끝내기
-        Debug.Log($"{gameObject.name}이 수비를 실행함");
-
-        // 양쪽 카드를 오픈
-        sequence.AppendInterval(2.0f);
-        sequence.AppendCallback(()=> CardGamePlayManager.Instance.CardOpenAtTheSameTime(AttackerScript, this));
+        // 모두 완료되었으면 애니메이션 실행후 다음으로 진행
+        PlaySequnce_PresentCard(false);
 
 
-        sequence.AppendInterval(1f);
-        sequence.SetLoops(1);
-        sequence.Play();
-        //Debug.Log($"애니메이션 시간 : {returnDelay}");
     }
+
+    
+
+    //public void PlaySequnce_Deffence()
+    //{
+    //    Sequence sequence = DOTween.Sequence();
+    //    float returnDelay;
+
+    //    // 카드를 제시하는 애니메이션
+    //    returnDelay = GetSequnce_PresentCard(sequence, false);
+
+    //    // 내 수비 끝내기
+    //    Debug.Log($"{gameObject.name}이 수비를 실행함");
+
+    //    // 양쪽 카드를 오픈
+    //    sequence.AppendInterval(progressDelay);
+    //    sequence.AppendCallback(CardGamePlayManager.Instance.NextProgress); // progress 302 실행
+    //    //sequence.AppendCallback(()=> CardGamePlayManager.Instance.CardOpenAtTheSameTime(AttackerScript, this));
+
+    //    sequence.SetLoops(1);
+    //    sequence.Play();
+    //    //Debug.Log($"애니메이션 시간 : {returnDelay}");
+    //}
 }

@@ -77,14 +77,20 @@ public class TrumpCardDefault : MonoBehaviour
     {
         // 동일한 디버깅은 생략함
 
+        
+
         // 플레이어의 경우 선택이 제한됨
-        if(player.tag == "Player")
+        if (player.tag == "Player")
         {
             PlayerMe playerMe = (player as PlayerMe);
             if (playerMe.isCompleteSelect_OnPlayTime == false)
             {
                 isSelected = true;
+
+                playerMe.TyrSetPresentedCard(this);
+
                 playerMe.Set_isCompleteSelect_OnPlayTime(isSelected);
+
                 Debug.Log($"선택된 카드 : {trumpCardInfo.cardName}");
                 return isSelected;
             }

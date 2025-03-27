@@ -18,7 +18,7 @@ public class TextWindowView : MonoBehaviour
     public GameObject selectionView;
 
     // 스크립트 수정
-    bool isTypingReady;
+    public bool isTypingReady {  get; private set; }
     float typingDelay;
     int TextIndex;
     public Coroutine currentCoroutine {  get; private set; }
@@ -209,6 +209,8 @@ public class TextWindowView : MonoBehaviour
     }
     private void DefaultProcess(eOOLProgress progress)
     {
+        
+
         //현재 읽어오려는 텍스트타입 저장
         currentTextType = eTextType.OnlyOneLivesProgress;
 
@@ -236,7 +238,11 @@ public class TextWindowView : MonoBehaviour
         // 텍스트가 다 끝난경우
         if (TextIndex >= textScriptDataList.Count)
         {
-            if(textScriptData.hasEndCallback == eHasEndCallback.yes)
+            Debug.Log($"현재 실행된 문자열의 개수 == {textScriptDataList.Count}");
+            CallbackManager.Instance.TextWindowPopUp_Close();
+
+            // 대화창을 한번 끄고 나서 엔드콜백을 실행함
+            if (textScriptData.hasEndCallback == eHasEndCallback.yes)
             {
                 if(textScriptData.endCallback !=null)
                 {
@@ -248,8 +254,7 @@ public class TextWindowView : MonoBehaviour
                 }
                 
             }
-            Debug.Log($"현재 실행된 문자열의 개수 == {textScriptDataList.Count}");
-            CallbackManager.Instance.TextWindowPopUp_Close();
+            
         }
 
 
@@ -322,6 +327,11 @@ public class TextWindowView : MonoBehaviour
             {
                 dialogue = dialogue.Replace("{DEFENDER}", CardGamePlayManager.Instance.Victim.characterInfo.CharacterName);
             }
+
+            if (dialogue.Contains("{EXPRESSION}"))
+            {
+                dialogue = dialogue.Replace("{EXPRESSION}", CardGamePlayManager.Instance.ExpressionValue.ToString());
+            }
         }
         
         
@@ -352,6 +362,7 @@ public class TextWindowView : MonoBehaviour
             }
         }
         isTypingReady = true;
+        currentCoroutine = null;
     }
 
     private void ArrowDoTween()

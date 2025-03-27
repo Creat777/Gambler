@@ -1,5 +1,4 @@
 using PublicSet;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,16 +10,16 @@ public class PlayerMe : CardGamePlayerBase
     {
         get 
         {
-            if (m_SelectCompleteButton == null)
+            if (selectCompleteButton == null)
             {
-                Debug.LogAssertion("SelectCompleteButton 연결안됨");
-                return null;
+                selectCompleteButton = CardGamePlayManager.Instance.cardGameView.selectCompleteButton;
             }
             return selectCompleteButton;
         }
     }
     public bool isCompleteSelect_OnGameSetting {  get; private set; }
     public bool isCompleteSelect_OnPlayTime { get; private set; }
+    public bool isAttack {  get; private set; }
 
     private void Start()
     {
@@ -48,18 +47,23 @@ public class PlayerMe : CardGamePlayerBase
 
     public override void AttackOtherPlayers(List<CardGamePlayerBase> playerList)
     {
-        // 버튼 클릭시 콜백을 추가
-        m_SelectCompleteButton.AddButtonCallback(CoroutineManager.Instance.SetBool_isButtonClicked_True);
+        CardGamePlayManager.Instance.NextProgress(); // 201을 실행
 
-        // DOTO 상대를 지목하여 대화를 시작
+        // 버튼 클릭시 콜백을 변경
+        isAttack = true;
+        m_SelectCompleteButton.SetButtonCallback(1);
+        // 상대를 지목하고 카드 선택을 완료하면 202를 실행해야함
     }
 
     
 
     public override void DeffenceFromOtherPlayers(CardGamePlayerBase AttackerScript)
     {
-        
-    }
+        CardGamePlayManager.Instance.NextProgress(); // 301을 실행
 
-    
+        // 버튼 클릭시 콜백을 변경
+        isAttack = false;
+        m_SelectCompleteButton.SetButtonCallback(1);
+        // 상대를 지목하고 카드 선택을 완료하면 302를 실행해야함
+    }
 }

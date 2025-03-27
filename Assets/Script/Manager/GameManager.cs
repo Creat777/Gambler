@@ -159,7 +159,7 @@ public class GameManager : Singleton<GameManager>
 
     public void PlaySequnce_StageAnimation()
     {
-        Debug.Log("stage 애니메이션 시작");
+        //Debug.Log("stage 애니메이션 시작");
 
         // 이미지 활성화
         connector.StageView.SetActive(true);

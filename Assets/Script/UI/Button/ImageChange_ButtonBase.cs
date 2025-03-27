@@ -36,7 +36,7 @@ public abstract class ImageChange_ButtonBase : ButtonBase
     {
         if (image != null)
         {
-            image.color = new Color(0.5f, 0.5f, 0.5f, 1.0f);
+            image.color = new Color(0.7f, 0.7f, 0.7f, 1.0f);
         }
         else
         {

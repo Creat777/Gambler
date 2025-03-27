@@ -281,7 +281,7 @@ public class CsvManager : Singleton<CsvManager>
                             {
                                 if (int.TryParse(field, out intField))
                                 {
-                                    info.endCallback = CallbackManager.Instance.CallBackList_DefaultText(intField);
+                                    info.endCallback = CallbackManager.Instance.CallbackList_OnlyOneLivesText(intField);
                                 }
                                 else
                                 {
@@ -290,53 +290,53 @@ public class CsvManager : Singleton<CsvManager>
                             }
                             break;
 
-                        // 선택지 처리
-                        case 6:
-                            if (int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
-                            {
-                                if (Enum.IsDefined(typeof(eHasSelection), intField)) // 정수값이 enum에 정의되었는지 확인
-                                {
-                                    info.hasSelection = (eHasSelection)intField;
-                                }
-                                else
-                                {
-                                    Debug.LogWarning($"{intField}는 {typeof(eHasSelection).Name}에 정의되지 않았음");
-                                }
-                            }
-                            else
-                            {
-                                Debug.LogWarning($"{field}는 정수값이 아닙니다.");
-                            }
-                            break;
-                        // 선택지가 존재하는 경우에만(기본값 NO)
-                        default:
-                            if (info.hasSelection == eHasSelection.yes)
-                            {
-                                // 비어있는경우 제외
-                                if (field.Length > 0)
-                                {
-                                    if ((field_num % 2) == 1)
-                                    {
+                        //// 선택지 처리
+                        //case 6:
+                        //    if (int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
+                        //    {
+                        //        if (Enum.IsDefined(typeof(eHasSelection), intField)) // 정수값이 enum에 정의되었는지 확인
+                        //        {
+                        //            info.hasSelection = (eHasSelection)intField;
+                        //        }
+                        //        else
+                        //        {
+                        //            Debug.LogWarning($"{intField}는 {typeof(eHasSelection).Name}에 정의되지 않았음");
+                        //        }
+                        //    }
+                        //    else
+                        //    {
+                        //        Debug.LogWarning($"{field}는 정수값이 아닙니다.");
+                        //    }
+                        //    break;
+                        //// 선택지가 존재하는 경우에만(기본값 NO)
+                        //default:
+                        //    if (info.hasSelection == eHasSelection.yes)
+                        //    {
+                        //        // 비어있는경우 제외
+                        //        if (field.Length > 0)
+                        //        {
+                        //            if ((field_num % 2) == 1)
+                        //            {
 
-                                        // 선택지 스크립트
-                                        info.selectionScript.Add(field);
-                                    }
-                                    else
-                                    {
-                                        // 선택지에 따른 처리
-                                        if (int.TryParse(field, out intField))
-                                        {
-                                            info.SelectionCallback.Add(CallbackManager.Instance.CallBackList_DefaultText(intField));
-                                        }
-                                        else
-                                        {
-                                            Debug.LogAssertion($"[{field}]는 정수값이 아님");
-                                        }
-                                    }
-                                }
+                        //                // 선택지 스크립트
+                        //                info.selectionScript.Add(field);
+                        //            }
+                        //            else
+                        //            {
+                        //                // 선택지에 따른 처리
+                        //                if (int.TryParse(field, out intField))
+                        //                {
+                        //                    info.SelectionCallback.Add(CallbackManager.Instance.CallBackList_DefaultText(intField));
+                        //                }
+                        //                else
+                        //                {
+                        //                    Debug.LogAssertion($"[{field}]는 정수값이 아님");
+                        //                }
+                        //            }
+                        //        }
 
-                            }
-                            break;
+                        //    }
+                        //    break;
                     }
 
                     field_num++;

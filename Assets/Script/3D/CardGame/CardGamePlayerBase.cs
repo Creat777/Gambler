@@ -367,6 +367,45 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         }
     }
 
+    public virtual bool TyrSetPresentedCard(TrumpCardDefault card)
+    {
+        PresentedCardScript = card;
+        return true;
+    }
+
+    
+    public void PlaySequnce_PresentCard(bool isAttack)
+    {
+        Sequence sequence = DOTween.Sequence();
+        float returnDelay = 0;
+        float progressDelay = 2.0f;
+
+        // 카드를 제시하는 애니메이션
+        returnDelay = GetSequnce_PresentCard(sequence, isAttack);
+
+        // 내 공격 끝내기
+        Debug.Log($"{gameObject.name}이 공격을 실행함");
+
+        if (isAttack)
+        {
+            AttackDone = true;
+        }
+
+        // 다음으로 진행
+        sequence.AppendInterval(progressDelay);
+        sequence.AppendCallback(CardGamePlayManager.Instance.NextProgress);
+
+        sequence.SetLoops(1);
+        sequence.Play();
+        //Debug.Log($"애니메이션 시간 : {returnDelay}");
+    }
+
+    /// <summary>
+    /// 카드를 중앙으로 제시하는 애니메이션
+    /// </summary>
+    /// <param name="sequence"></param>
+    /// <param name="isAttack"></param>
+    /// <returns></returns>
     public float GetSequnce_PresentCard(Sequence sequence, bool isAttack)
     {
         float returnDelay = 0;
@@ -405,4 +444,6 @@ public abstract class CardGamePlayerBase : MonoBehaviour
 
         return returnDelay;
     }
+
+
 }

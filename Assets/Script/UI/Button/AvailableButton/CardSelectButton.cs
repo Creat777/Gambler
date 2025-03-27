@@ -92,7 +92,7 @@ public class CardSelectButton : ImageChange_ButtonBase
             {
                 // 버튼 전환
                 ChangeOff();
-                SetButtonCallback(UnselectThisCard_OnStartTime);
+                SetButtonCallback(UnselectThisCard_OnGameSetting);
             }
             else
             {
@@ -105,7 +105,7 @@ public class CardSelectButton : ImageChange_ButtonBase
             Debug.LogAssertion($"{transform.parent.gameObject.name}의 CardButtonSet == null");
         }
     }
-    public void UnselectThisCard_OnStartTime()
+    public void UnselectThisCard_OnGameSetting()
     {
         CheckProperties();
 

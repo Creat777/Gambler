@@ -103,7 +103,7 @@ namespace PublicSet
         num403_OnAttackSuccess,
         num404_OnDefenceSuccess,
 
-        num405_AfterSettlementOfAccounts,
+        num405_OnChooseNextPlayer,
 
 
         num501_final = 501

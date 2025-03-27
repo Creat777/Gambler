@@ -283,10 +283,11 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         switch (index)
         {
-            case 0 : return nextProgress;
+            case 0: return nextProgress;
+            case 1: return GameStartButtonOn;
             case 10: return AttackPrgress;
             case 11: return DeffenceProgress;
-            case 20: return DetermineResult;
+            case 20: return CardOpen;
             case 21: return OnJokerWin;
             case 22: return OnAttackerWin;
             case 23: return OnDeffenderWin;
@@ -300,6 +301,11 @@ public class CallbackManager : Singleton<CallbackManager>
         CardGamePlayManager.Instance.NextProgress();
     }
 
+    public void GameStartButtonOn()
+    {
+        CardGamePlayManager.Instance.cardGameView.PlaySequnce_StartButtonFadeIn();
+    }
+
     public void AttackPrgress()
     {
         CardGamePlayManager.Instance.StartPlayerAttack();
@@ -310,9 +316,9 @@ public class CallbackManager : Singleton<CallbackManager>
         CardGamePlayManager.Instance.StartPlayerDeffence();
     }
 
-    public void DetermineResult()
+    public void CardOpen()
     {
-        CardGamePlayManager.Instance.DetermineTheResult();
+        CardGamePlayManager.Instance.CardOpenAtTheSameTime();
     }
 
     public void OnJokerWin()

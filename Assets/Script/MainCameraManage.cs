@@ -5,14 +5,17 @@ public class MainCameraManage : MonoBehaviour
     public Camera mainCamera;
     public GameObject player;
 
-    private Vector3 Position3d;
+    public Vector3 Position3d_ZoomOut {  get; private set; }
+    public Vector3 Position3d_ZoomIn { get; private set; }
     private Quaternion Rotation3d;
 
     bool isExecute = false;
 
     private void Start()
     {
-        Position3d = transform.position;
+        Position3d_ZoomOut = transform.position;
+        Position3d_ZoomIn = Position3d_ZoomOut + new Vector3(0f,-10f, 0f);
+
         Rotation3d = transform.rotation;
 
         mainCamera.orthographic = false;
@@ -60,7 +63,7 @@ public class MainCameraManage : MonoBehaviour
 
         // 카메라의 기본설정을 3d로 변경 및 위에서 아래로 내려보는 시야를 갖도록 함
         mainCamera.orthographic = false;
-        transform.position = Position3d;
+        transform.position = Position3d_ZoomOut;
         transform.rotation = Rotation3d;
     }
 }
