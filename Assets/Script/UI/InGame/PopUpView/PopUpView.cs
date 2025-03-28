@@ -9,23 +9,34 @@ public class PopUpView : MonoBehaviour
 
     // ¾ÆÀÌÄÜ ÆË¾÷
     public GameObject optionPopUp;
-    public GameObject inventoryPopUp;
-    public GameObject questListPopUp;
-    public GameObject questContentPopUp;
+    public InventoryPopUp inventoryPopUp;
+    public QuestListPopUp questListPopUp;
+    public QuestContentPopUp questContentPopUp;
     public GameAssistantPopUp_OnlyOneLives gameAssistantPopUp_OnlyOneLives;
 
     // ÄÝ¹éÆË¾÷
-    public GameObject yesOrNoPopUp;
-    public GameObject checkPopUp;
+    public YesOrNoPopUp yesOrNoPopUp;
+    public CheckPopUp checkPopUp;
     
     // cardGameView Àü¿ë ÆË¾÷
-    public GameObject CardGameRulePopUp;
+    public CardGameRulePopUp CardGameRulePopUp;
 
-    
 
-    void Start()
+    private void Awake()
     {
-        
+        MakePopUpSingleTone();
+    }
+
+    /// <summary>
+    /// ÆË¾÷Àº awake¿¡¼­ ½Ì±ÛÅæ»ý¼º È£ÃâÀ» ÇÏÁö ¾ÊÀ½
+    /// </summary>
+    public void MakePopUpSingleTone()
+    {
+        inventoryPopUp.MakeSingleTone();
+        questListPopUp.MakeSingleTone();
+        questContentPopUp.MakeSingleTone();
+        gameAssistantPopUp_OnlyOneLives.MakeSingleTone();
+        CardGameRulePopUp.MakeSingleTone();
     }
 
     
@@ -41,7 +52,7 @@ public class PopUpView : MonoBehaviour
     public void InventoryPopUpOpen()
     {
         gameObject.SetActive(true);
-        inventoryPopUp.SetActive(true);
+        inventoryPopUp.gameObject.SetActive(true);
         inventoryPopUp.transform.SetAsLastSibling();
 
     }
@@ -50,14 +61,14 @@ public class PopUpView : MonoBehaviour
     public void QuestListPopUpOpen()
     {
         gameObject.SetActive(true);
-        questListPopUp.SetActive(true);
+        questListPopUp.gameObject.SetActive(true);
         questListPopUp.transform.SetAsLastSibling();
     }
 
     public void QuestContentPopUpOpen()
     {
         gameObject.SetActive(true);
-        questContentPopUp.SetActive(true);
+        questContentPopUp.gameObject.SetActive(true);
         questContentPopUp.transform.SetAsLastSibling();
     }
 
@@ -72,7 +83,7 @@ public class PopUpView : MonoBehaviour
     public void YesOrNoPopUpOpen()
     {
         gameObject.SetActive(true);
-        yesOrNoPopUp.SetActive(true);
+        yesOrNoPopUp.gameObject.SetActive(true);
         yesOrNoPopUp.transform.SetAsLastSibling();
     }
 
@@ -80,7 +91,7 @@ public class PopUpView : MonoBehaviour
     public void CheckPopUpOpen()
     {
         gameObject.SetActive(true);
-        checkPopUp.SetActive(true);
+        checkPopUp.gameObject.SetActive(true);
         checkPopUp.transform.SetAsLastSibling();
     }
 
@@ -90,7 +101,7 @@ public class PopUpView : MonoBehaviour
     public void CardGameRulePopUpOpen()
     {
         gameObject.SetActive(true);
-        CardGameRulePopUp.SetActive(true);
+        CardGameRulePopUp.gameObject.SetActive(true);
         CardGameRulePopUp.transform.SetAsLastSibling();
     }
 }

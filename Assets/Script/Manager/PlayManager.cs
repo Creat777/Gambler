@@ -1,4 +1,5 @@
 using PublicSet;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +7,7 @@ public class PlayManager : Singleton<PlayManager>
 {
 
     private Text playerMoneyViewText; // 플레이어의 돈을 화면에 표시할 텍스트
+    private PlayerMoneyAnimation moneyAnimation;
 
 
     public struct PlayerStatus
@@ -23,7 +25,7 @@ public class PlayManager : Singleton<PlayManager>
     }
 
 
-    public PlayerStatus currentPlayerStatus;
+    public PlayerStatus currentPlayerStatus { get; private set; }
 
 
     //public int current
@@ -35,31 +37,23 @@ public class PlayManager : Singleton<PlayManager>
 
     void Start()
     {
+        playerMoneyViewText = GameManager.connector.playerMoneyView_Script.coinResult;
+        moneyAnimation = GameManager.connector.playerMoneyView_Script.GetComponent<PlayerMoneyAnimation>();
+
+        if(playerMoneyViewText == null)
+        {
+            Debug.LogAssertion($"{gameObject.name}의 playerMoneyViewText == null");
+        }
+        if(moneyAnimation == null)
+        {
+            Debug.LogAssertion($"{gameObject.name}의 moneyAnimation == null");
+        }
+
         AddExp();
         AddItem();
         DoQuest();
     }
 
-    private void FixedUpdate()
-    {
-        if(GameManager.Instance.currentScene == eScene.InGame)
-        {
-            PlayerMoneyUpdate();
-        }
-    }
-
-    /// <summary>
-    /// 현재 플레이어가 갖고있는 코인개수로 ui를 업데이트
-    /// </summary>
-    private void PlayerMoneyUpdate()
-    {
-        playerMoneyViewText = GameManager.connector.playerMoneyView.transform.GetChild(1).gameObject.GetComponent<Text>();
-        if(playerMoneyViewText != null)
-        {
-            playerMoneyViewText.text = "x"+currentPlayerStatus.money.ToString();
-        }
-        
-    }
 
     /// <summary>
     /// 플레이어가 소지하는 코인개수를 초기화
@@ -67,16 +61,35 @@ public class PlayManager : Singleton<PlayManager>
     /// <param name="setValue"></param>
     public void PlayerMoneySet(int setValue)
     {
-        currentPlayerStatus.money = setValue;
+        var update = currentPlayerStatus;
+        update.money = setValue;
+        currentPlayerStatus = update;
+
+        playerMoneyViewText.text = "x" + currentPlayerStatus.money.ToString();
     }
 
     /// <summary>
     /// 플레이어가 갖고있는 돈에 추가값을 설정
     /// </summary>
-    /// <param name="plusValue"></param>
-    public void PlayerMoneyPlus(int plusValue)
+    /// <param name="Value"></param>
+    public void AddPlayerMoney(int Value)
     {
-        currentPlayerStatus.money += plusValue;
+        var update = currentPlayerStatus;
+        update.money += Value;
+        currentPlayerStatus = update;
+
+        // 전광판 초기화
+        playerMoneyViewText.text = "x" + currentPlayerStatus.money.ToString();
+
+        // 변화량 애니메이션
+        if( Value > 0 )
+        {
+            moneyAnimation.PlaySequnce_PlayerMoneyPlus(Value);
+        }
+        else if( Value < 0 )
+        {
+            moneyAnimation.PlaySequnce_PlayerMoneyMinus(Value);
+        }
     }
 
 
@@ -99,10 +112,5 @@ public class PlayManager : Singleton<PlayManager>
     public void DoQuest()
     {
 
-    }
-
-    void Update()
-    {
-        
     }
 }

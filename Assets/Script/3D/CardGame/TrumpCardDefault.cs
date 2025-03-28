@@ -23,22 +23,44 @@ public class TrumpCardDefault : MonoBehaviour
         //CsvManager.Instance.PrintProperties(trumpCardInfo);
     }
 
-    public float GetSequnce_TryCardOpen(Sequence sequence, CardGamePlayerBase playerScript)
+    public bool GetSequnce_TryCardOpen(Sequence sequence, CardGamePlayerBase playerScript)
     {
-        float returnDelay = 0;
         if(isSelected)
         {
             trumpCardInfo.isFaceDown = false;
             gameObject.layer = 0;
             playerScript.SetParent_OpenBox(gameObject);
-            returnDelay += animationScript.GetSequnce_Animation_CardOpen(sequence);
+            animationScript.GetSequnce_Animation_CardOpen(sequence);
+
+            return true;
         }
         else
         {
             //Debug.Log($"{gameObject.name}은 선택되지 않았음");
+            return false;
         }
+    }
 
-        return returnDelay;
+    public bool GetSequnce_TryCardClose(Sequence sequence, CardGamePlayerBase playerScript)
+    {
+        if (isSelected == false)
+        {
+            trumpCardInfo.isFaceDown = true;
+            
+            // 레이어 재설정
+            if(playerScript.tag == "Player") gameObject.layer = CardGamePlayManager.Instance.layerOfMe;
+            else gameObject.layer = 0;
+            
+            playerScript.SetParent_CloseBox(gameObject);
+            animationScript.GetSequnce_Animation_CardClose(sequence);
+
+            return true;
+        }
+        else
+        {
+            //Debug.Log($"{gameObject.name}은 선택되지 않았음");
+            return false;
+        }
     }
 
     private void CantSelectThisCard()
@@ -123,16 +145,10 @@ public class TrumpCardDefault : MonoBehaviour
         if(player.tag == "Player")
         {
             PlayerMe playerMe = (player as PlayerMe);
-            if (playerMe.isCompleteSelect_OnPlayTime == true)
-            {
-                isSelected = false;
-                playerMe.Set_isCompleteSelect_OnPlayTime(isSelected);
-                Debug.Log($"선택 취소된 카드 : {trumpCardInfo.cardName}");
-            }
-            else
-            {
-                Debug.LogAssertion($"{player.gameObject.name}은 카드를 선택한 적이 없음");
-            }
+
+            isSelected = false;
+            playerMe.Set_isCompleteSelect_OnPlayTime(isSelected);
+            Debug.Log($"선택 취소된 카드 : {trumpCardInfo.cardName}");
         }
 
         else

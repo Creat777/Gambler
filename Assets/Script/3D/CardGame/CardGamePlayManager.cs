@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using PublicSet;
 using DG.Tweening;
 using System.Linq;
+using Unity.VisualScripting.Antlr3.Runtime;
 
 
 
@@ -38,10 +39,9 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
             cardButtonMemoryPool = value;
         }
     }
-
     public PopUpView popUpView;
-
     public MainCameraAnimation mainCamAnime;
+    public GameAssistantPopUp_OnlyOneLives gameAssistantPopUp;
 
     // 스크립트 편집
     public eOOLProgress currentProgress { get; private set; }
@@ -149,6 +149,9 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         
         // 게임어시스턴트를 사용할 수 있도록 시도
         GameManager.connector.iconView_Script.TryIconUnLock(eIcon.GameAssistant);
+
+        // 게임어시스턴트의 선택 기능은 사용순간까지 제한
+        gameAssistantPopUp.PlaceRestrictionToAllSelections();
 
         // 게임 진행도 초기화
         SetProgress_EnterGame();
@@ -455,11 +458,19 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         Victim.AddCoin(-ExpressionValue);
 
         Sequence sequence = DOTween.Sequence();
+
+        // 화면 줌 아웃
         mainCamAnime.GetSequnce_CameraZoomOut(sequence);
 
-        Debug.LogWarning("카드 정리 애니메이션 필요");
+        // 카드 정리 , 주인에게 돌아갈 카드만 언셀렉함
+        Victim.PresentedCardScript.UnselectThisCard_OnPlayTime(Victim);
+        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Joker);
+        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Victim);
 
         sequence.AppendCallback(NextProgress); // 405 또는 501로 이동
+
+        sequence.SetLoops(0);
+        sequence.Play();
     }
 
     public void OnAttackSuccess()
@@ -477,21 +488,38 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         Deffender.AddCoin(-ExpressionValue);
 
         Sequence sequence = DOTween.Sequence();
+
+        // 화면 줌 아웃
         mainCamAnime.GetSequnce_CameraZoomOut(sequence);
 
-        Debug.LogWarning("카드 정리 애니메이션 필요");
+        // 카드 정리 , 주인에게 돌아갈 카드만 언셀렉함
+        Attacker.PresentedCardScript.UnselectThisCard_OnPlayTime(Attacker);
+        Deffender.PresentedCardScript.UnselectThisCard_OnPlayTime(Deffender);
+        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Attacker);
+        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Deffender);
 
         sequence.AppendCallback(NextProgress); // 405 또는 501로 이동
+
+        sequence.SetLoops(0);
+        sequence.Play();
     }
 
     public void OnDefenceSuccess()
     {
 
         Sequence sequence = DOTween.Sequence();
+
+        // 화면 줌 아웃
         mainCamAnime.GetSequnce_CameraZoomOut(sequence);
 
-        Debug.LogWarning("카드 정리 애니메이션 필요");
+        // 카드 정리 , 주인에게 돌아갈 카드만 언셀렉함
+        Deffender.PresentedCardScript.UnselectThisCard_OnPlayTime(Deffender);
+        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Attacker);
+        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Deffender);
 
         sequence.AppendCallback(NextProgress); // 405 또는 501로 이동
+
+        sequence.SetLoops(0);
+        sequence.Play();
     }
 }

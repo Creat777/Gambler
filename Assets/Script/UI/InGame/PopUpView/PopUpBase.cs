@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 팝업창 관리를 위한 추상클래스
+/// 팝업창 관리를 위한 추상클래스, MakeSingleTone은 따로 호출해야함
 /// </summary>
 /// <typeparam name="T_Class">상속받는 클래스</typeparam>
 public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
@@ -14,7 +14,10 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
     public GridLayoutGroup contentGrid;
     public ScrollRect scrollRect;  // ScrollRect 컴포넌트를 연결
 
-
+    protected override void Awake()
+    {
+        Debug.Log("PopUp은 Awake에서 싱글톤 생성 안함");
+    }
 
     protected virtual void OnEnable()
     {

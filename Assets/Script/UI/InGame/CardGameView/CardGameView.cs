@@ -62,10 +62,7 @@ public class CardGameView : MonoBehaviour
 
         // start버튼 삭제
         GetSequnce_StartButtonFadeOut(sequence);
-
-
-
-
+        
         // 모든 카드를 덱의 자식객체로 전환
         sequence.AppendCallback(() => deckOfCards.ReturnAllOfCards());
 

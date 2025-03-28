@@ -12,7 +12,6 @@ public class Canvas_InGame : MonoBehaviour
 
     void Start()
     {
-        PopUpViewDisable();
         CloseAllOfView();
         interfaceView.SetActive(true);
     }
@@ -28,17 +27,6 @@ public class Canvas_InGame : MonoBehaviour
         }
     }
 
-    private void PopUpViewDisable()
-    {
-        foreach (Transform child in PopUPView.transform)
-        {
-            if(child.gameObject.activeSelf == true)
-            {
-                child.gameObject.SetActive(false);
-            }
-        }
-        PopUPView.SetActive(false);
-    }
 
     public void CasinoViewOpen()
     {

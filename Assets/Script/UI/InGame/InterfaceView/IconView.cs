@@ -34,16 +34,20 @@ public class IconView : MonoBehaviour
         {
             if (_iconLockDict == null)
             {
-                _iconLockDict = new Dictionary<eIcon, GameObject>();
-                _iconLockDict.Add(eIcon.Quest, quest_Lock);
-                _iconLockDict.Add(eIcon.Inventory, inventory_Lock);
-                _iconLockDict.Add(eIcon.GameAssistant, gameAssistance_Lock);
-                _iconLockDict.Add(eIcon.Message, message_Lock);
+                InitIconDict();
             }
             return _iconLockDict;
         }
     }
 
+    public void InitIconDict()
+    {
+        _iconLockDict = new Dictionary<eIcon, GameObject>();
+        _iconLockDict.Add(eIcon.Quest, quest_Lock);
+        _iconLockDict.Add(eIcon.Inventory, inventory_Lock);
+        _iconLockDict.Add(eIcon.GameAssistant, gameAssistance_Lock);
+        _iconLockDict.Add(eIcon.Message, message_Lock);
+    }
 
     private void Awake()
     {
@@ -52,6 +56,8 @@ public class IconView : MonoBehaviour
             ViewOpenDelay = 0.3f;
         }
         SetPos();
+
+        if(iconLockDict == null) InitIconDict();
     }
 
     private void SetPos()

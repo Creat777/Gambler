@@ -26,7 +26,7 @@ public class GameAssistantPopUp_OnlyOneLives : PopUpBase<GameAssistantPopUp_Only
                 int playerIndex;
                 for (int i = 0; i < ActiveObjList.Count; i++)
                 {
-                    OnlyOneLivesPlayer playerPanelScript = ActiveObjList[i].GetComponent<OnlyOneLivesPlayer>();
+                    OnlyOneLivesPlayerPanel playerPanelScript = ActiveObjList[i].GetComponent<OnlyOneLivesPlayerPanel>();
 
                     // 올바른 객체라면
                     if (playerPanelScript != null)
@@ -47,53 +47,55 @@ public class GameAssistantPopUp_OnlyOneLives : PopUpBase<GameAssistantPopUp_Only
             });
     }
 
+    /// <summary>
+    /// 유일한 한명을 선택했을 시 다른 대상을 선택하지 못하도록 만듬
+    /// </summary>
+    /// <param name="exception"></param>
+    public void PlaceRestrictionToSelections(SelectAsTarget_Toggle exception)
+    {
+        for (int i = 0; i < ActiveObjList.Count; i++)
+        {
+            OnlyOneLivesPlayerPanel panel = ActiveObjList[i].GetComponent<OnlyOneLivesPlayerPanel>();
 
-    //public void RefreshPopUp()
-    //{
-    //    PreCheck();
+            if (panel.selectAsTarget_Toggle == exception) continue;
+            else
+            {
+                panel.selectAsTarget_Toggle.SetInteractable(false);
+            }
+        }
+    }
 
-    //    // 필요한 객체의 개수
-    //    int requiredCount = players.Length - ActiveObjList.Count;
+    public void PlaceRestrictionToAllSelections()
+    {
+        for (int i = 0; i < ActiveObjList.Count; i++)
+        {
+            OnlyOneLivesPlayerPanel panel = ActiveObjList[i].GetComponent<OnlyOneLivesPlayerPanel>();
+            panel.selectAsTarget_Toggle.SetInteractable(false);
+        }
+    }
 
-    //    // 객체가 더 필요한 경우 메모리풀에서 꺼냄
-    //    if (requiredCount > 0) 
-    //    {
-    //        for(int i = 0; i < requiredCount; i++)
-    //        {
-    //            GetObject();
-    //        }
-    //    }
-    //    // 필요없는 만큼 환수함
-    //    else if(requiredCount< 0)
-    //    {
-    //        for (int i = 0; i > (-requiredCount); i++)
-    //        {
-    //            ReturnObject(ActiveObjList[0]);
-    //        }
-    //    }
+    public void LiftRestrictionToSelections(SelectAsTarget_Toggle exception)
+    {
+        for (int i = 0; i < ActiveObjList.Count; i++)
+        {
+            OnlyOneLivesPlayerPanel panel = ActiveObjList[i].GetComponent<OnlyOneLivesPlayerPanel>();
 
-    //    // 현재 활성화된 객체에서 정보를 초기화
-    //    int playerIndex;
-    //    for (int i = 0; i < ActiveObjList.Count; i++)
-    //    {
-    //        OnlyOneLivesPlayer playerPanelScript = ActiveObjList[i].GetComponent<OnlyOneLivesPlayer>();
+            if (panel.selectAsTarget_Toggle == exception) continue;
+            else
+            {
+                panel.selectAsTarget_Toggle.SetInteractable(true);
+            }
+        }
+    }
 
-    //        // 올바른 객체라면
-    //        if (playerPanelScript != null)
-    //        {
-    //            do // 유일한 인덱스를 선택
-    //            {
-    //                playerIndex = Random.Range((int)(eCharacterType.KangDoYun), (int)(eCharacterType.OhJinSoo)+1);
-    //            } while (SelectedIndex.Contains(playerIndex));
-    //            SelectedIndex.Add(playerIndex);
+    public void LiftRestrictionToAllSelections()
+    {
+        for (int i = 0; i < ActiveObjList.Count; i++)
+        {
+            OnlyOneLivesPlayerPanel panel = ActiveObjList[i].GetComponent<OnlyOneLivesPlayerPanel>();
+            panel.selectAsTarget_Toggle.SetInteractable(true);
+        }
+    }
 
-    //            // 해당 인덱스로 정보를 초기화
-    //            playerPanelScript.InitPlayerInfo(players[i], i, CsvManager.Instance.GetCharacterInfo((eCharacterType)playerIndex));
-    //        }
-    //        else Debug.LogAssertion("잘못된 프리팹");
-    //    }
-    //    // 항목에 맞게 사이즈를 변경
-    //    ChangeContentRectTransform();
-    //}
 
 }

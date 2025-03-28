@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class OnlyOneLivesPlayer : MonoBehaviour
+public class OnlyOneLivesPlayerPanel : MonoBehaviour
 {
     // 에디터
     public Image PlayerImage;
@@ -18,10 +18,10 @@ public class OnlyOneLivesPlayer : MonoBehaviour
     public Text PlayerFeature;
     public Text CurrentPosition;
     public Text SelectAsTarget_Label;
-    public Toggle SelectAsTarget_Toggle;
+    public SelectAsTarget_Toggle selectAsTarget_Toggle;
 
     // 스크립트
-    public PlayerEtc player;
+    public PlayerEtc player {  get; private set; }
 
     public class PlayerTemplate
     {
@@ -44,31 +44,37 @@ public class OnlyOneLivesPlayer : MonoBehaviour
     public void InitPlayerInfo(PlayerEtc inputPlayer, int clockwiseOrder , cCharacterInfo playerInfo)
     {
         // 한번 설정되지 변하지 않는 값
-        player = inputPlayer;
+        { 
+            player = inputPlayer;
+            player.SetAsisstantPanel(this);
+            selectAsTarget_Toggle.SetPlayer(player);
 
-        // 객체 이름 변경
-        gameObject.name = $"{playerInfo.CharacterName}_Info";
+            // 객체 이름 변경
+            gameObject.name = $"{playerInfo.CharacterName}_Info";
 
-        // 이미지 변경
-        TryChangePortraitImage(playerInfo.CharaterIndex);
+            // 이미지 변경
+            TryChangePortraitImage(playerInfo.CharaterIndex);
 
-        // text 변경
-        PlayerName.text = PlayerTemplate.PlayerName + playerInfo.CharacterName;
-        PlayerAge.text = PlayerTemplate.PlayerAge + playerInfo.CharacterAge;
-        //
-        PlayerClan.text = PlayerTemplate.PlayerClan + playerInfo.CharacterClan;
-        PlayerFeature.text = PlayerTemplate.PlayerFeature + playerInfo.CharacterFeature;
+            // text 변경
+            PlayerName.text = PlayerTemplate.PlayerName + playerInfo.CharacterName;
+            PlayerAge.text = PlayerTemplate.PlayerAge + playerInfo.CharacterAge;
+            //
+            PlayerClan.text = PlayerTemplate.PlayerClan + playerInfo.CharacterClan;
+            PlayerFeature.text = PlayerTemplate.PlayerFeature + playerInfo.CharacterFeature;
         
-        switch(clockwiseOrder)
-        {
-            case 0: CurrentPosition.text = PlayerTemplate.CurrentPosition + "오른쪽"; break;
-            case 1: CurrentPosition.text = PlayerTemplate.CurrentPosition + "정면"; break;
-            case 2: CurrentPosition.text = PlayerTemplate.CurrentPosition + "왼쪽"; break;
-            default: Debug.LogWarning("잘못된 값"); break;
+            switch(clockwiseOrder)
+            {
+                case 0: CurrentPosition.text = PlayerTemplate.CurrentPosition + "오른쪽"; break;
+                case 1: CurrentPosition.text = PlayerTemplate.CurrentPosition + "정면"; break;
+                case 2: CurrentPosition.text = PlayerTemplate.CurrentPosition + "왼쪽"; break;
+                default: Debug.LogWarning("잘못된 값"); break;
+            }
         }
 
-        // 여러번 호출되는 함수
-        PlayerBalanceUpdate();
+        // 여러번 호출되어야 하는 함수
+        { 
+            PlayerBalanceUpdate();
+        }
     }
 
     public bool TryChangePortraitImage(eCharacterType characterIndex)
@@ -88,7 +94,7 @@ public class OnlyOneLivesPlayer : MonoBehaviour
         return isSueccessed;
     }
 
-    private void PlayerBalanceUpdate()
+    public void PlayerBalanceUpdate()
     {
         // 실시간으로 변하는 값
         if (player != null)

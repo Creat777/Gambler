@@ -5,6 +5,18 @@ using DG.Tweening;
 
 public class PlayerEtc : CardGamePlayerBase
 {
+    public OnlyOneLivesPlayerPanel AsisstantPanel {  get; private set; }
+
+    public void SetAsisstantPanel(OnlyOneLivesPlayerPanel value)
+    {
+        AsisstantPanel = value;
+    }
+    public override void AddCoin(int value)
+    {
+        coin += value;
+        AsisstantPanel.PlayerBalanceUpdate();
+    }
+
     public void SelectCard_OnStartTime()
     {
         for (int i = 0; i <CardList.Count; i++)

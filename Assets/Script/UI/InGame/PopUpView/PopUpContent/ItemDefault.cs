@@ -49,6 +49,6 @@ public class ItemDefault : ButtonBase
         PlayerPrefsManager.Instance.PlayerLoseItem(item);
 
         cItemInfo itemInfo = CsvManager.Instance.GetItemInfo(item.type);
-        PlayManager.Instance.PlayerMoneyPlus(itemInfo.value_Sale);
+        PlayManager.Instance.AddPlayerMoney(itemInfo.value_Sale);
     }
 }

@@ -224,7 +224,7 @@ public class TextWindowView : MonoBehaviour
         {
             textScriptData = textScriptDataList[TextIndex++];
             Speaker.text = CsvManager.Instance.GetCharacterInfo(textScriptData.characterEnum).CharacterName;
-            portraitImage.TryChangePortraitImage(textScriptData.characterEnum);
+            portraitImage.TryChangePortraitImage(textScriptData.characterEnum, textScriptData.DialogueIconIndex);
 
             // 코루틴을 안전하게 처리
             StartReadText(TypeDialogue(textScriptData.script));

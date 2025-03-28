@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerMe : CardGamePlayerBase
 {
+
     //에디터 연결
     [SerializeField] private SelectCompleteButton selectCompleteButton;
     public SelectCompleteButton m_SelectCompleteButton
@@ -27,6 +28,12 @@ public class PlayerMe : CardGamePlayerBase
         SetCharacterInfo(info);
     }
 
+    public override void AddCoin(int value)
+    {
+        coin += value;
+        PlayManager.Instance.AddPlayerMoney(value);
+    }
+
     public void InitAttribute_PlayerMe()
     {
         isCompleteSelect_OnGameSetting = false;
@@ -38,9 +45,9 @@ public class PlayerMe : CardGamePlayerBase
     {
         isCompleteSelect_OnGameSetting = value;
     }
-    public virtual void Set_isCompleteSelect_OnPlayTime(bool setValue)
+    public virtual void Set_isCompleteSelect_OnPlayTime(bool value)
     {
-        isCompleteSelect_OnPlayTime = setValue;
+        isCompleteSelect_OnPlayTime = value;
     }
     
 
@@ -48,6 +55,9 @@ public class PlayerMe : CardGamePlayerBase
     public override void AttackOtherPlayers(List<CardGamePlayerBase> playerList)
     {
         CardGamePlayManager.Instance.NextProgress(); // 201을 실행
+
+        // 게임어시스턴트로 선택이 가능하도록 만듬
+        GameAssistantPopUp_OnlyOneLives.Instance.LiftRestrictionToAllSelections();
 
         // 버튼 클릭시 콜백을 변경
         isAttack = true;

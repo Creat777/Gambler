@@ -16,8 +16,8 @@ public class Connector : MonoBehaviour
     public GameObject outsideOfHouse;
     public GameObject interfaceView;
     public GameObject textWindowView;
-    public GameObject playerMoneyView;
 
+    public PlayerMoneyView playerMoneyView_Script;
     public TextWindowView textWindowView_Script;
     public IconView iconView_Script;
     public PopUpView popUpView_Script;

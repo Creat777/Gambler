@@ -21,10 +21,10 @@ public class PortraitImage : MonoBehaviour
         rectTrans.sizeDelta = rectSize;
     }
 
-    public bool TryChangePortraitImage(eCharacterType characterIndex)
+    public bool TryChangePortraitImage(eCharacterType characterIndex, int iconIndex)
     {
         bool isSueccessed = false;
-        Sprite sprite = PortraitImageResource.Instance.TryGetImage(characterIndex, out isSueccessed);
+        Sprite sprite = PortraitImageResource.Instance.TryGetImage(characterIndex, iconIndex, out isSueccessed);
         if(isSueccessed)
         {
             image.sprite = sprite;

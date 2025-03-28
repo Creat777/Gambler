@@ -93,7 +93,7 @@ public class SelectCompleteButton : Deactivatable_ButtonBase
         CardGamePlayManager.Instance.cardGameView.GetSequnce_CardScrrenClose(sequence);
 
         // 카드 이동 및 공개
-        CardGameAnimationManager.Instance.GetSequnce_ChooseCardsToReveal(sequence);
+        CardGameAnimationManager.Instance.GetSequnce_ChooseCardsToReveal_Aniamaition(sequence);
 
         // 애니메이션이 끝난 후 본게임에 진입
         sequence.AppendInterval(2.0f);
@@ -107,6 +107,9 @@ public class SelectCompleteButton : Deactivatable_ButtonBase
     public void CompleteCardSelect_OnAttack_Or_OnDeffence()
     {
         Debug.Log($"CompleteCardSelect_OnAttack_Or_OnDeffence 실행");
+
+        // 역할이 끝난 게임어시스턴트의 선택기능 종료
+        GameAssistantPopUp_OnlyOneLives.Instance.PlaceRestrictionToAllSelections();
 
         // 애니메이션 실행
         Sequence sequence = DOTween.Sequence();
@@ -144,7 +147,7 @@ public class SelectCompleteButton : Deactivatable_ButtonBase
                 }
             case eOOLProgress.num201_AttackTurnPlayer:
                 {
-                    if(playerMe.isCompleteSelect_OnPlayTime)
+                    if(playerMe.AttackTarget != null && playerMe.isCompleteSelect_OnPlayTime)
                     {
                         button.interactable = true;
                         return true;

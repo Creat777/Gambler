@@ -73,7 +73,7 @@ namespace PublicSet
         PlayerMonologue,
 
         // 카지노
-        CasinoDealer,
+        GameMaster,
     }
 
     /// <summary>
@@ -123,8 +123,8 @@ namespace PublicSet
         None,
 
         System = 101,
-        Narration ,
-        GameManager, // 게임진행자
+        Narration,
+        GameMaster,
         Unknown = 404,
 
         Player = 1001,

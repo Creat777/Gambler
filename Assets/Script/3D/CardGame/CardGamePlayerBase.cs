@@ -80,7 +80,7 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         }
     }
 
-    public void AddCoin(int value)
+    public virtual void AddCoin(int value)
     {
         coin += value;
     }
@@ -183,12 +183,12 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         {
             if (cardScript.trumpCardInfo.isFaceDown)
             {
-                Debug.Log($"카드{cardScript.gameObject.name}는 뒤집혀 있음");
+                Debug.Log($"카드{cardScript.trumpCardInfo.cardName}는 뒤집혀 있음");
                 SetParent_CloseBox(card.gameObject);
             }
             else
             {
-                Debug.Log($"카드{cardScript.gameObject.name}는 공개되어 있음");
+                Debug.Log($"카드{cardScript.trumpCardInfo.cardName}는 공개되어 있음");
                 SetParent_OpenBox(card.gameObject);
             }
         }
@@ -281,10 +281,9 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         return returnDealy;
     }
 
-    public float GetSequnce_CompleteSelectCard(Sequence sequence)
+    public void GetSequnce_OpenAndCloseCards(Sequence sequence)
     {
         Debug.Log("GetSequnce_CompleteSelectCard 실행");
-        float returnDelay = 0;
 
         int num = 0;
         foreach(Transform card in CardList)
@@ -293,7 +292,12 @@ public abstract class CardGamePlayerBase : MonoBehaviour
             if(cardScript != null)
             {
                 Sequence newSequnce = DOTween.Sequence();
-                returnDelay += cardScript.GetSequnce_TryCardOpen(newSequnce, this);
+
+                bool result = cardScript.GetSequnce_TryCardOpen(newSequnce, this);
+                if(result == false)
+                {
+                    cardScript.GetSequnce_TryCardClose(newSequnce, this);
+                }
 
                 if (newSequnce != null)
                 {
@@ -320,7 +324,6 @@ public abstract class CardGamePlayerBase : MonoBehaviour
             }
             
         }
-        return returnDelay;
     }
 
     public virtual bool TryDownCountPerCardType(cTrumpCardInfo cardInfo)
@@ -358,13 +361,25 @@ public abstract class CardGamePlayerBase : MonoBehaviour
             Debug.Log("자기 자신을 공격대상으로 삼을 수 없음");
             return false;
         }
+        else if(AttackTarget != null)
+        {
+            Debug.Log($"이미 공격대상을 {AttackTarget.characterInfo.CharacterName}으로 선택했습니다.");
+            return false;
+        }
         else
         {
             AttackTarget = target;
             CardGamePlayManager.Instance.SetDeffender(AttackTarget);
-            Debug.Log($"{gameObject.name}의 공격 대상 : {target.gameObject.name}");
+            Debug.Log($"{gameObject.name}의 공격 대상 : {AttackTarget.characterInfo.CharacterName}");
             return true;
         }
+    }
+
+    public virtual void ClearAttackTarget()
+    {
+        Debug.Log($"공격 대상을 취소합니다. 기존 공격대상 : {AttackTarget.characterInfo.CharacterName}");
+        AttackTarget = null;
+        CardGamePlayManager.Instance.SetDeffender(null);
     }
 
     public virtual bool TyrSetPresentedCard(TrumpCardDefault card)

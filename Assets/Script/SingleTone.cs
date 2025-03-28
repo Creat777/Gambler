@@ -38,7 +38,7 @@ public abstract class Singleton<T_Class> : MonoBehaviour where T_Class : MonoBeh
         }
     }
 
-    protected virtual void MakeSingleTone()
+    public virtual void MakeSingleTone()
     {
         lock(_lock)
         {

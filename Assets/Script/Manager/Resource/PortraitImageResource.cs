@@ -6,14 +6,13 @@ using System;
 
 public class PortraitImageResource : ImageResourceBase<PortraitImageResource,eCharacterType>
 {
-
     // 일반 캐릭터
     [SerializeField] private Sprite[] sPlayer;
     [SerializeField] private Sprite[] sMunDuckBea;
     [SerializeField] private Sprite[] sCaesar;
 
     // 도박 캐릭터
-    [SerializeField] private Sprite[] sCasinoDealer;
+    [SerializeField] private Sprite[] sCasinoDealer; // 0번 idle, 2번 funny, 3번 big funny, 4번 surprised
     [SerializeField] private Sprite[] sKangDoYun;
     [SerializeField] private Sprite[] sSeoJiHoo;
     [SerializeField] private Sprite[] sLeeHaRin;
@@ -63,9 +62,19 @@ public class PortraitImageResource : ImageResourceBase<PortraitImageResource,eCh
         }
         else
         {
-            result = false;
-            Debug.LogAssertion($"{characterIndex}가 딕셔너리에 추가되지 않았습니다.");
-            return null;
+            if (characterIndex < eCharacterType.Player) // 시스템, 나레이션, GM, ???의 경우
+            {
+                Debug.Log("이미지를 기본값으로 합니다.");
+                result = true;
+                return defaultImage;
+            }
+            else
+            {
+                Debug.LogAssertion($"{characterIndex.ToString()}가 딕셔너리에 추가되지 않았습니다.");
+                result = false;
+                return null;
+            }
+            
         }
     }
     

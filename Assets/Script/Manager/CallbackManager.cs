@@ -217,7 +217,7 @@ public class CallbackManager : Singleton<CallbackManager>
     // 9
     public virtual void GetGamblingCoin()
     {
-        PlayManager.Instance.PlayerMoneyPlus(100);
+        PlayManager.Instance.AddPlayerMoney(100);
         GameManager.connector.box_Script.FillUpBox();
         TextHoldOn();
     }
