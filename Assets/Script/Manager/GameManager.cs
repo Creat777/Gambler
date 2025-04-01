@@ -212,6 +212,9 @@ public class GameManager : Singleton<GameManager>
         Month = 12;
         Day = 1;
 
+        // 코인을 0으로 초기화
+        PlayManager.Instance.SetPlayerMoney(50);
+
         connector.map_Script.ChangeMapTo(eMap.InsideOfHouse);
         ChangeStage(eStage.Stage1);
         SceneLoadView(
@@ -258,7 +261,6 @@ public class GameManager : Singleton<GameManager>
                     // 일반적인 경우
                     {
                         SceneLoadView();
-                        
                     }
                     // 새로하기 시작하는 경우
                     {

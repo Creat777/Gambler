@@ -217,7 +217,7 @@ public class CallbackManager : Singleton<CallbackManager>
     // 9
     public virtual void GetGamblingCoin()
     {
-        PlayManager.Instance.AddPlayerMoney(100);
+        PlayManager.Instance.TryAddPlayerMoney(100);
         GameManager.connector.box_Script.FillUpBox();
         TextHoldOn();
     }
@@ -283,7 +283,7 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         switch (index)
         {
-            case 0: return nextProgress;
+            case 0: return NextProgress;
             case 1: return GameStartButtonOn;
             case 10: return AttackPrgress;
             case 11: return DeffenceProgress;
@@ -291,12 +291,14 @@ public class CallbackManager : Singleton<CallbackManager>
             case 21: return OnJokerWin;
             case 22: return OnAttackerWin;
             case 23: return OnDeffenderWin;
+            case 24: return OnHuntingTime;
+            case 30: return NextGame;
 
             default: return TrashFuc;
         }
     }
 
-    public void nextProgress()
+    public void NextProgress()
     {
         CardGamePlayManager.Instance.NextProgress();
     }
@@ -313,6 +315,10 @@ public class CallbackManager : Singleton<CallbackManager>
 
     public void DeffenceProgress()
     {
+        if(CardGamePlayManager.Instance.Deffender.closedCardList.Count <= 0)
+        {
+            CardGamePlayManager.Instance.NextProgress();
+        }
         CardGamePlayManager.Instance.StartPlayerDeffence();
     }
 
@@ -329,9 +335,21 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         CardGamePlayManager.Instance.OnAttackSuccess();
     }
+    
     public void OnDeffenderWin()
     {
         CardGamePlayManager.Instance.OnDefenceSuccess();
+    }
+
+    public void OnHuntingTime()
+    {
+        CardGamePlayManager.Instance.OnHuntPrey();
+    }
+    
+    private void NextGame()
+    {
+        CardGamePlayManager.Instance.InitCurrentGame();
+        CardGamePlayManager.Instance.cardGameView.PlaySequnce_StartButtonFadeIn();
     }
 
 

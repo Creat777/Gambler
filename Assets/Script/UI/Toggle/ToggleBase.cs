@@ -21,6 +21,7 @@ public class ToggleBase : MonoBehaviour
     public void SetInteractable(bool value)
     {
         toggle.interactable = value;
+        toggle.isOn = false;
     }
 
     public void SetToggleCallback(UnityAction<bool> callback)

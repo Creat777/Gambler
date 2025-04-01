@@ -126,7 +126,6 @@ public class DeckOfCards : MonoBehaviour
                 // 처리된 데이터를 각 카드에 삽입
                 if(trumpCardInfo.cardIndex>=0 && trumpCardInfo.cardIndex < Cards.Length)
                 {
-                    trumpCardInfo.isFaceDown = true; // 모든 카드는 처음에 뒤집어져있음
                     Cards[trumpCardInfo.cardIndex].GetComponent<TrumpCardDefault>().SetTrumpCard(trumpCardInfo);
                 }
                 
@@ -150,6 +149,8 @@ public class DeckOfCards : MonoBehaviour
         {
             // 모든 카드를 활성화
             Cards[i].SetActive(true);
+
+            Cards[i].GetComponent<TrumpCardDefault>().InitAttribute();
 
             // 레이어를 디폴트로 바꿔줌
             if (Cards[i].layer != 0)
@@ -231,6 +232,7 @@ public class DeckOfCards : MonoBehaviour
                 child.DOMove(child.parent.position + Vector3.up * (i+1), delay)
                 );
 
+
             // 플레이어 방향에 맞게 카드를 회전 Animaition
             Vector3 targetRotation = child.parent.rotation.eulerAngles;
             sequence.Join(
@@ -241,16 +243,8 @@ public class DeckOfCards : MonoBehaviour
         // 카드배분 후 잠시 기다림
         sequence.AppendInterval(delay * 2);
 
-        if(playerScript!= null)
-        {
-            // 정리된 카드를 펼침
-            playerScript.GetSequnece_CardSpread(sequence, delay);
-        }
-        else
-        {
-            Debug.LogAssertion("playerScript == null");
-            return;
-        }
+        // 정리된 카드를 펼침
+        playerScript.GetSequnece_CardSpread(sequence, delay);
 
 
         // 플레이어(Me)의 카드 배분이 끝났으면 자기 카드를 확인 할 수 있도록 만듬

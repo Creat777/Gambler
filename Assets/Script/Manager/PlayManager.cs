@@ -6,8 +6,26 @@ using UnityEngine.UI;
 public class PlayManager : Singleton<PlayManager>
 {
 
-    private Text playerMoneyViewText; // 플레이어의 돈을 화면에 표시할 텍스트
-    private PlayerMoneyAnimation moneyAnimation;
+    private Text _playerMoneyViewText; // 플레이어의 돈을 화면에 표시할 텍스트
+    public Text playerMoneyViewText
+    {
+        get 
+        { 
+            if(_playerMoneyViewText == null) _playerMoneyViewText = GameManager.connector.playerMoneyView_Script.coinResult;
+            return _playerMoneyViewText; 
+        }
+    }
+
+
+    private PlayerMoneyAnimation _moneyAnimation;
+    public PlayerMoneyAnimation moneyAnimation
+    {
+        get
+        {
+            if (_moneyAnimation == null) _moneyAnimation = GameManager.connector.playerMoneyView_Script.GetComponent<PlayerMoneyAnimation>();
+            return _moneyAnimation;
+        }
+    }
 
 
     public struct PlayerStatus
@@ -37,18 +55,6 @@ public class PlayManager : Singleton<PlayManager>
 
     void Start()
     {
-        playerMoneyViewText = GameManager.connector.playerMoneyView_Script.coinResult;
-        moneyAnimation = GameManager.connector.playerMoneyView_Script.GetComponent<PlayerMoneyAnimation>();
-
-        if(playerMoneyViewText == null)
-        {
-            Debug.LogAssertion($"{gameObject.name}의 playerMoneyViewText == null");
-        }
-        if(moneyAnimation == null)
-        {
-            Debug.LogAssertion($"{gameObject.name}의 moneyAnimation == null");
-        }
-
         AddExp();
         AddItem();
         DoQuest();
@@ -59,7 +65,7 @@ public class PlayManager : Singleton<PlayManager>
     /// 플레이어가 소지하는 코인개수를 초기화
     /// </summary>
     /// <param name="setValue"></param>
-    public void PlayerMoneySet(int setValue)
+    public void SetPlayerMoney(int setValue)
     {
         var update = currentPlayerStatus;
         update.money = setValue;
@@ -72,7 +78,8 @@ public class PlayManager : Singleton<PlayManager>
     /// 플레이어가 갖고있는 돈에 추가값을 설정
     /// </summary>
     /// <param name="Value"></param>
-    public void AddPlayerMoney(int Value)
+    /// <returns>파산여부를 확인</returns>
+    public bool TryAddPlayerMoney(int Value)
     {
         var update = currentPlayerStatus;
         update.money += Value;
@@ -81,15 +88,24 @@ public class PlayManager : Singleton<PlayManager>
         // 전광판 초기화
         playerMoneyViewText.text = "x" + currentPlayerStatus.money.ToString();
 
-        // 변화량 애니메이션
-        if( Value > 0 )
+        if(currentPlayerStatus.money > 0)
         {
-            moneyAnimation.PlaySequnce_PlayerMoneyPlus(Value);
+            // 변화량 애니메이션
+            if (Value > 0)
+            {
+                moneyAnimation.PlaySequnce_PlayerMoneyPlus(Value);
+            }
+            else if (Value < 0)
+            {
+                moneyAnimation.PlaySequnce_PlayerMoneyMinus(Value);
+            }
+            return true;
         }
-        else if( Value < 0 )
+        else
         {
-            moneyAnimation.PlaySequnce_PlayerMoneyMinus(Value);
+            return false; //파산
         }
+        
     }
 
 

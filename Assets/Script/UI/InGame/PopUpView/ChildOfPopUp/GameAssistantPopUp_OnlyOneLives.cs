@@ -16,7 +16,7 @@ public class GameAssistantPopUp_OnlyOneLives : PopUpBase<GameAssistantPopUp_Only
         else SelectedIndex.Clear();
     }
 
-    public void RefreshPopUp()
+    public override void RefreshPopUp()
     {
         PreCheck();
 

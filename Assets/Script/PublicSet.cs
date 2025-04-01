@@ -89,6 +89,7 @@ namespace PublicSet
         // °ø°ÝÂ÷·Ê, computerÀÇ °æ¿ì AttackTurn_Player¸¦ ½ºÅµ
         num201_AttackTurnPlayer = 201,
         num202_Attack,
+        num203_PlayerCantAttack,
 
         // ¼öºñÂ÷·Ê, computerÀÇ °æ¿ì DefenseTrun_Player¸¦ ½ºÅµ
         num301_DefenseTrun_Player= 301,
@@ -102,8 +103,9 @@ namespace PublicSet
         num402_OnJokerAppear,
         num403_OnAttackSuccess,
         num404_OnDefenceSuccess,
+        num405_OnHuntPrey,
 
-        num405_OnChooseNextPlayer,
+        num406_OnChooseNextPlayer,
 
 
         num501_final = 501
@@ -114,7 +116,8 @@ namespace PublicSet
         None = 0,
         JokerWin,
         AttakkerWin,
-        DeffenderWin
+        DeffenderWin,
+        HuntingTime
     }
 
 
@@ -262,8 +265,6 @@ namespace PublicSet
         public string cardName { get; set; }
         public eCardType cardType { get; set; }
         public int cardValue { get; set; }
-
-        public bool isFaceDown;
     }
 
     public class cCharacterInfo

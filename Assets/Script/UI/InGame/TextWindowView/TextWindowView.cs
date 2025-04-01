@@ -41,6 +41,12 @@ public class TextWindowView : MonoBehaviour
         // 셀렉션뷰가 처음부터 켜져있는 오류 방지
         if (selectionView.activeSelf == true) selectionView.SetActive(false);
 
+        if (currentCoroutine != null) // 대화창이 진행중이면 현재대화창을 안전하게 종료
+        {
+            StopCoroutine(currentCoroutine);
+            currentCoroutine = null;
+        }
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.Pause_theGame();
@@ -320,12 +326,12 @@ public class TextWindowView : MonoBehaviour
 
             if (dialogue.Contains("{JOKER}"))
             {
-                dialogue = dialogue.Replace("{DEFENDER}", CardGamePlayManager.Instance.Joker.characterInfo.CharacterName);
+                dialogue = dialogue.Replace("{JOKER}", CardGamePlayManager.Instance.Joker.characterInfo.CharacterName);
             }
 
             if (dialogue.Contains("{VICTIM}"))
             {
-                dialogue = dialogue.Replace("{DEFENDER}", CardGamePlayManager.Instance.Victim.characterInfo.CharacterName);
+                dialogue = dialogue.Replace("{VICTIM}", CardGamePlayManager.Instance.Victim.characterInfo.CharacterName);
             }
 
             if (dialogue.Contains("{EXPRESSION}"))

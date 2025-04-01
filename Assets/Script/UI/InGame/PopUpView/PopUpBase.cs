@@ -118,6 +118,7 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
         // 현재 활성화된 객체에 정보를 초기화
         InitElementCallback();
     }
+    public abstract void RefreshPopUp();
 
     protected override void CreateNewObject(int orderInPool)
     {
@@ -170,5 +171,27 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
         obj.SetActive(true);
         ActiveObjList.Add(obj);
         return obj;
+    }
+
+    public override void ReturnObject(GameObject obj)
+    {
+        Debug.Log($"반환되는 객체 : {obj.name}");
+        obj.SetActive(false);
+        memoryPool.Enqueue(obj);
+        ActiveObjList.Remove(obj);
+
+        RefreshPopUp();
+    }
+
+    public override void ReturnAllObject()
+    {
+        int activeObjCount = ActiveObjList.Count;
+        Debug.Log($"반환시작, 반환될 객체의 개수 : {ActiveObjList.Count}");
+        for (int i = 0; i < activeObjCount; i++)
+        {
+            ReturnObject(ActiveObjList[0]);
+        }
+
+        RefreshPopUp();
     }
 }

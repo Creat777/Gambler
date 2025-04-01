@@ -8,7 +8,7 @@ public class PlayerMoneyAnimation : MonoBehaviour
     public void PlaySequnce_PlayerMoneyPlus(int value)
     {
         Sequence sequence = DOTween.Sequence();
-        GetSequnce_PlayerMoneyPlus(sequence, 100);
+        GetSequnce_PlayerMoneyPlus(sequence, value);
 
         sequence.SetLoops(1);
         sequence.Play();
@@ -17,7 +17,7 @@ public class PlayerMoneyAnimation : MonoBehaviour
     public void PlaySequnce_PlayerMoneyMinus(int value)
     {
         Sequence sequence = DOTween.Sequence();
-        GetSequnce_PlayerMoneyMinus(sequence, 100);
+        GetSequnce_PlayerMoneyMinus(sequence, value);
 
         sequence.SetLoops(1);
         sequence.Play();

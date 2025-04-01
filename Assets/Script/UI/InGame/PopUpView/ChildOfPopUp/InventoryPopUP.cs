@@ -8,7 +8,7 @@ public class InventoryPopUp : PopUpBase<InventoryPopUp>
     public sItem currentClickItem; // 현재 클릭한 아이템
 
 
-    public void RefreshPopUp()
+    public override void RefreshPopUp()
     {
         // 플레이어의 아이템 정보 불러오기
         HashSet<sItem> Player_items = PlayerPrefsManager.Instance.LoadItems();

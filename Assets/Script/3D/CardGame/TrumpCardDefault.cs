@@ -1,5 +1,6 @@
 using DG.Tweening;
 using PublicSet;
+using UnityEditor.Build;
 using UnityEngine;
 
 public class TrumpCardDefault : MonoBehaviour
@@ -7,12 +8,12 @@ public class TrumpCardDefault : MonoBehaviour
     public TrumpCardAnimaition animationScript {  get; private set; }
     public cTrumpCardInfo trumpCardInfo {  get; private set; }
     public bool isSelected { get; private set; }
+    public bool isFaceDown { get; private set; }
 
     private void Awake()
     {
         animationScript = GetComponent<TrumpCardAnimaition>();
     }
-
 
     public void SetTrumpCard(cTrumpCardInfo value)
     {
@@ -23,11 +24,17 @@ public class TrumpCardDefault : MonoBehaviour
         //CsvManager.Instance.PrintProperties(trumpCardInfo);
     }
 
+    public void InitAttribute()
+    {
+        isSelected = false;
+        isFaceDown = true;
+    }
+
     public bool GetSequnce_TryCardOpen(Sequence sequence, CardGamePlayerBase playerScript)
     {
         if(isSelected)
         {
-            trumpCardInfo.isFaceDown = false;
+            isFaceDown = true;
             gameObject.layer = 0;
             playerScript.SetParent_OpenBox(gameObject);
             animationScript.GetSequnce_Animation_CardOpen(sequence);
@@ -45,7 +52,7 @@ public class TrumpCardDefault : MonoBehaviour
     {
         if (isSelected == false)
         {
-            trumpCardInfo.isFaceDown = true;
+            isFaceDown = true;
             
             // 레이어 재설정
             if(playerScript.tag == "Player") gameObject.layer = CardGamePlayManager.Instance.layerOfMe;

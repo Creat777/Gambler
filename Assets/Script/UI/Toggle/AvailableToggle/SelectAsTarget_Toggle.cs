@@ -21,6 +21,7 @@ public class SelectAsTarget_Toggle : ToggleBase
         if(isSelected)
         {
             bool result = CardGamePlayManager.Instance.playerMe.TrySetAttackTarget(player);
+            CardGamePlayManager.Instance.cardGameView.selectCompleteButton.TryActivate_Button();
 
             GameAssistantPopUp_OnlyOneLives.Instance.PlaceRestrictionToSelections(this);
         }

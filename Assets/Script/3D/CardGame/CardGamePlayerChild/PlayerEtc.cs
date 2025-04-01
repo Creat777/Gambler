@@ -17,11 +17,27 @@ public class PlayerEtc : CardGamePlayerBase
         AsisstantPanel.PlayerBalanceUpdate();
     }
 
+    public override int TryMinusCoin(int value)
+    {
+        if (coin < value)
+        {
+            coin = 0;
+            value = coin;
+            Debug.Log($"플레이어{characterInfo.CharacterName} 파산");
+        }
+        else
+        {
+            coin -= value;
+        }
+        AsisstantPanel.PlayerBalanceUpdate();
+        return value;
+    }
+
     public void SelectCard_OnStartTime()
     {
-        for (int i = 0; i <CardList.Count; i++)
+        for (int i = 0; i <closedCardList.Count; i++)
         {
-            TrumpCardDefault card = CardList[i].GetComponent<TrumpCardDefault>();
+            TrumpCardDefault card = closedCardList[i].GetComponent<TrumpCardDefault>();
             if(card != null)
             {
                 card.TrySelectThisCard_OnGameSetting(this);
@@ -34,17 +50,19 @@ public class PlayerEtc : CardGamePlayerBase
         Debug.Log($"컴퓨터 \"{gameObject.name}\"가 공격할 대상을 선택합니다.");
         int randomPlayerIndex;
 
-        // 자신 이외의 다른 플레이어 찾기
-        //do{
-        //    randomPlayerIndex = Random.Range(0, playerList.Count);
-        //} while (TrySetAttackTarget(playerList[randomPlayerIndex]) == false); // 세팅에 실패했으면 반복
+        //자신 이외의 다른 플레이어 찾기
+        do
+        {
+            randomPlayerIndex = Random.Range(0, playerList.Count);
+        } while (TrySetAttackTarget(playerList[randomPlayerIndex]) == false); // 세팅에 실패했으면 반복
 
-        Debug.Log("테스트용 상대선택");
-        TrySetAttackTarget(playerList[0]);
+        //Debug.Log("테스트용 상대선택");
+        //TrySetAttackTarget(playerList[0]);
     }
 
     public void SelectCard_OnPlayTime()
     {
+
         Debug.Log($"컴퓨터 \"{gameObject.name}\"가 사용할 카드를 선택합니다.");
         int randomCardIndex;
 

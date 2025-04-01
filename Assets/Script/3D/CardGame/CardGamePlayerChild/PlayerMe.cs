@@ -31,12 +31,35 @@ public class PlayerMe : CardGamePlayerBase
     public override void AddCoin(int value)
     {
         coin += value;
-        PlayManager.Instance.AddPlayerMoney(value);
+        PlayManager.Instance.TryAddPlayerMoney(value);
     }
 
-    public void InitAttribute_PlayerMe()
+    public override int TryMinusCoin(int value)
     {
+        if (coin < value)
+        {
+            coin = 0;
+            value = coin;
+            Debug.Log("플레이어 파산");
+        }
+        else
+        {
+            coin -= value;
+        }
+        PlayManager.Instance.TryAddPlayerMoney(-value);
+        return value;
+    }
+
+
+    public override void InitAttribute_All()
+    {
+        base.InitAttribute_All();
         isCompleteSelect_OnGameSetting = false;
+    }
+
+    public override void InitAttribute_NextOrder()
+    {
+        base.InitAttribute_NextOrder();
         isCompleteSelect_OnPlayTime = false;
     }
 

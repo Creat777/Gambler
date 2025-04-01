@@ -34,18 +34,12 @@ public abstract class CardGamePlayerBase : MonoBehaviour
 
     protected virtual void Awake()
     {
-        InitAttribute();
-        cardCountPerType = new Dictionary<eCardType, int>();
-        foreach (eCardType type in Enum.GetValues(typeof(eCardType)))
-        {
-            cardCountPerType.Add(type, 0);
-        }
+        InitAttribute_All();
+        
     }
 
-    public virtual void InitAttribute()
+    public virtual void InitAttribute_All()
     {
-        AttackTarget = null;
-
         if (CardList == null) CardList = new List<Transform>();
         else CardList.Clear();
 
@@ -59,6 +53,20 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         AttackDone = false;
         
         myDiceValue = 0;
+
+        InitAttribute_NextOrder();
+    }
+
+    public virtual void InitAttribute_NextOrder()
+    {
+        if(cardCountPerType == null) cardCountPerType = new Dictionary<eCardType, int>();
+        foreach (eCardType type in Enum.GetValues(typeof(eCardType)))
+        {
+            if(cardCountPerType.ContainsKey(type)) cardCountPerType[type] = 0;
+            else cardCountPerType.Add(type, 0);
+        }
+        AttackTarget = null;
+        PresentedCardScript = null;
     }
 
     /// <summary>
@@ -72,6 +80,7 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         if (value == int.MinValue)
         {
             int randomValue = UnityEngine.Random.Range(100, 500);
+            randomValue = Mathf.CeilToInt(randomValue / 10f) * 10; // 10의 자리 올림
             coin = randomValue;
         }
         else
@@ -80,10 +89,14 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         }
     }
 
-    public virtual void AddCoin(int value)
-    {
-        coin += value;
-    }
+    public abstract void AddCoin(int value);
+
+    /// <summary>
+    /// 플레이어가 소지한 금액에서 현재 값을 차감했을 때 파산여부를 알 수 있음
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns>차감하는데 성공한 금액</returns>
+    public abstract int TryMinusCoin(int value);
 
     public void SetCharacterInfo(cCharacterInfo info)
     {
@@ -122,13 +135,10 @@ public abstract class CardGamePlayerBase : MonoBehaviour
             closedCard.SetSiblingIndex(newSiblingIndex);
         }
 
-        // 섞은 카드를 알맞은 순서로 재배치
-        Sequence sequence = DOTween.Sequence();
-        float delay = 0.5f;
-        GetSequnece_CardSpread_individual(sequence, delay, closeBox);
-
-        sequence.SetLoops(1);
-        sequence.Play();
+        if(gameObject.CompareTag("Player"))
+        {
+            CardButtonMemoryPool.Instance.InitCardButton(closeBox.transform);
+        }
     }
 
     public void UpCountPerCardType(cTrumpCardInfo cardInfo)
@@ -181,7 +191,7 @@ public abstract class CardGamePlayerBase : MonoBehaviour
 
         if (cardScript != null)
         {
-            if (cardScript.trumpCardInfo.isFaceDown)
+            if (cardScript.isFaceDown)
             {
                 Debug.Log($"카드{cardScript.trumpCardInfo.cardName}는 뒤집혀 있음");
                 SetParent_CloseBox(card.gameObject);
@@ -199,19 +209,42 @@ public abstract class CardGamePlayerBase : MonoBehaviour
 
     }
 
+    //public void GetSequnceJoin_AllCardRotation(Sequence sequence, float delay, GameObject cardBox)
+    //{
+    //    for(int i = 0; i < cardBox.transform.childCount; i++)
+    //    {
+    //        // 플레이어 방향에 맞게 카드를 회전
+    //        Vector3 targetRotation = transform.rotation.eulerAngles;
+    //        Vector3 currentRotation = cardBox.transform.GetChild(i).rotation.eulerAngles;
+    //        sequence.Join(
+    //            cardBox.transform.GetChild(i).DORotate(targetRotation - currentRotation, delay, RotateMode.WorldAxisAdd)
+    //            );
+    //    }
+    //}
 
-    public float GetSequnece_CardSpread(Sequence sequence, float delay = 0.5f)
+    //public void GetSequnceJoin_CardRotation(Sequence sequence, float delay, Transform card)
+    //{
+    //    // 플레이어 방향에 맞게 카드를 회전
+    //    Vector3 targetRotation = transform.rotation.eulerAngles;
+    //    Vector3 currentRotation = card.rotation.eulerAngles;
+    //    sequence.Join(
+    //        card.DORotate(targetRotation - currentRotation, delay, RotateMode.WorldAxisAdd)
+    //        );
+    //}
+
+    public float GetSequnece_CardSpread(Sequence sequence, float delay)
     {
         Debug.Log("GetSequnece_CardSpread 실행");
 
         float returnDelay = 0;
         returnDelay += GetSequnece_CardSpread_individual(sequence, delay, closeBox);
-        returnDelay += GetSequnece_CardSpread_individual(sequence, delay, openBox); 
+        returnDelay += GetSequnece_CardSpread_individual(sequence, delay, openBox);
         return returnDelay;
     }
 
     private float GetSequnece_CardSpread_individual(Sequence sequence, float delay, GameObject cardBox)
     {
+
         Debug.Log("GetSequnece_CardSpread_individual 실행");
 
         float returnDealy = 0;
@@ -250,10 +283,11 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         {
             Vector3 targetPos = cardBox.transform.position + Vector3.up * i * 0.2f;
             sequence.Join(cardBox.transform.GetChild(i).DOMove(targetPos, delay));
+
         }
 
         // 카드가 1개만 있으면 펼칠 필요는 없음
-        if(cardBox.transform.childCount != 1)
+        if(cardBox.transform.childCount > 1)
         {
             // 정 중앙에서 카드를 퍼트림
             sequence.AppendInterval(delay);
@@ -277,10 +311,9 @@ public abstract class CardGamePlayerBase : MonoBehaviour
                 sequence.AppendCallback(() => cardRigid.useGravity = true);
             }
         }
-
         return returnDealy;
     }
-
+    
     public void GetSequnce_OpenAndCloseCards(Sequence sequence)
     {
         Debug.Log("GetSequnce_CompleteSelectCard 실행");
@@ -377,8 +410,11 @@ public abstract class CardGamePlayerBase : MonoBehaviour
 
     public virtual void ClearAttackTarget()
     {
-        Debug.Log($"공격 대상을 취소합니다. 기존 공격대상 : {AttackTarget.characterInfo.CharacterName}");
-        AttackTarget = null;
+        if(AttackTarget != null)
+        {
+            Debug.Log($"공격 대상을 취소합니다. 기존 공격대상 : {AttackTarget.characterInfo.CharacterName}");
+            AttackTarget = null;
+        }
         CardGamePlayManager.Instance.SetDeffender(null);
     }
 

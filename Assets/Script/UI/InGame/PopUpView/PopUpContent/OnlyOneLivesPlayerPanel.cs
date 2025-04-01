@@ -96,11 +96,19 @@ public class OnlyOneLivesPlayerPanel : MonoBehaviour
 
     public void PlayerBalanceUpdate()
     {
-        // 실시간으로 변하는 값
-        if (player != null)
+        if (player.coin > 0)
         {
-            PlayerBalance.text = PlayerTemplate.PlayerBalance + player.coin.ToString();
+            // 실시간으로 변하는 값
+            if (player != null)
+            {
+                PlayerBalance.text = PlayerTemplate.PlayerBalance + player.coin.ToString();
+            }
+            else Debug.LogAssertion($"player == {player}, 지금 호출되면 안됨");
         }
-        else Debug.LogAssertion($"player == {player}, 지금 호출되면 안됨");
+        else
+        {
+            Debug.Log("파산 대사가 나와야함");
+            GameAssistantPopUp_OnlyOneLives.Instance.ReturnObject(gameObject);
+        }
     }
 }

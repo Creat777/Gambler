@@ -4,6 +4,7 @@ using PublicSet;
 using DG.Tweening;
 using System.Linq;
 using Unity.VisualScripting.Antlr3.Runtime;
+using NUnit.Framework.Constraints;
 
 
 
@@ -45,7 +46,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
 
     // 스크립트 편집
     public eOOLProgress currentProgress { get; private set; }
-    public bool isCotributionCompleted { get; private set; }
+    public bool isContributionCompleted { get; private set; }
     public List<CardGamePlayerBase> playerList {  get; private set; }
     public Queue<CardGamePlayerBase> OrderedPlayerQueue { get; private set; }
     public eCriteria currentCriteria { get; private set; }
@@ -80,14 +81,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         Victim = value;
     }
 
-    public void ResultExpression(int value)
-    {
-        // 남은 플레이어 숫자의 제곱에 비례하여 이동하는 코인이 결정됨(1배, 4배, 9배로 증가)
-        coinMultiple = 1 + playerParent.childCount - playerList.Count;
-        coinMultiple *= coinMultiple;
-
-        ExpressionValue = value * coinMultiple;
-    }
+    
 
     public int layerOfMe { get; private set; }
     private int coinMultiple; // 코인 배수
@@ -116,10 +110,13 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
 
     public void InitCurrentGame()
     {
-        playerMe.InitAttribute();
+        foreach (CardGamePlayerBase player in playerList)
+        {
+            player.InitAttribute_All();
+        }
         cardGameView.InitAttribute();
 
-        isCotributionCompleted = false;
+        isContributionCompleted = false;
     }
 
     public void EnterCardGame()
@@ -166,12 +163,14 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         GameManager.connector.textWindowView_Script.StartTextWindow(currentProgress);
     }
 
-    public void InitProgress_NewGame()
+    public void SetProgress(eOOLProgress progress)
     {
-        currentProgress = eOOLProgress.num102_BeforeRotateDiceAndDistribution;
+        Debug.Log($"현재 진행상황 : {currentProgress.ToString()}");
+        currentProgress = progress;
+
+        Debug.Log($"다음 진행상황 : {currentProgress.ToString()}");
         GameManager.connector.textWindowView_Script.StartTextWindow(currentProgress);
     }
-
     /// <summary>
     /// 모든 진행사항은 직접 제어하지 않고 해당 함수로 제어함
     /// </summary>
@@ -180,18 +179,24 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         Debug.Log($"현재 진행상황 : {currentProgress.ToString()}");
 
         if (currentProgress == eOOLProgress.num104_OnChooseFirstPlayer || 
-            currentProgress == eOOLProgress.num405_OnChooseNextPlayer)
+            currentProgress == eOOLProgress.num406_OnChooseNextPlayer)
         {
             if (Attacker != null)
             {
-                // 컴퓨터의 경우 num201_AttackTurnPlayer는 패스됨
-                if (Attacker.CompareTag("Player"))
+                // 카드가 1장만 존재하였고 방어할 때 조커를 사용했으면 공격에 쓸 카드가 없음
+                // 선택할 카드가 없는 경우
+                if (Attacker.closedCardList.Count <= 0)
+                {
+                    currentProgress = eOOLProgress.num203_PlayerCantAttack;
+                }
+                // 플레이어의 경우
+                else if (Attacker.CompareTag("Player"))
                 {
                     currentProgress = eOOLProgress.num201_AttackTurnPlayer;
                 }
+                // 컴퓨터의 경우
                 else
                 {
-                    
                     currentProgress = eOOLProgress.num202_Attack;
                 }
             }
@@ -205,8 +210,13 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         {
             if(Deffender != null)
             {
-                // 컴퓨터의 경우 num301_DefenseTrun_Player는 패스됨
-                if (Deffender.CompareTag("Player"))
+                // 카드가 1장만 존재하였고 공격에 조커를 사용했거나 공격에 실패한경우 방어할 카드가 없음
+                // 선택할 카드가 없는 경우
+                if (Attacker.closedCardList.Count <= 0)
+                {
+                    currentProgress = eOOLProgress.num401_CardOpenAtTheSameTime;
+                }
+                else if (Deffender.CompareTag("Player"))
                 {
                     currentProgress = eOOLProgress.num301_DefenseTrun_Player;
                 }
@@ -232,18 +242,27 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
                 case eCriteria.JokerWin: currentProgress = eOOLProgress.num402_OnJokerAppear; break;
                 case eCriteria.AttakkerWin: currentProgress = eOOLProgress.num403_OnAttackSuccess; break;
                 case eCriteria.DeffenderWin: currentProgress = eOOLProgress.num404_OnDefenceSuccess; break;
+                case eCriteria.HuntingTime: currentProgress = eOOLProgress.num405_OnHuntPrey; break;
                 default: Debug.LogAssertion("설정되지 않은 값이 들어갔음"); break;
             }
         }
-        else if(currentProgress == eOOLProgress.num402_OnJokerAppear ||
+        else if(currentProgress == eOOLProgress.num203_PlayerCantAttack ||
+            currentProgress == eOOLProgress.num402_OnJokerAppear ||
             currentProgress == eOOLProgress.num403_OnAttackSuccess ||
-            currentProgress == eOOLProgress.num404_OnDefenceSuccess)
+            currentProgress == eOOLProgress.num404_OnDefenceSuccess ||
+            currentProgress == eOOLProgress.num405_OnHuntPrey)
         {
             // 다음차례가 있으면 큐에서 그 선수의 명단을 꺼낸 후 다음차례를 진행
-            if(OrderedPlayerQueue.Count > 1)
+            if(OrderedPlayerQueue.Count > 0)
             {
+                Debug.Log($"남은 플레이어 순서 : {OrderedPlayerQueue.Count}");
+                foreach(var player in playerList)
+                {
+                    player.InitAttribute_NextOrder();
+                }
+
                 Attacker = OrderedPlayerQueue.Dequeue();
-                currentProgress = eOOLProgress.num405_OnChooseNextPlayer;
+                currentProgress = eOOLProgress.num406_OnChooseNextPlayer;
             }
             // 그렇지 않으면 게임을 종료
             else
@@ -251,9 +270,9 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
                 currentProgress = eOOLProgress.num501_final;
             }
         }
-        else if(currentProgress == eOOLProgress.num501_final)
+        else if(currentProgress == eOOLProgress.num501_final) // 게임이 끝나고 다음 게임을 시작한 경우
         {
-            InitProgress_NewGame();
+            currentProgress = eOOLProgress.num102_BeforeRotateDiceAndDistribution;
         }
         else // 1씩 증가하는 경우 ++을 사용
         {
@@ -363,7 +382,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         }
 
         // 플레이어(me)가 카드 선택을 완료하는 버튼을 활성화
-        isCotributionCompleted = true;
+        isContributionCompleted = true;
         cardGameView.selectCompleteButton.TryActivate_Button();
     }
 
@@ -394,32 +413,18 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         sequence.Play();
     }
 
-    //public void CardOpenAtTheSameTime(CardGamePlayerBase AttackerScript, CardGamePlayerBase DefenderScript)
-    //{
-    //    // 각 카드를 동시에 오픈
-    //    Sequence sequence = DOTween.Sequence();
-
-    //    Sequence appendSequence = DOTween.Sequence();
-    //    AttackerScript.PresentedCardScript.GetSequnce_TryCardOpen(appendSequence, AttackerScript);
-    //    sequence.Append(appendSequence);
-
-    //    Sequence joinSequnce = DOTween.Sequence();
-    //    DefenderScript.PresentedCardScript.GetSequnce_TryCardOpen(joinSequnce, DefenderScript);
-    //    sequence.Join(joinSequnce);
-
-    //    // 카드 오픈 후 결과 확인
-    //    sequence.AppendCallback(NextProgress);
-
-    //    sequence.SetLoops(1);
-    //    sequence.Play();
-    //}
-
     public void DetermineTheResult()
     {
-        
+        // 수비에 사용할 카드가 없는 경우
+        if(Deffender.PresentedCardScript == null)
+        {
+            currentCriteria = eCriteria.HuntingTime;
+            SetAttacker(Attacker);
+            SetVictim(Deffender);
+        }
 
-        // 조커가 있는지 먼저 확인
-        if (Attacker.PresentedCardScript.trumpCardInfo.cardType == eCardType.Joker)
+        // 조커가 있는 경우
+        else if (Attacker.PresentedCardScript.trumpCardInfo.cardType == eCardType.Joker)
         {
             currentCriteria = eCriteria.JokerWin;
             SetJoker(Attacker);
@@ -442,20 +447,48 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
             currentCriteria = eCriteria.DeffenderWin;
         }
 
+        // 결과에 따른 수식 계산, 정산 이전에 Text로 알려야하기에 미리 계산해야함
+        ResultExpression();
+
         // 402, 403, 404 중 하나 실행
         NextProgress();
     }
 
+    public void ResultExpression()
+    {
+        int resultValue = 0;
+
+        switch (currentCriteria)
+        {
+            case eCriteria.JokerWin:
+            case eCriteria.HuntingTime:
+                {
+                    resultValue = Victim.PresentedCardScript.trumpCardInfo.cardValue;
+                }break;
+
+            case eCriteria.AttakkerWin:
+                {
+                    resultValue = Attacker.PresentedCardScript.trumpCardInfo.cardValue -
+                                    Deffender.PresentedCardScript.trumpCardInfo.cardValue;
+                    resultValue = Mathf.Abs(resultValue);
+                }break;
+            //case eCriteria.DeffenderWin: break;
+            default: break; // 필요 없으나 만일을 대비
+        }
+
+        // 남은 플레이어 숫자의 제곱에 비례하여 이동하는 코인이 결정됨(1배, 4배, 9배로 증가)
+        coinMultiple = 1 + playerParent.childCount - playerList.Count;
+        coinMultiple *= coinMultiple;
+
+        int defaultMultiple = 10; //게임의 난이도에 따라 변경 할 수 있도록 만들까?
+        ExpressionValue = resultValue * coinMultiple * defaultMultiple;
+    }
+
     public void OnJokerAppear()
     {
-        // 조커를 제시한 경우 피해자의 카드값 
-        int resultValue = Victim.PresentedCardScript.trumpCardInfo.cardValue;
-
-        // 배수값을 계산하여 저장
-        ResultExpression(resultValue);
-
-        Joker.AddCoin(ExpressionValue);
-        Victim.AddCoin(-ExpressionValue);
+        int result = Victim.TryMinusCoin(ExpressionValue);
+        Joker.AddCoin(result);
+        
 
         Sequence sequence = DOTween.Sequence();
 
@@ -464,10 +497,10 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
 
         // 카드 정리 , 주인에게 돌아갈 카드만 언셀렉함
         Victim.PresentedCardScript.UnselectThisCard_OnPlayTime(Victim);
-        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Joker);
-        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Victim);
+        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Joker, true);
+        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Victim, true);
 
-        sequence.AppendCallback(NextProgress); // 405 또는 501로 이동
+        sequence.AppendCallback(NextProgress); // 406 또는 501로 이동
 
         sequence.SetLoops(0);
         sequence.Play();
@@ -475,17 +508,8 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
 
     public void OnAttackSuccess()
     {
-        // 공격자와 수비자의 숫자차이 * 배수
-        int resultValue =
-            Attacker.PresentedCardScript.trumpCardInfo.cardValue -
-            Deffender.PresentedCardScript.trumpCardInfo.cardValue;
-        resultValue = Mathf.Abs(resultValue);
-
-        // 배수값을 계산하여 저장
-        ResultExpression(resultValue);
-
-        Attacker.AddCoin(ExpressionValue);
-        Deffender.AddCoin(-ExpressionValue);
+        int result = Deffender.TryMinusCoin(ExpressionValue);
+        Attacker.AddCoin(result);
 
         Sequence sequence = DOTween.Sequence();
 
@@ -495,17 +519,39 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         // 카드 정리 , 주인에게 돌아갈 카드만 언셀렉함
         Attacker.PresentedCardScript.UnselectThisCard_OnPlayTime(Attacker);
         Deffender.PresentedCardScript.UnselectThisCard_OnPlayTime(Deffender);
-        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Attacker);
-        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Deffender);
+        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Attacker, true);
+        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Deffender, true);
 
-        sequence.AppendCallback(NextProgress); // 405 또는 501로 이동
+        sequence.AppendCallback(NextProgress); // 406 또는 501로 이동
 
+
+        
         sequence.SetLoops(0);
         sequence.Play();
     }
 
     public void OnDefenceSuccess()
     {
+        Sequence sequence = DOTween.Sequence();
+
+        // 화면 줌 아웃
+        mainCamAnime.GetSequnce_CameraZoomOut(sequence);
+
+        // 카드 정리 , 주인에게 돌아갈 카드 언셀렉
+        Deffender.PresentedCardScript.UnselectThisCard_OnPlayTime(Deffender);
+        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Attacker, true);
+        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Deffender, true);
+
+        sequence.AppendCallback(NextProgress); // 406 또는 501로 이동
+
+        sequence.SetLoops(0);
+        sequence.Play();
+    }
+
+    public void OnHuntPrey()
+    {
+        int result = Victim.TryMinusCoin(ExpressionValue);
+        Attacker.AddCoin(result);
 
         Sequence sequence = DOTween.Sequence();
 
@@ -513,11 +559,10 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         mainCamAnime.GetSequnce_CameraZoomOut(sequence);
 
         // 카드 정리 , 주인에게 돌아갈 카드만 언셀렉함
-        Deffender.PresentedCardScript.UnselectThisCard_OnPlayTime(Deffender);
-        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Attacker);
-        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Deffender);
+        Victim.PresentedCardScript.UnselectThisCard_OnPlayTime(Attacker);
+        CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Attacker, true);
 
-        sequence.AppendCallback(NextProgress); // 405 또는 501로 이동
+        sequence.AppendCallback(NextProgress); // 406 또는 501로 이동
 
         sequence.SetLoops(0);
         sequence.Play();
