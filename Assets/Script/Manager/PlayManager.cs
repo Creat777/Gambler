@@ -75,36 +75,34 @@ public class PlayManager : Singleton<PlayManager>
     }
 
     /// <summary>
-    /// 플레이어가 갖고있는 돈에 추가값을 설정
+    /// 플레이어가 갖고있는 돈에 추가값을 설정, 파산여부는 같은 스크립트의 TryMinusCoin에서 판별
     /// </summary>
     /// <param name="Value"></param>
     /// <returns>파산여부를 확인</returns>
-    public bool TryAddPlayerMoney(int Value)
+    public void AddPlayerMoney(int Value)
     {
-        var update = currentPlayerStatus;
+        PlayerStatus update = currentPlayerStatus;
         update.money += Value;
         currentPlayerStatus = update;
 
         // 전광판 초기화
         playerMoneyViewText.text = "x" + currentPlayerStatus.money.ToString();
 
-        if(currentPlayerStatus.money > 0)
+        // 변화량 애니메이션
+        if (Value > 0) // AddCoin에 의해 호출된 경우
         {
-            // 변화량 애니메이션
-            if (Value > 0)
-            {
-                moneyAnimation.PlaySequnce_PlayerMoneyPlus(Value);
-            }
-            else if (Value < 0)
-            {
-                moneyAnimation.PlaySequnce_PlayerMoneyMinus(Value);
-            }
-            return true;
+            moneyAnimation.PlaySequnce_PlayerMoneyPlus(Value);
         }
-        else
+        else if (Value < 0) // TryMinusCoin에 의해 호출된 경우
         {
-            return false; //파산
+            Value -= Value; // 전광판에 띄우기 위해 양수로 바꿈
+            moneyAnimation.PlaySequnce_PlayerMoneyMinus(Value);
         }
+
+        //if (currentPlayerStatus.money > 0)
+        //{
+            
+        //}
         
     }
 

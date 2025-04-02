@@ -31,22 +31,30 @@ public class PlayerMe : CardGamePlayerBase
     public override void AddCoin(int value)
     {
         coin += value;
-        PlayManager.Instance.TryAddPlayerMoney(value);
+        PlayManager.Instance.AddPlayerMoney(value);
     }
 
-    public override int TryMinusCoin(int value)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="value">양수를 값으로 받음</param>
+    /// <returns></returns>
+    public override int TryMinusCoin(int value, out bool isBankrupt)
     {
-        if (coin < value)
+        if (coin <= value) //파산
         {
             coin = 0;
             value = coin;
-            Debug.Log("플레이어 파산");
+            isBankrupt = true;
         }
         else
         {
             coin -= value;
+            isBankrupt = false;
         }
-        PlayManager.Instance.TryAddPlayerMoney(-value);
+        PlayManager.Instance.AddPlayerMoney(-value);
+
+        // 플레이어가 소지한 금액이 최대값
         return value;
     }
 
@@ -57,9 +65,9 @@ public class PlayerMe : CardGamePlayerBase
         isCompleteSelect_OnGameSetting = false;
     }
 
-    public override void InitAttribute_NextOrder()
+    public override void InitAttribute_ForNextOrder()
     {
-        base.InitAttribute_NextOrder();
+        base.InitAttribute_ForNextOrder();
         isCompleteSelect_OnPlayTime = false;
     }
 
@@ -99,4 +107,6 @@ public class PlayerMe : CardGamePlayerBase
         m_SelectCompleteButton.SetButtonCallback(1);
         // 상대를 지목하고 카드 선택을 완료하면 302를 실행해야함
     }
+
+    
 }

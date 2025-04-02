@@ -24,7 +24,7 @@ public class CallbackManager : Singleton<CallbackManager>
         isBlakcViewReady = true;
     }
 
-    public void BlackViewProcess(float delay, Action middleCallBack, Action endCallback = null)
+    public void PlaySequnce_BlackViewProcess(float delay, Action middleCallBack, Action endCallback = null)
     {
         isBlakcViewReady = false;
 
@@ -55,23 +55,24 @@ public class CallbackManager : Singleton<CallbackManager>
 
         sequence.Append(blackViewImage.DOColor(Color.clear, delay / 2));
 
+        sequence.AppendCallback(
+        () =>
+        {
+            // 비활성화를 해야 화면 클릭이 가능함
+            GameManager.connector.blackView.SetActive(false);
+
+            // 게임 지속
+            GameManager.Instance.Continue_theGame();
+
+            isBlakcViewReady = true;
+        }
+        );
+
         if (endCallback != null)
         {
             sequence.AppendCallback(() => endCallback());
         }
 
-        sequence.AppendCallback(
-            () =>
-            {
-                // 비활성화를 해야 화면 클릭이 가능함
-                GameManager.connector.blackView.SetActive(false);
-
-                // 게임 지속
-                GameManager.Instance.Continue_theGame();
-
-                isBlakcViewReady = true;
-            }
-            );
 
         sequence.SetLoops(1);
 
@@ -136,7 +137,7 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         float delay = 2.0f;
         // 암막 중에 실행될 처리를 람다함수로 전달
-        BlackViewProcess(delay, 
+        PlaySequnce_BlackViewProcess(delay, 
             () => GameManager.connector.map_Script.ChangeMapTo(eMap.OutsideOfHouse), 
             () => GameManager.connector.interfaceView.SetActive(true)
         );
@@ -148,7 +149,7 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         float delay = 2.0f;
         // 암막 중에 실행될 처리를 람다함수로 전달
-        BlackViewProcess(delay,
+        PlaySequnce_BlackViewProcess(delay,
             () =>GameManager.connector.map_Script.ChangeMapTo(eMap.InsideOfHouse),
             () =>GameManager.connector.interfaceView.SetActive(true)
         );
@@ -160,7 +161,7 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         float delay = 4.0f;
 
-        BlackViewProcess(delay,
+        PlaySequnce_BlackViewProcess(delay,
                 () =>
                 {
                     GameManager.Instance.Day++;
@@ -217,7 +218,7 @@ public class CallbackManager : Singleton<CallbackManager>
     // 9
     public virtual void GetGamblingCoin()
     {
-        PlayManager.Instance.TryAddPlayerMoney(100);
+        PlayManager.Instance.AddPlayerMoney(100);
         GameManager.connector.box_Script.FillUpBox();
         TextHoldOn();
     }
@@ -227,7 +228,7 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         float delay = 2.0f;
         // 암막 중에 실행될 처리를 람다함수로 전달
-        BlackViewProcess(delay,
+        PlaySequnce_BlackViewProcess(delay,
             () =>
             {
                 GameManager.connector.map_Script.ChangeMapTo(eMap.Casino);
@@ -254,7 +255,7 @@ public class CallbackManager : Singleton<CallbackManager>
     {
         //Debug.Log("카지노 입장");
         float delay = 2.0f;
-        BlackViewProcess(delay,
+        PlaySequnce_BlackViewProcess(delay,
             ()=>
             {
                 GameManager.connector.MainCanvas_script.CasinoViewOpen();
@@ -292,6 +293,7 @@ public class CallbackManager : Singleton<CallbackManager>
             case 22: return OnAttackerWin;
             case 23: return OnDeffenderWin;
             case 24: return OnHuntingTime;
+            case 25: return OnPlayerBackrupt;
             case 30: return NextGame;
 
             default: return TrashFuc;
@@ -344,6 +346,11 @@ public class CallbackManager : Singleton<CallbackManager>
     public void OnHuntingTime()
     {
         CardGamePlayManager.Instance.OnHuntPrey();
+    }
+
+    public void OnPlayerBackrupt()
+    {
+        CardGamePlayManager.Instance.OnPlayerBankrupt();
     }
     
     private void NextGame()

@@ -175,12 +175,17 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
 
     public override void ReturnObject(GameObject obj)
     {
-        Debug.Log($"반환되는 객체 : {obj.name}");
-        obj.SetActive(false);
-        memoryPool.Enqueue(obj);
-        ActiveObjList.Remove(obj);
-
-        RefreshPopUp();
+        if(ActiveObjList.Contains(obj))
+        {
+            Debug.Log($"반환되는 객체 : {obj.name}");
+            obj.SetActive(false);
+            memoryPool.Enqueue(obj);
+            ActiveObjList.Remove(obj);
+        }
+        else
+        {
+            Debug.LogAssertion("잘못된 반환");
+        }
     }
 
     public override void ReturnAllObject()
@@ -191,7 +196,5 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
         {
             ReturnObject(ActiveObjList[0]);
         }
-
-        RefreshPopUp();
     }
 }

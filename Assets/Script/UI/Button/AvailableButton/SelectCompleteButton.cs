@@ -135,7 +135,7 @@ public class SelectCompleteButton : Deactivatable_ButtonBase
             case eOOLProgress.num102_BeforeRotateDiceAndDistribution:
             case eOOLProgress.num103_BeforeChooseCardsToReveal:
                 {
-                    if (CardGamePlayManager.Instance.isContributionCompleted && playerMe.isCompleteSelect_OnGameSetting)
+                    if (CardGamePlayManager.Instance.isDistributionCompleted && playerMe.isCompleteSelect_OnGameSetting)
                     {
                         button.interactable = true;
                         return true;

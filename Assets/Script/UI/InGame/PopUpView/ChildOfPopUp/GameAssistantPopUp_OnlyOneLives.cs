@@ -1,14 +1,29 @@
 using UnityEngine;
 using System.Collections.Generic;
 using PublicSet;
+using UnityEngine.UIElements;
 
 public class GameAssistantPopUp_OnlyOneLives : PopUpBase<GameAssistantPopUp_OnlyOneLives>
 {
-    // 에디터
-    public PlayerEtc[] players;
-
     // 스크립트
+    public List<PlayerEtc> players {  get; private set; } 
     private List<int> SelectedIndex;
+
+
+    public void InitPlayerList()
+    {
+        if (players == null) players = new List<PlayerEtc>();
+        else players.Clear();
+
+        Queue<CardGamePlayerBase> tempQueue = new Queue<CardGamePlayerBase>(CardGamePlayManager.Instance.playerList);
+
+        while (tempQueue.Count > 0)
+        {
+            CardGamePlayerBase player = tempQueue.Dequeue();
+            if (player.CompareTag("Player")) continue;
+            else players.Add(player as PlayerEtc);
+        }
+    }
 
     protected void PreCheck()
     {
@@ -19,8 +34,9 @@ public class GameAssistantPopUp_OnlyOneLives : PopUpBase<GameAssistantPopUp_Only
     public override void RefreshPopUp()
     {
         PreCheck();
+        InitPlayerList();
 
-        RefreshPopUp(players.Length,
+        RefreshPopUp(players.Count,
             () =>
             {
                 int playerIndex;

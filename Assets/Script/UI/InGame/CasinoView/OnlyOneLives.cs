@@ -19,9 +19,12 @@ public class OnlyOneLives : Deactivatable_ButtonBase
             return;
         }
 
-        CallbackManager.Instance.BlackViewProcess(2.0f,
-            () => GameManager.connector.MainCanvas_script.CloseAllOfView(),
-            () => CardGameView.gameObject.SetActive(true)
+        CallbackManager.Instance.PlaySequnce_BlackViewProcess(2.0f,
+            () =>
+            {
+                GameManager.connector.MainCanvas_script.CloseAllOfView();
+                CardGameView.gameObject.SetActive(true);
+            }
             );
         
     }

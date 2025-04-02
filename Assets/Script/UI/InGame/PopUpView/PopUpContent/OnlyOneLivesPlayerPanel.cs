@@ -94,21 +94,16 @@ public class OnlyOneLivesPlayerPanel : MonoBehaviour
         return isSueccessed;
     }
 
+    /// <summary>
+    /// 파산여부는 TryMinusCoin에서 판별함
+    /// </summary>
     public void PlayerBalanceUpdate()
     {
-        if (player.coin > 0)
+        // 실시간으로 변하는 값
+        if (player != null)
         {
-            // 실시간으로 변하는 값
-            if (player != null)
-            {
-                PlayerBalance.text = PlayerTemplate.PlayerBalance + player.coin.ToString();
-            }
-            else Debug.LogAssertion($"player == {player}, 지금 호출되면 안됨");
+            PlayerBalance.text = PlayerTemplate.PlayerBalance + player.coin.ToString();
         }
-        else
-        {
-            Debug.Log("파산 대사가 나와야함");
-            GameAssistantPopUp_OnlyOneLives.Instance.ReturnObject(gameObject);
-        }
+        else Debug.LogAssertion($"player == {player}, 지금 호출되면 안됨");
     }
 }

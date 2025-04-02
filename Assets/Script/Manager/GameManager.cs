@@ -233,7 +233,13 @@ public class GameManager : Singleton<GameManager>
 
     }
 
-
+    public void GameOver()
+    {
+        float delay = 2f;
+        CallbackManager.Instance.PlaySequnce_BlackViewProcess(
+            delay,
+            () => connector.youLoseView_Script.gameObject.SetActive(true));
+    }
 
     // 씬 로드 시 호출될 콜백 함수
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)

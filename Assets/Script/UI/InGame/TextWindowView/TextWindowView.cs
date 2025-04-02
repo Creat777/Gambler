@@ -334,6 +334,11 @@ public class TextWindowView : MonoBehaviour
                 dialogue = dialogue.Replace("{VICTIM}", CardGamePlayManager.Instance.Victim.characterInfo.CharacterName);
             }
 
+            if (dialogue.Contains("{PREY}"))
+            {
+                dialogue = dialogue.Replace("{PREY}", CardGamePlayManager.Instance.Prey.characterInfo.CharacterName);
+            }
+
             if (dialogue.Contains("{EXPRESSION}"))
             {
                 dialogue = dialogue.Replace("{EXPRESSION}", CardGamePlayManager.Instance.ExpressionValue.ToString());

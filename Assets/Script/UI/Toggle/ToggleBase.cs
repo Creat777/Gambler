@@ -1,7 +1,7 @@
-
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class ToggleBase : MonoBehaviour
 {
@@ -18,20 +18,30 @@ public class ToggleBase : MonoBehaviour
         }
     }
 
+    protected UnityAction<bool> StoredCallback;
+
     public void SetInteractable(bool value)
     {
         toggle.interactable = value;
-        toggle.isOn = false;
+
+        if(toggle.interactable == false)
+        {
+            SetIsOn(value);
+        }
+    }
+
+    public void SetIsOn(bool value)
+    {
+        toggle.onValueChanged.RemoveAllListeners();
+        toggle.isOn = value;
+        SetToggleCallback(StoredCallback);
     }
 
     public void SetToggleCallback(UnityAction<bool> callback)
     {
         toggle.onValueChanged.RemoveAllListeners();
         toggle.onValueChanged.AddListener(callback);
+        if(StoredCallback != callback) StoredCallback = callback;
     }
 
-    public void AddToggleCallback(UnityAction<bool> callback)
-    {
-        toggle.onValueChanged.AddListener(callback);
-    }
 }

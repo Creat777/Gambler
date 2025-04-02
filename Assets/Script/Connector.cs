@@ -21,6 +21,7 @@ public class Connector : MonoBehaviour
     public TextWindowView textWindowView_Script;
     public IconView iconView_Script;
     public PopUpView popUpView_Script;
+    public YouLoseView youLoseView_Script;  
     public Joystick joystick_Script;
     public Map map_Script;
     public Box box_Script;

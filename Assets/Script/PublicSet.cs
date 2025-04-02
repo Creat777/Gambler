@@ -94,6 +94,7 @@ namespace PublicSet
         // 수비차례, computer의 경우 DefenseTrun_Player를 스킵
         num301_DefenseTrun_Player= 301,
         num302_Defense,
+        num303_PlayerCantDefense,
 
 
         // 공격, 방어를 진행한 후 카드를 동시에 오픈
@@ -105,7 +106,9 @@ namespace PublicSet
         num404_OnDefenceSuccess,
         num405_OnHuntPrey,
 
-        num406_OnChooseNextPlayer,
+        num406_OnPlayerBankrupt,
+
+        num407_OnChooseNextPlayer,
 
 
         num501_final = 501
@@ -118,6 +121,11 @@ namespace PublicSet
         AttakkerWin,
         DeffenderWin,
         HuntingTime
+    }
+
+    public enum eSystemGuide
+    {
+
     }
 
 

@@ -54,10 +54,10 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         
         myDiceValue = 0;
 
-        InitAttribute_NextOrder();
+        InitAttribute_ForNextOrder();
     }
 
-    public virtual void InitAttribute_NextOrder()
+    public virtual void InitAttribute_ForNextOrder()
     {
         if(cardCountPerType == null) cardCountPerType = new Dictionary<eCardType, int>();
         foreach (eCardType type in Enum.GetValues(typeof(eCardType)))
@@ -96,7 +96,7 @@ public abstract class CardGamePlayerBase : MonoBehaviour
     /// </summary>
     /// <param name="value"></param>
     /// <returns>차감하는데 성공한 금액</returns>
-    public abstract int TryMinusCoin(int value);
+    public abstract int TryMinusCoin(int value, out bool isBankrupt);
 
     public void SetCharacterInfo(cCharacterInfo info)
     {
@@ -496,5 +496,5 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         return returnDelay;
     }
 
-
+    
 }

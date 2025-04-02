@@ -39,13 +39,13 @@ public class Canvas_InGame : MonoBehaviour
     {
         float delay = 2.0f;
         GameManager.Instance.ChangeCardGameView(false);
-        CallbackManager.Instance.BlackViewProcess(
+        CallbackManager.Instance.PlaySequnce_BlackViewProcess(
             delay,
-            ()=> CloseAllOfView(),
+            CloseAllOfView,
             () => interfaceView.SetActive(true)
-
             );
     }
 
     
+
 }
