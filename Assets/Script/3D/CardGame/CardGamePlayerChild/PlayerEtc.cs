@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
 using DG.Tweening;
+using System.ComponentModel;
 
 public class PlayerEtc : CardGamePlayerBase
 {
@@ -21,13 +22,13 @@ public class PlayerEtc : CardGamePlayerBase
     {
         if (coin <= value)
         {
+            value = coin; // 남은돈에 한하여 상대방에게 지급함
             coin = 0;
-            value = coin;
             isBankrupt = true;
         }
         else
         {
-            coin -= value;
+            coin = coin - value;
             isBankrupt = false;
         }
         AsisstantPanel.PlayerBalanceUpdate();
@@ -71,7 +72,7 @@ public class PlayerEtc : CardGamePlayerBase
                 weekPlayer = playerList[i];
             }
             else if(weekPlayer.closedCardList.Count == playerList[i].closedCardList.Count &&
-                weekPlayer.openedCardList.Count < playerList[i].openedCardList.Count) // 손패가 같을 경우 오픈된 카드가 더 많은 쪽을 공략
+                weekPlayer.revealedCardList.Count < playerList[i].revealedCardList.Count) // 손패가 같을 경우 공개된 카드가 더 많은 쪽을 공략
             {
                 weekPlayer = playerList[i];
             }
@@ -93,7 +94,35 @@ public class PlayerEtc : CardGamePlayerBase
 
         TrumpCardDefault selectedCard = null;
 
-        // 공격인 경우 상대의 오픈패 중에 내 수중에 있는 카드와 같은 타입이 있다면 해당 카드를 선택
+        // 상대의 손패중에 공개된 카드를 우선해서 선택
+        if(isAttack)
+        {
+            TrumpCardDefault revealedCardScript = null;
+            foreach (GameObject revealedCard in AttackTarget.revealedCardList)
+            {
+                if(closedCardList.Contains(revealedCard))
+                {
+                    revealedCardScript = revealedCard.GetComponent<TrumpCardDefault>();
+                    foreach (var myCard in closedCardList)
+                    {
+                        selectedCard = myCard.GetComponent<TrumpCardDefault>();
+                        if (revealedCardScript.trumpCardInfo.cardType == selectedCard.trumpCardInfo.cardType)
+                        {
+                            if (selectedCard.TrySelectThisCard_OnPlayTime(this))
+                            {
+                                if (TyrSetPresentedCard(selectedCard))
+                                {
+                                    Debug.Log($"사용된 카드 : {PresentedCardScript}");
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 상대의 오픈패 중에 내 수중에 있는 카드와 같은 타입이 있다면 해당 카드를 선택
         if (isAttack)
         {
             TrumpCardDefault OpenedCardOfTarget = null;

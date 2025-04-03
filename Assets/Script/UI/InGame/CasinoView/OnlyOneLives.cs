@@ -22,7 +22,7 @@ public class OnlyOneLives : Deactivatable_ButtonBase
         CallbackManager.Instance.PlaySequnce_BlackViewProcess(2.0f,
             () =>
             {
-                GameManager.connector.MainCanvas_script.CloseAllOfView();
+                (GameManager.connector as Connector_InGame).MainCanvas_script.CloseAllOfView();
                 CardGameView.gameObject.SetActive(true);
             }
             );

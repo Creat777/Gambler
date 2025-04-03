@@ -241,7 +241,10 @@ MonoBehaviour:
   sCaesar:
   - {fileID: -7232521027535748977, guid: be17cab09090b144198e79a974088e9c, type: 3}
   sCasinoDealer:
-  - {fileID: 21300000, guid: fcc556aeaae94434881ecdfde944665c, type: 3}
+  - {fileID: -1427974186, guid: 7f52ae45c22cd28449dbc7dbac12b0aa, type: 3}
+  - {fileID: -2097700262, guid: 7f52ae45c22cd28449dbc7dbac12b0aa, type: 3}
+  - {fileID: 310328486, guid: 7f52ae45c22cd28449dbc7dbac12b0aa, type: 3}
+  - {fileID: 1444789783, guid: 7f52ae45c22cd28449dbc7dbac12b0aa, type: 3}
   sKangDoYun:
   - {fileID: -3787567608466063202, guid: 7db43feb46ba42a41aaf557013d7e620, type: 3}
   sSeoJiHoo:

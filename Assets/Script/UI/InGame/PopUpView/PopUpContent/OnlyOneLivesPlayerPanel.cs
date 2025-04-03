@@ -36,11 +36,6 @@ public class OnlyOneLivesPlayerPanel : MonoBehaviour
         public const string SelectAsTarget = "해당 플레이어를 선택";
     }
 
-    private void Start()
-    {
-        //SaveTemplate();
-    }
-
     public void InitPlayerInfo(PlayerEtc inputPlayer, int clockwiseOrder , cCharacterInfo playerInfo)
     {
         // 한번 설정되지 변하지 않는 값

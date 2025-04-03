@@ -73,14 +73,6 @@ public class IconView : MonoBehaviour
     }
 
 
-
-
-    private void Start()
-    {
-        PopUpView popUpView = GameManager.connector.popUpView_Script;
-
-    }
-
     private void FixedUpdate()
     {
         if(isIconViewOpen)

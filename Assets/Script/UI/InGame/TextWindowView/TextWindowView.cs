@@ -177,7 +177,7 @@ public class TextWindowView : MonoBehaviour
         if (fileEnum == eTextScriptFile.None)
         {
             // 플레이어의 레이캐스트에 걸리는 객체
-            GameObject curruntObject = GameManager.connector.player.GetComponent<Player_MoveAndAnime>().hitObject;
+            GameObject curruntObject = (GameManager.connector as Connector_InGame).player.GetComponent<Player_MoveAndAnime>().hitObject;
 
             if (curruntObject != null)
             {
@@ -288,28 +288,9 @@ public class TextWindowView : MonoBehaviour
         // 텍스트에서 변수 처리
         if(currentTextType == eTextType.TextScriptFile)
         {
-            if (dialogue.Contains("{Month}"))
+            if (dialogue.Contains("{D-DAY}"))
             {
-                dialogue = dialogue.Replace("{Month}", GameManager.Instance.Month.ToString());
-
-                if (dialogue.Contains("{Day}"))
-                {
-                    dialogue = dialogue.Replace("{Day}", GameManager.Instance.Day.ToString());
-                }
-
-                if (dialogue.Contains("{d-Day}"))
-                {
-                    int d_day = 31 - GameManager.Instance.Day;
-                    if (d_day > 0)
-                    {
-                        dialogue = dialogue.Replace("{d-Day}", d_day.ToString() + "일 이겠군");
-                    }
-                    else if (d_day == 0)
-                    {
-                        dialogue = dialogue.Replace("{d-Day}", "오늘이 마지막이겠군");
-                    }
-
-                }
+                dialogue = dialogue.Replace("{D-DAY}", GameManager.Instance.D_day.ToString());
             }
         }
         else if(currentTextType == eTextType.OnlyOneLivesProgress)

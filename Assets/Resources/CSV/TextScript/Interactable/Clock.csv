@@ -2,4 +2,4 @@ stage번호,Character_Enum,DialogueIcon_Index,Script,"endCallback 유무(1, 0)",
 0,1001,0,시간이 벌써 이렇게 됐나…,0,0,0,null,null,null,null
 0,101,0,지금까지의 내용을 저장하시겠습니까?,0,0,1,저장하기,7,대화 나가기,1
 1,1001,0,시계가 12시 정각을 가리키고 있다.,0,0,0,null,null,null,null
-1,1001,0,시계를 보고 있으니 나중에 무언가 할 수 있을거 같다.,0,0,0,null,null,null,null
+1,1001,0,시계를 보고 있으니 나중에 [저장하기]라는 것을 할 수 있을거 같다.,0,0,0,null,null,null,null

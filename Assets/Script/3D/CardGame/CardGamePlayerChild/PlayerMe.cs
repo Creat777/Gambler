@@ -43,13 +43,13 @@ public class PlayerMe : CardGamePlayerBase
     {
         if (coin <= value) //파산
         {
+            value = coin; // 남은돈에 한해서 상대방에게 지급함
             coin = 0;
-            value = coin;
             isBankrupt = true;
         }
         else
         {
-            coin -= value;
+            coin = coin - value;
             isBankrupt = false;
         }
         PlayManager.Instance.AddPlayerMoney(-value);

@@ -16,10 +16,7 @@ public class GameManager : Singleton<GameManager>
     static public Connector connector
     {
         get { 
-            if(_connector == null)
-            {
-                _connector = GameObject.FindGameObjectWithTag("Connector").GetComponent<Connector>();
-            }
+            if(_connector == null) Debug.LogAssertion("커넥터 연결 안됐음");
             return _connector;
         }
     }
@@ -29,21 +26,18 @@ public class GameManager : Singleton<GameManager>
     public int maxStage;
 
     // 스크립트에서 수정
-    public bool isJoinGame {  get; private set; }
     public bool isGamePause {  get; private set; }
     public bool isCasinoGameView {  get; private set; }
     public float gameSpeed { get; private set; }
 
-    public ePlayerSaveKey currentSaveKey;
+    public ePlayerSaveKey currentPlayerSaveKey;
     public eScene currentScene;
     public eMap currentMap;
     public eStage currentStage { get; set; }
 
 
-    [SerializeField] private int month = 12;
-    [SerializeField] private int day;
-    public int Month { get { return month; } set { month = value; } }
-    public int Day { get { return day; } set { day = value; } }
+    [SerializeField] private int _D_day;
+    public int D_day { get { return D_day; } set { _D_day = value; } }
 
     Dictionary<eStage, string> StageMessageDict;
 
@@ -61,15 +55,6 @@ public class GameManager : Singleton<GameManager>
         Continue_theGame();
     }
 
-    public void Join_In_Game()
-    {
-        isJoinGame = true;
-    }
-    public void Out_Of_Game()
-    {
-        isJoinGame = false;
-    }
-
     public void Pause_theGame()
     {
         gameSpeed = 0;
@@ -84,6 +69,27 @@ public class GameManager : Singleton<GameManager>
     public void ChangeCardGameView(bool boolValue)
     {
         isCasinoGameView = boolValue;
+    }
+
+    public void InitConnector()
+    {
+        switch(currentScene)
+        {
+            case eScene.Title:{
+                    _connector = GameObject.FindGameObjectWithTag("Connector").GetComponent<Connector>();
+                    if (_connector == null) Debug.LogAssertion($"커넥터 Connector 연결 실패");
+                } break;
+            case eScene.Lobby: { 
+                    _connector = GameObject.FindGameObjectWithTag("Connector").GetComponent<Connector_Lobby>();
+                    if (_connector == null) Debug.LogAssertion($"커넥터 Connector_Lobby 연결 실패");
+                } break;
+            case eScene.InGame: {
+                    _connector = GameObject.FindGameObjectWithTag("Connector").GetComponent<Connector_InGame>();
+                    if (_connector == null) Debug.LogAssertion($"커넥터 Connector_InGame 연결 실패");
+                } break;
+        }
+
+        
     }
 
     
@@ -126,7 +132,7 @@ public class GameManager : Singleton<GameManager>
     public void ProcessSceneView(bool isSceneLoad, Color startColor, Color targetColor, Action callback = null)
     {
         connector.blackView.SetActive(true);
-        Image blackViewImage = _connector.blackView.GetComponent<Image>();
+        Image blackViewImage = connector.blackView.GetComponent<Image>();
         blackViewImage.color = startColor;
 
         Sequence sequence = DOTween.Sequence();
@@ -162,15 +168,15 @@ public class GameManager : Singleton<GameManager>
         //Debug.Log("stage 애니메이션 시작");
 
         // 이미지 활성화
-        connector.StageView.SetActive(true);
+        (connector as Connector_InGame).StageView.SetActive(true);
 
         // 이미지 색깔 초기화
-        Image stateViewImage = connector.StageView.GetComponent<Image>();
+        Image stateViewImage = (connector as Connector_InGame).StageView.GetComponent<Image>();
         Color colorBack = new Color(1,1,1,0);
         stateViewImage.color = colorBack;
 
         // 이미지 내부 텍스트 초기화
-        Text StageViewText = connector.StageView.transform.GetChild(0).gameObject.GetComponent<Text>();
+        Text StageViewText = (connector as Connector_InGame).StageView.transform.GetChild(0).gameObject.GetComponent<Text>();
         StageViewText.text = StageMessageDict[currentStage];
         StageViewText.color = Color.clear;
 
@@ -194,7 +200,7 @@ public class GameManager : Singleton<GameManager>
 
                 .AppendCallback(() =>
                 {
-                    connector.StageView.SetActive(false);
+                    (connector as Connector_InGame).StageView.SetActive(false);
                 })
 
                 .SetLoops(1);
@@ -205,17 +211,16 @@ public class GameManager : Singleton<GameManager>
     private void StartNewGame()
     {
         // 게임을 저장하기 전엔 쓰레기 데이터 취급
-        currentSaveKey = ePlayerSaveKey.None;
+        currentPlayerSaveKey = ePlayerSaveKey.None;
         PlayerPrefsManager.Instance.SetPlayerKeySet();
 
-        // 게임시작은 12월 1일부터 시작
-        Month = 12;
-        Day = 1;
+        // 디데이는 30일부터 시작해서 0이 되면 게임이 종료됨
+        D_day = 30;
 
         // 코인을 0으로 초기화
         PlayManager.Instance.SetPlayerMoney(50);
 
-        connector.map_Script.ChangeMapTo(eMap.InsideOfHouse);
+        (connector as Connector_InGame).map_Script.ChangeMapTo(eMap.InsideOfHouse);
         ChangeStage(eStage.Stage1);
         SceneLoadView(
             () =>
@@ -229,7 +234,7 @@ public class GameManager : Singleton<GameManager>
     {
         CallbackManager.Instance.TextWindowPopUp_Open();
 
-        GameManager.connector.textWindowView_Script.StartTextWindow(eTextScriptFile.PlayerMonologue);
+        (GameManager.connector as Connector_InGame).textWindowView_Script.StartTextWindow(eTextScriptFile.PlayerMonologue);
 
     }
 
@@ -238,7 +243,7 @@ public class GameManager : Singleton<GameManager>
         float delay = 2f;
         CallbackManager.Instance.PlaySequnce_BlackViewProcess(
             delay,
-            () => connector.youLoseView_Script.gameObject.SetActive(true));
+            () => (connector as Connector_InGame).youLoseView_Script.gameObject.SetActive(true));
     }
 
     // 씬 로드 시 호출될 콜백 함수
@@ -252,18 +257,24 @@ public class GameManager : Singleton<GameManager>
             case 0:
                 {
                     currentScene = eScene.Title;
+                    InitConnector();
+
                     SceneLoadView();
                 }
                 break;
             case 1:
                 {
                     currentScene = eScene.Lobby;
+                    InitConnector();
+
                     SceneLoadView();
                 }
                  break;
             case 2:
                 {
                     currentScene = eScene.InGame;
+                    InitConnector();
+
                     // 일반적인 경우
                     {
                         SceneLoadView();
@@ -274,10 +285,6 @@ public class GameManager : Singleton<GameManager>
                         StartNewGame();
                     }
                 }
-                
-
-                
-                
                 break;
         }
 

@@ -1,6 +1,7 @@
 using PublicSet;
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 // 아이템을 저장하는 자료구조
@@ -18,13 +19,13 @@ public struct sItem
     // string으로 저장했던 정보를 사용가능한 데이터로 변환
     public static sItem DataSplit(string data)
     {
+        sItem item = new sItem();
         string[] parts = data.Split(':');
         if (parts.Length == 2 &&
-            int.TryParse(parts[0], out int id) &&
-            eItemType.TryParse(parts[1], out eItemType serial)
-                )
+            int.TryParse(parts[0], out item.Id_inInventory) &&
+            eItemType.TryParse(parts[1], out item.type))
         {
-            return new sItem(id, serial);
+            return item;
         }
 
         // 값타입이 반환형인경우 각 속성이 기본값인 해당 값타입을 반환
@@ -33,6 +34,18 @@ public struct sItem
             // bool의 기본값은 false
         // 참조타입이 반환형인경우 기본값으로 null을 반환
         return default;
+    }
+
+    public override bool Equals(object obj)
+    {
+        return obj is sItem item &&
+               Id_inInventory == item.Id_inInventory &&
+               type == item.type;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Id_inInventory, type);
     }
 
     // 생성자
@@ -51,27 +64,181 @@ public struct sItem
     }
 }
 
+public struct sQuest
+{
+    public int ID;
+
+    // 데이터 저장을 위해 string으로 변환
+    public override string ToString()
+    {
+        return $"{ID}";
+    }
+
+
+    // 생성자
+    public sQuest(int id)
+    {
+        this.ID = id;
+        return;
+    }
+
+    public sQuest(sQuest quest)
+    {
+        this.ID = quest.ID;
+        return;
+    }
+}
+
+public struct sPlayerStatus
+{
+    public int hp; // 체력
+    public int agility; // 민첩성
+    public int hunger; // 허기
+    public int money; // 소지금
+
+
+
+    public override string ToString()
+    {
+        return $"{hp}:{agility}:{hunger}:{money}";
+    }
+
+    // string으로 저장했던 정보를 사용가능한 데이터로 변환
+    public static sPlayerStatus DataSplit(string data)
+    {
+        sPlayerStatus playerStatus = new sPlayerStatus();
+        string[] parts = data.Split(':');
+
+        if (parts.Length == 4 &&
+            int.TryParse(parts[0], out playerStatus.hp) &&
+            int.TryParse(parts[1], out playerStatus.agility) &&
+            int.TryParse(parts[2], out playerStatus.hunger) &&
+            int.TryParse(parts[3], out playerStatus.money))
+        {
+            return playerStatus;
+        }
+
+        // 값타입이 반환형인경우 각 속성이 기본값인 해당 값타입을 반환
+        // int의 기본값은 0
+        // float의 기본값은 0.0f
+        // bool의 기본값은 false
+        // 참조타입이 반환형인경우 기본값으로 null을 반환
+        return default;
+    }
+
+    public static sPlayerStatus GetDefault()
+    {
+        return default;
+    }
+
+    public override bool Equals(object obj)
+    {
+        return obj is sPlayerStatus status &&
+               hp == status.hp &&
+               agility == status.agility &&
+               hunger == status.hunger &&
+               money == status.money;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(hp, agility, hunger, money);
+    }
+
+    // == 연산자 재정의
+    public static bool operator ==(sPlayerStatus left, sPlayerStatus right)
+    {
+        // 객체가 동일한지 체크
+        return left.hp == right.hp &&
+               left.agility == right.agility &&
+               left.hunger == right.hunger &&
+               left.money == right.money;
+    }
+
+    // != 연산자 재정의
+    public static bool operator !=(sPlayerStatus left, sPlayerStatus right)
+    {
+        return !(left == right);
+    }
+
+    // 생성자
+    public sPlayerStatus(int hp, int agility, int hunger, int money)
+    {
+        this.hp = hp;
+        this.agility = agility;
+        this.hunger = hunger;
+        this.money = money;
+    }
+
+    public sPlayerStatus(sPlayerStatus status)
+    {
+        hp = status.hp;
+        agility = status.agility;
+        hunger = status.hunger;
+        money = status.money;
+    }
+}
+
 public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
 {
-    private const string defaultSavedItemsKey = "SavedItems";
-    public string currentPlayerSaveItemKey;
+    string currentPlayerSavaKey;
+
+    private const string defaultSaveKey_Items = "SavedItems";
+    public string currentPlayerSaveKey_Items;
+
+    private const string defaultSaveKey_Quests = "SavedQuests";
+    public string currentPlayerSaveKey_Quests;
+
+    private const string defaultSaveKey_RemainingPeriod = "SavedRemainingPeriod";
+    public string currentPlayerSaveKey_RemainingPeriod;
+
+    private const string defaultSaveKey_PlayerStatus = "SavedPlayerStatus";
+    public string currentPlayerSaveKey_PlayerStatus;
 
     public void SetPlayerKeySet()
     {
-        SetPlayerItemKey();
-    }
-    private void SetPlayerItemKey()
-    {
         // 현재 플레이어 정보를 가져옴
-        string currentPlayer = GameManager.Instance.currentSaveKey.ToString();
-        Debug.Log($"currentPlayer : {currentPlayer}");
+        currentPlayerSavaKey = GameManager.Instance.currentPlayerSaveKey.ToString();
+        Debug.Log($"currentPlayer : {currentPlayerSavaKey}");
 
+        Set_CurrentPlayerSaveKey_Items();
+        Set_CurrentPlayerSaveKey_Quests();
+        Set_CurrentPlayerSaveKey_RemainingPeriod();
+        Set_CurrentPlayerSaveKey_PlayerStatus();
+    }
+    private void Set_CurrentPlayerSaveKey_Items()
+    {
         // 아이템키를 업데이트하고 그 아이템키에 현재 아이템 데이터를 저장
-        currentPlayerSaveItemKey = currentPlayer + defaultSavedItemsKey;
-        SaveData(defaultSavedItemsKey, string.Join(",", Player_Items));
+        currentPlayerSaveKey_Items = currentPlayerSavaKey + defaultSaveKey_Items;
+        SaveData(currentPlayerSaveKey_Items, string.Join(",", Player_Items));
 
         // 업데이트 전에 사용되었던 더미데이터는 모두 삭제
-        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString()+defaultSavedItemsKey);
+        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString()+defaultSaveKey_Items);
+    }
+
+    private void Set_CurrentPlayerSaveKey_Quests()
+    {
+        currentPlayerSaveKey_Quests = currentPlayerSavaKey + defaultSaveKey_Quests;
+        SaveData(currentPlayerSaveKey_Quests, string.Join(",", Player_Quests));
+
+        // 업데이트 전에 사용되었던 더미데이터는 모두 삭제
+        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_Quests);
+    }
+    private void Set_CurrentPlayerSaveKey_RemainingPeriod()
+    {
+        currentPlayerSaveKey_RemainingPeriod = currentPlayerSavaKey + defaultSaveKey_RemainingPeriod;
+        SaveData(currentPlayerSaveKey_RemainingPeriod, GameManager.Instance.D_day);
+
+        // 업데이트 전에 사용되었던 더미데이터는 모두 삭제
+        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_RemainingPeriod);
+    }
+    private void Set_CurrentPlayerSaveKey_PlayerStatus()
+    {
+        currentPlayerSaveKey_PlayerStatus = currentPlayerSavaKey + defaultSaveKey_PlayerStatus;
+        SaveData(currentPlayerSaveKey_PlayerStatus, PlayManager.Instance.currentPlayerStatus);
+
+        // 업데이트 전에 사용되었던 더미데이터는 모두 삭제
+        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_PlayerStatus);
     }
 
     private void OnDisable()
@@ -83,14 +250,14 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
     private void DeleteDefaultData()
     {
         // 업데이트 전에 사용되었던 더미데이터는 모두 삭제
-        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSavedItemsKey);
+        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_Items);
     }
 
     // 현재 플레이어가 소유하고있는 아이템
     // HashSet(집합) : 중복되는 데이터는 무시함
     // 참조타입을 자료형 파라미터에 넣을경우 참조(주소)를 비교하여 실 데이터가 중복될 수 있음
     public HashSet<sItem> Player_Items { get; private set; }
-
+    public HashSet<sQuest> Player_Quests { get; private set; }
     
 
     protected override void Awake()
@@ -98,7 +265,7 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
         base.Awake();
         Player_Items = new HashSet<sItem>();
 
-        currentPlayerSaveItemKey = ePlayerSaveKey.None.ToString()+defaultSavedItemsKey;
+        currentPlayerSaveKey_Items = ePlayerSaveKey.None.ToString()+defaultSaveKey_Items;
     }
 
     public void SaveData(string key, object value)
@@ -203,20 +370,21 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
         // Join : 구분자(첫번째 변수)로 데이터목록을 묶음
         // Join의 두번째 인수에서 ToString 메소드가 사용됨
 
-        SaveData(currentPlayerSaveItemKey, string.Join(",", Player_Items));
+        SaveData(currentPlayerSaveKey_Items, string.Join(",", Player_Items));
         //PlayerPrefs.SetString(savedItemsKey, string.Join(",", Player_Items));
         //PlayerPrefs.Save();
 
         endCallback();
 
         // 아이템에 변화가 생겼으니 인벤토리창을 새로고침
-        GameManager.connector.popUpView_Script.inventoryPopUp.GetComponent<InventoryPopUp>().RefreshPopUp();
+        (GameManager.connector as Connector_InGame).
+            popUpView_Script.inventoryPopUp.GetComponent<InventoryPopUp>().RefreshPopUp();
     }
 
     public HashSet<sItem> LoadItems()
     {
         //string savedData = PlayerPrefs.GetString(savedItemsKey, string.Empty);
-        string savedData = LoadData(currentPlayerSaveItemKey, string.Empty);
+        string savedData = LoadData(currentPlayerSaveKey_Items, string.Empty);
         
         Debug.Log($"savedData : {savedData}");
         if (string.IsNullOrEmpty(savedData))
@@ -251,6 +419,30 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
             }
         }
         return Player_Items;
+    }
+
+    public sPlayerStatus LoadPlayerStatus()
+    {
+        //string savedData = PlayerPrefs.GetString(savedItemsKey, string.Empty);
+        string savedData = LoadData(currentPlayerSaveKey_PlayerStatus, string.Empty);
+
+        Debug.Log($"savedData : {savedData}");
+        if (string.IsNullOrEmpty(savedData))
+        {
+            Debug.LogWarning("데이터가 비었습니다 : sPlayerStatus");
+            return new sPlayerStatus();
+        }
+
+        // id : serail
+        sPlayerStatus playerStatus = sPlayerStatus.DataSplit(savedData);
+
+        // 데이터가 잘못된경우 패스
+        if (playerStatus == sPlayerStatus.GetDefault())
+        {
+            Debug.LogAssertion("데이터 저장 오류 : sPlayerStatus");
+        }
+
+        return playerStatus;
     }
 
     public int GetNewLastId()

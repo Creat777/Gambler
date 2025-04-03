@@ -19,6 +19,7 @@ public abstract class CardGamePlayerBase : MonoBehaviour
     public List<Transform> CardList {  get; protected set; }
     public List<GameObject> openedCardList { get; protected set; } // 오픈박스 자식객체로 있는 카드
     public List<GameObject> closedCardList { get; protected set; } // 클로즈박스 자식객체로 있는 카드
+    public List<GameObject> revealedCardList { get; protected set; } // 클로즈박스에 상관없이 게임에서 공개된 카드 목록
 
     public Dictionary<eCardType, int> cardCountPerType { get; protected set; } // 게임 세팅을 위해 플레이어가 갖고있는 각 문양의 카드 숫자
 
@@ -48,6 +49,9 @@ public abstract class CardGamePlayerBase : MonoBehaviour
 
         if (closedCardList == null) closedCardList = new List<GameObject>();
         else closedCardList.Clear();
+
+        if (revealedCardList == null) revealedCardList = new List<GameObject>();
+        else revealedCardList.Clear();
 
         diceDone = false;
         AttackDone = false;
@@ -179,8 +183,12 @@ public abstract class CardGamePlayerBase : MonoBehaviour
 
         // 반대쪽 리스트에서 제거
         if (closedCardList.Contains(card))
-        {
             closedCardList.Remove(card);
+
+        // 한번 오픈된 카드는 공개된 것임
+        if(revealedCardList.Contains(card) == false)
+        {
+            revealedCardList.Add(card);
         }
     }
 

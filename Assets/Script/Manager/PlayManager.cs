@@ -11,7 +11,8 @@ public class PlayManager : Singleton<PlayManager>
     {
         get 
         { 
-            if(_playerMoneyViewText == null) _playerMoneyViewText = GameManager.connector.playerMoneyView_Script.coinResult;
+            if(_playerMoneyViewText == null) _playerMoneyViewText =
+                    (GameManager.connector as Connector_InGame).playerMoneyView_Script.coinResult;
             return _playerMoneyViewText; 
         }
     }
@@ -22,35 +23,23 @@ public class PlayManager : Singleton<PlayManager>
     {
         get
         {
-            if (_moneyAnimation == null) _moneyAnimation = GameManager.connector.playerMoneyView_Script.GetComponent<PlayerMoneyAnimation>();
+            if (_moneyAnimation == null) _moneyAnimation = (GameManager.connector as Connector_InGame).playerMoneyView_Script.GetComponent<PlayerMoneyAnimation>();
             return _moneyAnimation;
         }
     }
 
 
-    public struct PlayerStatus
-    {
-        public int hp; // 체력
-        public int agility; // 민첩성
-        public int hunger; // 허기
-
-        public int money; // 소지금
-
-        public static PlayerStatus GetDefault()
-        {
-            return default(PlayerStatus);
-        }
-    }
+    
 
 
-    public PlayerStatus currentPlayerStatus { get; private set; }
+    public sPlayerStatus currentPlayerStatus { get; private set; }
 
 
     //public int current
     protected override void Awake()
     {
         base.Awake();
-        currentPlayerStatus = PlayerStatus.GetDefault();
+        currentPlayerStatus = new sPlayerStatus();
     }
 
     void Start()
@@ -81,7 +70,7 @@ public class PlayManager : Singleton<PlayManager>
     /// <returns>파산여부를 확인</returns>
     public void AddPlayerMoney(int Value)
     {
-        PlayerStatus update = currentPlayerStatus;
+        sPlayerStatus update = currentPlayerStatus;
         update.money += Value;
         currentPlayerStatus = update;
 
@@ -95,7 +84,7 @@ public class PlayManager : Singleton<PlayManager>
         }
         else if (Value < 0) // TryMinusCoin에 의해 호출된 경우
         {
-            Value -= Value; // 전광판에 띄우기 위해 양수로 바꿈
+            Value = (-Value); // 전광판에 띄우기 위해 양수로 바꿈
             moneyAnimation.PlaySequnce_PlayerMoneyMinus(Value);
         }
 

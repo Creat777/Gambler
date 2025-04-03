@@ -47,7 +47,8 @@ public class QuestListPopUp : PopUpBase<QuestListPopUp>
         QuestElementPanel script = obj.GetComponent<QuestElementPanel>();
         if (script != null)
         {
-            script.SetButtonCallback(GameManager.connector.popUpView_Script.QuestContentPopUpOpen);
+            script.SetButtonCallback(
+                (GameManager.connector as Connector_InGame).popUpView_Script.QuestContentPopUpOpen);
             ChangeContentRectTransform();
         }
 

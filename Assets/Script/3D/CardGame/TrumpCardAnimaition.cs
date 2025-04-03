@@ -3,17 +3,41 @@ using DG.Tweening;
 
 public class TrumpCardAnimaition : MonoBehaviour
 {
-    private BoxCollider m_BoxCollider;
-    private Rigidbody m_Rigidbody;
+    private TrumpCardDefault _CardDefault;
+    public TrumpCardDefault CardDefault
+    {
+        get
+        {
+            if (_CardDefault == null) _CardDefault = GetComponent<TrumpCardDefault>();
+            return _CardDefault;
+        }
+    }
+
+    private BoxCollider _m_BoxCollider;
+    public BoxCollider m_BoxCollider
+    {
+        get 
+        {
+            if(_m_BoxCollider == null) _m_BoxCollider = GetComponent<BoxCollider>();
+            return _m_BoxCollider; 
+        }
+    }
+
+    private Rigidbody _m_Rigidbody;
+    public Rigidbody m_Rigidbody
+    {
+        get
+        {
+            if (_m_Rigidbody == null) _m_Rigidbody = GetComponent<Rigidbody>();
+            return _m_Rigidbody;
+        }
+    }
+
     //private Renderer m_Renderer;
     public float upValue;
-    bool m_isCardOpened = false;
 
     private void Awake()
     {
-        m_BoxCollider = GetComponent<BoxCollider>();
-        m_Rigidbody = GetComponent<Rigidbody>();
-
         upValue = 3f;
     }
 
@@ -25,20 +49,10 @@ public class TrumpCardAnimaition : MonoBehaviour
         float returnDelay = 0;
 
         // 카드가 1번만 뒤집히도록 만듬
-        if (m_isCardOpened == false)
+        if (CardDefault.isFaceDown)
         {
-            if (m_BoxCollider == null || m_Rigidbody == null)
-            {
-                if (m_BoxCollider != null)
-                    Debug.LogAssertion("m_BoxCollider == null");
+            CardDefault.isFaceDown = false;
 
-                if (m_Rigidbody == null)
-                    Debug.LogAssertion("m_Rigidbody == null");
-
-                return 0f;
-            }
-
-            m_isCardOpened = true;
             // 중력을 잠시 끄고
             sequence.AppendCallback(() => m_Rigidbody.useGravity = false);
 
@@ -65,20 +79,10 @@ public class TrumpCardAnimaition : MonoBehaviour
         float returnDelay = 0;
 
         // 카드가 1번만 뒤집히도록 만듬
-        if (m_isCardOpened == true)
+        if (CardDefault.isFaceDown == false)
         {
-            if (m_BoxCollider == null || m_Rigidbody == null)
-            {
-                if (m_BoxCollider != null)
-                    Debug.LogAssertion("m_BoxCollider == null");
+            CardDefault.isFaceDown = true;
 
-                if (m_Rigidbody == null)
-                    Debug.LogAssertion("m_Rigidbody == null");
-
-                return 0f;
-            }
-
-            m_isCardOpened = false;
             // 중력을 잠시 끄고
             sequence.AppendCallback(() => m_Rigidbody.useGravity = false);
 

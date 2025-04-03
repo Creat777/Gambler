@@ -172,7 +172,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         popUpView.gameAssistantPopUp_OnlyOneLives.RefreshPopUp();
         
         // 게임어시스턴트를 사용할 수 있도록 시도
-        GameManager.connector.iconView_Script.TryIconUnLock(eIcon.GameAssistant);
+        (GameManager.connector as Connector_InGame).iconView_Script.TryIconUnLock(eIcon.GameAssistant);
 
         // 게임어시스턴트의 선택 기능은 사용순간까지 제한
         gameAssistantPopUp.PlaceRestrictionToAllSelections();
@@ -187,7 +187,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
     public void SetProgress_EnterGame()
     {
         currentProgress = eOOLProgress.num101_BeforeStartGame;
-        GameManager.connector.textWindowView_Script.StartTextWindow(currentProgress);
+        (GameManager.connector as Connector_InGame).textWindowView_Script.StartTextWindow(currentProgress);
     }
 
     public void SetProgress(eOOLProgress progress)
@@ -196,7 +196,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         currentProgress = progress;
 
         Debug.Log($"다음 진행상황 : {currentProgress.ToString()}");
-        GameManager.connector.textWindowView_Script.StartTextWindow(currentProgress);
+        (GameManager.connector as Connector_InGame).textWindowView_Script.StartTextWindow(currentProgress);
     }
     /// <summary>
     /// 모든 진행사항은 직접 제어하지 않고 해당 함수로 제어함
@@ -257,7 +257,8 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
                 Debug.LogAssertion("이번 진행의 방어자가 설정되지 않았음");
             }
         }
-        else if(currentProgress == eOOLProgress.num302_Defense)
+        else if(currentProgress == eOOLProgress.num302_Defense ||
+                currentProgress == eOOLProgress.num303_PlayerCantDefense)
         {
             currentProgress = eOOLProgress.num401_CardOpenAtTheSameTime;
         }
@@ -312,7 +313,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
 
 
         Debug.Log($"다음 진행상황 : {currentProgress.ToString()}");
-        GameManager.connector.textWindowView_Script.StartTextWindow(currentProgress);
+        (GameManager.connector as Connector_InGame).textWindowView_Script.StartTextWindow(currentProgress);
 
         
     }
@@ -447,7 +448,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
     public void DetermineTheResult()
     {
         // 수비에 사용할 카드가 없는 경우
-        if(Deffender.PresentedCardScript == null)
+        if(Prey != null)
         {
             currentCriteria = eCriteria.HuntingTime;
         }

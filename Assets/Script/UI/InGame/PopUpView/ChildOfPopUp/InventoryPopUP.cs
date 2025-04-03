@@ -45,11 +45,11 @@ public class InventoryPopUp : PopUpBase<InventoryPopUp>
                         itemDefault.SetButtonCallback(
                             () =>
                             {
-                                YesOrNoPopUp yesOrNoPopUp_Script = GameManager.connector.popUpView_Script.yesOrNoPopUp.GetComponent<YesOrNoPopUp>();
+                                YesOrNoPopUp yesOrNoPopUp_Script = (GameManager.connector as Connector_InGame).popUpView_Script.yesOrNoPopUp.GetComponent<YesOrNoPopUp>();
                                 if (yesOrNoPopUp_Script == null) { Debug.LogAssertion("팝업창이 없음"); return; }
 
                                 // 아이템을 누르면 팝업창이 켜짐
-                                GameManager.connector.popUpView_Script.YesOrNoPopUpOpen();
+                                (GameManager.connector as Connector_InGame).popUpView_Script.YesOrNoPopUpOpen();
 
                                 // 팝업창이 켜진 후 아이템 이름과 설명을 업데이트
                                 string inputString = $"아이템 이름 : {itemInfo.name}\n\n{itemInfo.description}";
@@ -96,10 +96,10 @@ public class InventoryPopUp : PopUpBase<InventoryPopUp>
                         itemDefault.SetButtonCallback(
                             () =>
                             {
-                                GameManager.connector.popUpView_Script.CheckPopUpOpen();
+                                (GameManager.connector as Connector_InGame).popUpView_Script.CheckPopUpOpen();
 
                                 // 팝업창을 초기화
-                                CheckPopUp checkPopUp_Script = GameManager.connector.popUpView_Script.checkPopUp.GetComponent<CheckPopUp>();
+                                CheckPopUp checkPopUp_Script = (GameManager.connector as Connector_InGame).popUpView_Script.checkPopUp.GetComponent<CheckPopUp>();
                                 string inputString = $"아이템 이름 : {itemInfo.name}\n\n{itemInfo.description}";
                                 checkPopUp_Script.UpdateMainDescription(inputString);
 

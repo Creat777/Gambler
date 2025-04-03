@@ -7,8 +7,11 @@ public class TrumpCardDefault : MonoBehaviour
 {
     public TrumpCardAnimaition animationScript {  get; private set; }
     public cTrumpCardInfo trumpCardInfo {  get; private set; }
-    public bool isSelected { get; private set; }
-    public bool isFaceDown { get; private set; }
+
+    [SerializeField] bool _isSelected;
+    public bool isSelected { get { return _isSelected; } set { _isSelected = value; } }
+    [SerializeField] bool _isFaceDown;
+    public bool isFaceDown { get { return _isFaceDown; } set { _isFaceDown = value; } }
 
     private void Awake()
     {
@@ -34,8 +37,10 @@ public class TrumpCardDefault : MonoBehaviour
     {
         if(isSelected)
         {
-            isFaceDown = true;
-            gameObject.layer = 0;
+            sequence.AppendCallback(()=>
+                    { if(gameObject.layer != 0) gameObject.layer = 0; }
+            ); // 서브스크린에서 지우기 위함
+
             playerScript.SetParent_OpenBox(gameObject);
             animationScript.GetSequnce_Animation_CardOpen(sequence);
 
@@ -52,11 +57,9 @@ public class TrumpCardDefault : MonoBehaviour
     {
         if (isSelected == false)
         {
-            isFaceDown = true;
-            
             // 레이어 재설정
             if(playerScript.tag == "Player") gameObject.layer = CardGamePlayManager.Instance.layerOfMe;
-            else gameObject.layer = 0;
+            //else gameObject.layer = 0;
             
             playerScript.SetParent_CloseBox(gameObject);
             animationScript.GetSequnce_Animation_CardClose(sequence);

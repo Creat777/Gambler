@@ -4,11 +4,10 @@ using UnityEngine;
 
 
 // æ¿∫π±ÕΩ√ ΩÃ±€≈Ê ∞¥√º¿« √≥∏Æ ¥„¥Á
-public class Connector : MonoBehaviour
+public class Connector_InGame : Connector
 {
     public Canvas_InGame MainCanvas_script;
 
-    public GameObject blackView;
     public GameObject StageView;
 
     public GameObject player;
@@ -25,12 +24,4 @@ public class Connector : MonoBehaviour
     public Joystick joystick_Script;
     public Map map_Script;
     public Box box_Script;
-
-    void Start()
-    {
-        if(GameManager.Instance.currentScene == eScene.InGame)
-        {
-            GameManager.Instance.Join_In_Game();
-        }
-    }
 }

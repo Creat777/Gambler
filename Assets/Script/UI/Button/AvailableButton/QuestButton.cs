@@ -10,7 +10,7 @@ public class QuestButton : ButtonBase
             if (_popUpView == null)
             {
                 Debug.LogWarning($"{gameObject.name}에서 popUpView 재연결 시도");
-                _popUpView = GameManager.connector.popUpView_Script;
+                _popUpView = (GameManager.connector as Connector_InGame).popUpView_Script;
                 if (_popUpView != null)
                 {
                     Debug.LogWarning("재연결 성공");
