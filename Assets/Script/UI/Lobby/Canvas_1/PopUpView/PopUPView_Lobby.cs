@@ -1,9 +1,17 @@
 using UnityEngine;
-
-public class PopUPView_Lobby : MonoBehaviour
+public class PopUPView_Lobby : PopUpViewBase
 {
     public ContinuePopUp continuePopUp;
-    public YesOrNoPopUp yesOrNoPopUp;
-    public CheckPopUp checkPopUp;
+    public override void MakePopUpSingleTone()
+    {
+        continuePopUp.MakeSingleTone();
+    }
 
+    public void ContinuePopUpOpen()
+    {
+        continuePopUp.gameObject.SetActive(true);
+        continuePopUp.transform.SetAsLastSibling();
+    }
+
+    
 }

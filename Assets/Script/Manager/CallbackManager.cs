@@ -164,7 +164,7 @@ public class CallbackManager : Singleton<CallbackManager>
         PlaySequnce_BlackViewProcess(delay,
                 () =>
                 {
-                    GameManager.Instance.D_day--;
+                    GameManager.Instance.CountDownRemainingPeriod();
                 },
                 ()=>
                 {
@@ -206,7 +206,7 @@ public class CallbackManager : Singleton<CallbackManager>
     // 7
     public virtual void SavePlayerData()
     {
-        Debug.Log("추가 필요");
+        (GameManager.connector as Connector_InGame).popUpView_Script.SaveDataPopUpOpen();
     }
 
     // 8

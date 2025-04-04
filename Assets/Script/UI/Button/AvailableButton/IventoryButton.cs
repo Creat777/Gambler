@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class IventoryButton : ButtonBase
 {
-    [SerializeField] private PopUpView _popUpView;
-    public PopUpView popUpView
+    [SerializeField] private PopUpView_InGame _popUpView;
+    public PopUpView_InGame popUpView
     {
         get
         {

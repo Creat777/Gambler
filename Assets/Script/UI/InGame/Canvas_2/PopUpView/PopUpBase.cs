@@ -16,7 +16,7 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
 
     protected override void Awake()
     {
-        Debug.Log("PopUp은 Awake에서 싱글톤 생성 안함");
+        Debug.LogWarning("PopUp은 Awake에서 싱글톤 생성 안함");
     }
 
     protected virtual void OnEnable()

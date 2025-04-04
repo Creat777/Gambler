@@ -290,7 +290,7 @@ public class TextWindowView : MonoBehaviour
         {
             if (dialogue.Contains("{D-DAY}"))
             {
-                dialogue = dialogue.Replace("{D-DAY}", GameManager.Instance.D_day.ToString());
+                dialogue = dialogue.Replace("{D-DAY}", GameManager.Instance.RemainingPeriod.ToString());
             }
         }
         else if(currentTextType == eTextType.OnlyOneLivesProgress)

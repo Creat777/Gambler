@@ -11,7 +11,7 @@ public class InventoryPopUp : PopUpBase<InventoryPopUp>
     public override void RefreshPopUp()
     {
         // 플레이어의 아이템 정보 불러오기
-        HashSet<sItem> Player_items = PlayerPrefsManager.Instance.LoadItems();
+        HashSet<sItem> Player_items = PlayerPrefsManager.Instance.LoadItems(ePlayerSaveKey.None);
 
         Debug.Log($"Player_items.Count == {Player_items.Count}");
         RefreshPopUp(Player_items.Count,

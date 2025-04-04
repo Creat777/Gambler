@@ -19,7 +19,7 @@ public class Connector_InGame : Connector
     public PlayerMoneyView playerMoneyView_Script;
     public TextWindowView textWindowView_Script;
     public IconView iconView_Script;
-    public PopUpView popUpView_Script;
+    public PopUpView_InGame popUpView_Script;
     public YouLoseView youLoseView_Script;  
     public Joystick joystick_Script;
     public Map map_Script;

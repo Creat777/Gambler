@@ -36,7 +36,7 @@ public class Map : MonoBehaviour
         mapDict[targetMap].SetActive(true);
         
         // 변경된 맵을 gameManager에 저장
-        GameManager.Instance.currentMap = targetMap;
+        GameManager.Instance.SetCurrentMap(targetMap);
 
         Debug.Log("맵 변경 완료");
     }

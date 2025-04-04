@@ -1,10 +1,11 @@
 using PublicSet;
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
-// 아이템을 저장하는 자료구조
+/// <summary>
+/// 아이템 저장 자료구조
+/// </summary>
 public struct sItem
 {
     public int Id_inInventory; // 내가 소유하고 있는 아이템 번호
@@ -64,6 +65,9 @@ public struct sItem
     }
 }
 
+/// <summary>
+/// 퀘스트 저장 자료구조
+/// </summary>
 public struct sQuest
 {
     public int ID;
@@ -89,6 +93,9 @@ public struct sQuest
     }
 }
 
+/// <summary>
+/// 플레이어 데이터 자료구조
+/// </summary>
 public struct sPlayerStatus
 {
     public int hp; // 체력
@@ -126,9 +133,13 @@ public struct sPlayerStatus
         return default;
     }
 
-    public static sPlayerStatus GetDefault()
+    public static sPlayerStatus defaultData
     {
-        return default;
+        get
+        {
+            return default;
+        }
+        
     }
 
     public override bool Equals(object obj)
@@ -181,65 +192,43 @@ public struct sPlayerStatus
 
 public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
 {
-    string currentPlayerSavaKey;
+    string currentPlayerSavaKey { get { return GameManager.Instance.currentPlayerSaveKey.ToString(); } }
 
-    private const string defaultSaveKey_Items = "SavedItems";
-    public string currentPlayerSaveKey_Items;
+    public const string defaultSaveKey_SavedDate = "savedDate"; // 데이터가 저장된 날짜와 시간을 저장
+    public const string defaultSaveKey_Items = "SavedItems";
+    public const string defaultSaveKey_Quests = "SavedQuests";
+    public const string defaultSaveKey_RemainingPeriod = "SavedRemainingPeriod";
+    public const string defaultSaveKey_PlayerStatus = "SavedPlayerStatus";
 
-    private const string defaultSaveKey_Quests = "SavedQuests";
-    public string currentPlayerSaveKey_Quests;
+    public string currentPlayerSaveKey_SavedDate
+    { get { return (currentPlayerSavaKey + defaultSaveKey_SavedDate); } }
+    public string currentPlayerSaveKey_Items
+    { get { return (currentPlayerSavaKey + defaultSaveKey_Items); } }
+    public string currentPlayerSaveKey_Quests
+    { get { return (currentPlayerSavaKey + defaultSaveKey_Quests); } }
+    public string currentPlayerSaveKey_RemainingPeriod
+    { get { return (currentPlayerSavaKey + defaultSaveKey_RemainingPeriod); } }
+    public string currentPlayerSaveKey_PlayerStatus
+    { get { return (currentPlayerSavaKey + defaultSaveKey_PlayerStatus); } }
 
-    private const string defaultSaveKey_RemainingPeriod = "SavedRemainingPeriod";
-    public string currentPlayerSaveKey_RemainingPeriod;
-
-    private const string defaultSaveKey_PlayerStatus = "SavedPlayerStatus";
-    public string currentPlayerSaveKey_PlayerStatus;
-
-    public void SetPlayerKeySet()
+    public void SaveTotalData()
     {
-        // 현재 플레이어 정보를 가져옴
-        currentPlayerSavaKey = GameManager.Instance.currentPlayerSaveKey.ToString();
-        Debug.Log($"currentPlayer : {currentPlayerSavaKey}");
+        Debug.Log($"SaveData -> currentPlayer : {currentPlayerSavaKey}");
 
-        Set_CurrentPlayerSaveKey_Items();
-        Set_CurrentPlayerSaveKey_Quests();
-        Set_CurrentPlayerSaveKey_RemainingPeriod();
-        Set_CurrentPlayerSaveKey_PlayerStatus();
+        // 저장되는 날짜
+        string SavedDate = DateTime.Now.ToString("yyyy년 MM월 dd일:HH시 mm분 ss초");
+
+        // 결과 출력
+        Debug.Log($"저장 시간 : {SavedDate}");
+
+        // 저장날짜와 더미데이터를 현재 플레이어 데이터에 저장
+        SaveData(currentPlayerSaveKey_SavedDate, SavedDate);
+        SaveData(currentPlayerSaveKey_Items, LoadItems(ePlayerSaveKey.None));
+        SaveData(currentPlayerSaveKey_Quests, LoadQuests(ePlayerSaveKey.None));
+        SaveData(currentPlayerSaveKey_RemainingPeriod, LoadRemainingPeriod(ePlayerSaveKey.None));
+        SaveData(currentPlayerSaveKey_PlayerStatus, LoadPlayerStatus(ePlayerSaveKey.None));
     }
-    private void Set_CurrentPlayerSaveKey_Items()
-    {
-        // 아이템키를 업데이트하고 그 아이템키에 현재 아이템 데이터를 저장
-        currentPlayerSaveKey_Items = currentPlayerSavaKey + defaultSaveKey_Items;
-        SaveData(currentPlayerSaveKey_Items, string.Join(",", Player_Items));
-
-        // 업데이트 전에 사용되었던 더미데이터는 모두 삭제
-        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString()+defaultSaveKey_Items);
-    }
-
-    private void Set_CurrentPlayerSaveKey_Quests()
-    {
-        currentPlayerSaveKey_Quests = currentPlayerSavaKey + defaultSaveKey_Quests;
-        SaveData(currentPlayerSaveKey_Quests, string.Join(",", Player_Quests));
-
-        // 업데이트 전에 사용되었던 더미데이터는 모두 삭제
-        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_Quests);
-    }
-    private void Set_CurrentPlayerSaveKey_RemainingPeriod()
-    {
-        currentPlayerSaveKey_RemainingPeriod = currentPlayerSavaKey + defaultSaveKey_RemainingPeriod;
-        SaveData(currentPlayerSaveKey_RemainingPeriod, GameManager.Instance.D_day);
-
-        // 업데이트 전에 사용되었던 더미데이터는 모두 삭제
-        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_RemainingPeriod);
-    }
-    private void Set_CurrentPlayerSaveKey_PlayerStatus()
-    {
-        currentPlayerSaveKey_PlayerStatus = currentPlayerSavaKey + defaultSaveKey_PlayerStatus;
-        SaveData(currentPlayerSaveKey_PlayerStatus, PlayManager.Instance.currentPlayerStatus);
-
-        // 업데이트 전에 사용되었던 더미데이터는 모두 삭제
-        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_PlayerStatus);
-    }
+    
 
     private void OnDisable()
     {
@@ -249,14 +238,22 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
     // 플레이어가 저장하지 않은 경우
     private void DeleteDefaultData()
     {
-        // 업데이트 전에 사용되었던 더미데이터는 모두 삭제
+        // 게임 종료시 더미데이터는 모두 삭제
+        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_SavedDate);
         PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_Items);
+        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_Quests);
+        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_RemainingPeriod);
+        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_PlayerStatus);
     }
 
     // 현재 플레이어가 소유하고있는 아이템
     // HashSet(집합) : 중복되는 데이터는 무시함
     // 참조타입을 자료형 파라미터에 넣을경우 참조(주소)를 비교하여 실 데이터가 중복될 수 있음
     public HashSet<sItem> Player_Items { get; private set; }
+
+    /// <summary>
+    /// 완료되었던 퀘스트를 포함한 모든 퀘스트
+    /// </summary>
     public HashSet<sQuest> Player_Quests { get; private set; }
     
 
@@ -264,11 +261,12 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
     {
         base.Awake();
         Player_Items = new HashSet<sItem>();
+        Player_Quests = new HashSet<sQuest>();
 
-        currentPlayerSaveKey_Items = ePlayerSaveKey.None.ToString()+defaultSaveKey_Items;
+        //currentPlayerSaveKey_Items = ePlayerSaveKey.None.ToString()+defaultSaveKey_Items;
     }
 
-    public void SaveData(string key, object value)
+    private void SaveData(string key, object value)
     {
         // 해당 key 리셋
         //PlayerPrefs.DeleteKey(key); 
@@ -357,8 +355,8 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
 
     public void ItemsDataSaveProcess(int itemId, eItemType serialNum, Action<sItem> middleCallback, Action endCallback)
     {
-        // 기존 저장된 데이터를 불러오고
-        LoadItems();
+        // 더미데이터에 저장된 데이터를 불러오고
+        LoadItems(ePlayerSaveKey.None);
 
         // 입력된 아이템 코드에 맞는 임시데이터를 생성
         sItem newItem = new sItem(itemId, serialNum);
@@ -370,9 +368,8 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
         // Join : 구분자(첫번째 변수)로 데이터목록을 묶음
         // Join의 두번째 인수에서 ToString 메소드가 사용됨
 
-        SaveData(currentPlayerSaveKey_Items, string.Join(",", Player_Items));
-        //PlayerPrefs.SetString(savedItemsKey, string.Join(",", Player_Items));
-        //PlayerPrefs.Save();
+
+        SaveData(ePlayerSaveKey.None.ToString() + defaultSaveKey_Items, string.Join(",", Player_Items));
 
         endCallback();
 
@@ -381,10 +378,27 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
             popUpView_Script.inventoryPopUp.GetComponent<InventoryPopUp>().RefreshPopUp();
     }
 
-    public HashSet<sItem> LoadItems()
+    public string LoadSavedDate(ePlayerSaveKey saveKey)
+    {
+        string savedData = LoadData(saveKey.ToString() + defaultSaveKey_SavedDate, string.Empty);
+
+        Debug.Log($"savedData : {savedData}");
+        if (string.IsNullOrEmpty(savedData))
+        {
+            Debug.LogWarning("저장기록이 없음");
+            return string.Empty;
+        }
+        else
+        {
+            Debug.Log("저장기록이 있음");
+            return savedData;
+        }
+    }
+
+    public HashSet<sItem> LoadItems(ePlayerSaveKey saveKey)
     {
         //string savedData = PlayerPrefs.GetString(savedItemsKey, string.Empty);
-        string savedData = LoadData(currentPlayerSaveKey_Items, string.Empty);
+        string savedData = LoadData(saveKey.ToString() + defaultSaveKey_Items, string.Empty);
         
         Debug.Log($"savedData : {savedData}");
         if (string.IsNullOrEmpty(savedData))
@@ -420,24 +434,52 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
         }
         return Player_Items;
     }
-
-    public sPlayerStatus LoadPlayerStatus()
+    public HashSet<sQuest> LoadQuests(ePlayerSaveKey saveKey)
     {
         //string savedData = PlayerPrefs.GetString(savedItemsKey, string.Empty);
-        string savedData = LoadData(currentPlayerSaveKey_PlayerStatus, string.Empty);
+        int savedData = LoadData(saveKey.ToString() + defaultSaveKey_Quests, 0);
+        return null;
+    }
+    public int LoadRemainingPeriod(ePlayerSaveKey saveKey)
+    {
+        //string savedData = PlayerPrefs.GetString(savedItemsKey, string.Empty);
+        int savedData = LoadData(saveKey.ToString() + defaultSaveKey_RemainingPeriod, 0);
+
+        Debug.Log($"savedData : {savedData}");
+        if (savedData == 0)
+        {
+            Debug.LogWarning("데이터가 비었음 : RemainingPeriod");
+            return savedData;
+        }
+        else if(savedData < 0)
+        {
+            Debug.LogAssertion("의도하지 않은 데이터 저장 : RemainingPeriod");
+            return savedData;
+        }
+        else
+        {
+            Debug.Log("데이터 로딩 성공 : LoadRemainingPeriod");
+            return savedData;
+        }
+        
+    }
+    public sPlayerStatus LoadPlayerStatus(ePlayerSaveKey saveKey)
+    {
+        //string savedData = PlayerPrefs.GetString(savedItemsKey, string.Empty);
+        string savedData = LoadData(saveKey.ToString() + defaultSaveKey_PlayerStatus, string.Empty);
 
         Debug.Log($"savedData : {savedData}");
         if (string.IsNullOrEmpty(savedData))
         {
-            Debug.LogWarning("데이터가 비었습니다 : sPlayerStatus");
-            return new sPlayerStatus();
+            Debug.LogWarning("데이터가 비었음 : sPlayerStatus");
+            return sPlayerStatus.defaultData;
         }
 
         // id : serail
         sPlayerStatus playerStatus = sPlayerStatus.DataSplit(savedData);
 
         // 데이터가 잘못된경우 패스
-        if (playerStatus == sPlayerStatus.GetDefault())
+        if (playerStatus == sPlayerStatus.defaultData)
         {
             Debug.LogAssertion("데이터 저장 오류 : sPlayerStatus");
         }
@@ -454,7 +496,7 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
 
     public int GetLastItemId()
     {
-        LoadItems();
+        LoadItems(ePlayerSaveKey.None);
 
         if (Player_Items.Count == 0)
         {

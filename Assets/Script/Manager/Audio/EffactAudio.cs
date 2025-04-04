@@ -41,7 +41,7 @@ public class EffactAudio : GameAudio
     {
         float value = 1.0f;
 
-        value = PlayerPrefsManager.Instance.LoadData(volumeKey, 1.0f);
+        //value = PlayerPrefsManager.Instance.LoadData(volumeKey, 1.0f);
 
         audioSource.volume = value;
 

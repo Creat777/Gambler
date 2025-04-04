@@ -40,7 +40,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
             cardButtonMemoryPool = value;
         }
     }
-    public PopUpView popUpView;
+    public PopUpView_InGame popUpView;
     public MainCameraAnimation mainCamAnime;
     public GameAssistantPopUp_OnlyOneLives gameAssistantPopUp;
 

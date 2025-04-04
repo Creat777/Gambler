@@ -30,14 +30,49 @@ public class GameManager : Singleton<GameManager>
     public bool isCasinoGameView {  get; private set; }
     public float gameSpeed { get; private set; }
 
-    public ePlayerSaveKey currentPlayerSaveKey;
-    public eScene currentScene;
-    public eMap currentMap;
-    public eStage currentStage { get; set; }
+    public ePlayerSaveKey _currentPlayerSaveKey;
+    public eScene _currentScene;
+    public eMap _currentMap;
+    public eStage _currentStage;
+    [SerializeField] private int _RemainingPeriod;
 
+    public ePlayerSaveKey currentPlayerSaveKey
+    { get { return _currentPlayerSaveKey; } private set {  _currentPlayerSaveKey = value; } }
+    public eScene currentScene
+    { get { return _currentScene; } private set { _currentScene = value; } }
+    public eMap currentMap
+    { get { return _currentMap; } private set { _currentMap = value; } }
+    public eStage currentStage
+    { get { return _currentStage; } private set { _currentStage = value; } }
+    public int RemainingPeriod 
+    { get { return _RemainingPeriod; } private set { _RemainingPeriod = value; } }
 
-    [SerializeField] private int _D_day;
-    public int D_day { get { return D_day; } set { _D_day = value; } }
+    public void SetPlayerSaveKey(ePlayerSaveKey value)
+    {
+        currentPlayerSaveKey = value;
+    }
+    public void SetCurrentScene(eScene value)
+    {
+        currentScene = value;
+        InitConnector();
+        SceneLoadView();
+    }
+    public void SetCurrentMap(eMap value)
+    {
+        currentMap = value;
+    }
+    public void SetCurrentStage(eStage value)
+    {
+        currentStage = value;
+    }
+    public void SetRemainingPeriod(int value)
+    {
+        RemainingPeriod = value;
+    }
+    public void CountDownRemainingPeriod()
+    {
+        RemainingPeriod--;
+    }
 
     Dictionary<eStage, string> StageMessageDict;
 
@@ -210,14 +245,12 @@ public class GameManager : Singleton<GameManager>
 
     private void StartNewGame()
     {
-        // 게임을 저장하기 전엔 쓰레기 데이터 취급
-        currentPlayerSaveKey = ePlayerSaveKey.None;
-        PlayerPrefsManager.Instance.SetPlayerKeySet();
-
         // 디데이는 30일부터 시작해서 0이 되면 게임이 종료됨
-        D_day = 30;
+        SetRemainingPeriod(30);
 
         // 코인을 0으로 초기화
+        PlayManager.Instance.SetPlayerStatus();
+        Debug.LogWarning("빠른 디버깅을 위해 골드 설정했음");
         PlayManager.Instance.SetPlayerMoney(50);
 
         (connector as Connector_InGame).map_Script.ChangeMapTo(eMap.InsideOfHouse);
@@ -228,6 +261,20 @@ public class GameManager : Singleton<GameManager>
                 StartPlayerMonologue();
             }
             );
+    }
+
+    private void ContinueGame()
+    {
+        // 남은기간 불러오기
+        SetRemainingPeriod(PlayerPrefsManager.Instance.LoadRemainingPeriod(currentPlayerSaveKey));
+
+        // 플레이어 정보 불러오기
+        PlayManager.Instance.SetPlayerStatus(
+            PlayerPrefsManager.Instance.LoadPlayerStatus(currentPlayerSaveKey)
+            );
+
+        (connector as Connector_InGame).map_Script.ChangeMapTo(eMap.InsideOfHouse);
+        ChangeStage(eStage.Stage1);
     }
 
     public void StartPlayerMonologue()
@@ -249,44 +296,21 @@ public class GameManager : Singleton<GameManager>
     // 씬 로드 시 호출될 콜백 함수
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 씬넘어갈 시 기존 커넥터의 연결을 초기화
-        _connector = null;
-
         switch (scene.buildIndex)
         { 
-            case 0:
-                {
-                    currentScene = eScene.Title;
-                    InitConnector();
-
-                    SceneLoadView();
-                }
-                break;
-            case 1:
-                {
-                    currentScene = eScene.Lobby;
-                    InitConnector();
-
-                    SceneLoadView();
-                }
-                 break;
+            case 0: SetCurrentScene(eScene.Title);  break;
+            case 1: SetCurrentScene(eScene.Lobby);  break;
             case 2:
                 {
-                    currentScene = eScene.InGame;
-                    InitConnector();
-
-                    // 일반적인 경우
+                    SetCurrentScene(eScene.InGame); 
+                    switch (currentPlayerSaveKey)
                     {
-                        SceneLoadView();
-                    }
-                    // 새로하기 시작하는 경우
-                    {
-                        SceneLoadView();
-                        StartNewGame();
+                        case ePlayerSaveKey.None: StartNewGame(); break; // 새로시작하기 누른 경우
+                        default: ContinueGame(); break; // 이어하기 누른 경우
                     }
                 }
                 break;
         }
-
+        
     }
 }

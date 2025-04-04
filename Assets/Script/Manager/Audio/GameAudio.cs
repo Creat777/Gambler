@@ -10,7 +10,7 @@ public abstract class GameAudio : MonoBehaviour
         if (audioSource != null)
         {
             audioSource.volume = value;
-            PlayerPrefsManager.Instance.SaveData(volumeKey, value); // 
+            //PlayerPrefsManager.Instance.SaveData(volumeKey, value); // 
         }
         else
         {

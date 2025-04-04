@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public abstract class SimplePopUpBase : MonoBehaviour
 {
-    public Text mainDescription;
+    [SerializeField]private Text mainDescription;
 
     public virtual void UpdateMainDescription(string script)
     {

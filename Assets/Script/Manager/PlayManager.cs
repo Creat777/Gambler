@@ -7,18 +7,19 @@ public class PlayManager : Singleton<PlayManager>
 {
 
     private Text _playerMoneyViewText; // 플레이어의 돈을 화면에 표시할 텍스트
+    private PlayerMoneyAnimation _moneyAnimation;
+
+
+    public sPlayerStatus currentPlayerStatus { get; private set; }
     public Text playerMoneyViewText
     {
-        get 
-        { 
-            if(_playerMoneyViewText == null) _playerMoneyViewText =
+        get
+        {
+            if (_playerMoneyViewText == null) _playerMoneyViewText =
                     (GameManager.connector as Connector_InGame).playerMoneyView_Script.coinResult;
-            return _playerMoneyViewText; 
+            return _playerMoneyViewText;
         }
     }
-
-
-    private PlayerMoneyAnimation _moneyAnimation;
     public PlayerMoneyAnimation moneyAnimation
     {
         get
@@ -27,19 +28,10 @@ public class PlayManager : Singleton<PlayManager>
             return _moneyAnimation;
         }
     }
-
-
-    
-
-
-    public sPlayerStatus currentPlayerStatus { get; private set; }
-
-
     //public int current
     protected override void Awake()
     {
         base.Awake();
-        currentPlayerStatus = new sPlayerStatus();
     }
 
     void Start()
@@ -49,6 +41,16 @@ public class PlayManager : Singleton<PlayManager>
         DoQuest();
     }
 
+    public void SetPlayerStatus(sPlayerStatus value = default)
+    {
+        currentPlayerStatus = value;
+        UpdateInterface();
+    }
+
+    public void UpdateInterface()
+    {
+        playerMoneyViewText.text = "x" + currentPlayerStatus.money.ToString();
+    }
 
     /// <summary>
     /// 플레이어가 소지하는 코인개수를 초기화
@@ -59,8 +61,7 @@ public class PlayManager : Singleton<PlayManager>
         var update = currentPlayerStatus;
         update.money = setValue;
         currentPlayerStatus = update;
-
-        playerMoneyViewText.text = "x" + currentPlayerStatus.money.ToString();
+        UpdateInterface();
     }
 
     /// <summary>
@@ -87,12 +88,6 @@ public class PlayManager : Singleton<PlayManager>
             Value = (-Value); // 전광판에 띄우기 위해 양수로 바꿈
             moneyAnimation.PlaySequnce_PlayerMoneyMinus(Value);
         }
-
-        //if (currentPlayerStatus.money > 0)
-        //{
-            
-        //}
-        
     }
 
 

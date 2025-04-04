@@ -2,7 +2,7 @@ using PublicSet;
 using System;
 using UnityEngine;
 
-public class ContinuePopUp : PopUpBase<ContinuePopUp>
+public class SaveDataPopUp : PopUpBase<SavedPlayerDataPanel>
 {
     protected override void Awake()
     {
@@ -12,6 +12,7 @@ public class ContinuePopUp : PopUpBase<ContinuePopUp>
     {
         RefreshPopUp();
     }
+
     public override void RefreshPopUp()
     {
         RefreshPopUp(4,
