@@ -92,6 +92,12 @@ public class PlayerEtc : CardGamePlayerBase
     {
         Debug.Log($"컴퓨터 \"{gameObject.name}\"가 사용할 카드를 선택합니다.");
 
+        if (closedCardList.Count <= 0)
+        {
+            Debug.LogWarning("player {gameObject.name}는 사용할 수 있는 카드가 없음");
+            return;
+        }
+
         TrumpCardDefault selectedCard = null;
 
         // 상대의 손패중에 공개된 카드를 우선해서 선택
@@ -177,7 +183,6 @@ public class PlayerEtc : CardGamePlayerBase
         if (TyrSetPresentedCard(selectedCard))
         {
             Debug.Log($"사용된 카드 : {PresentedCardScript}");
-            return;
         }
     }
 

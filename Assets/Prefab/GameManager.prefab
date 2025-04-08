@@ -636,7 +636,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1e57b2af80df3b4680ca67ad93a440a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentPlayerSaveItemKey: 
+--- !u!1 &6739587503635923056
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 308993582716223118}
+  - component: {fileID: 7865003209538183481}
+  m_Layer: 0
+  m_Name: QuestManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &308993582716223118
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6739587503635923056}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1861339401939184162}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7865003209538183481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6739587503635923056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e754fe6186c673e42a75083b4a3a1491, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6838472869166136666
 GameObject:
   m_ObjectHideFlags: 0
@@ -671,6 +714,8 @@ Transform:
   - {fileID: 6646559183064872669}
   - {fileID: 3064120667387505815}
   - {fileID: 366644105232989912}
+  - {fileID: 3952897277067873381}
+  - {fileID: 308993582716223118}
   - {fileID: 2355556602582664949}
   - {fileID: 8668471788352297548}
   - {fileID: 801476693598853379}
@@ -692,11 +737,55 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultGamespeed: 5
   maxStage: 3
-  currentSaveKey: 0
-  currentScene: 0
-  currentMap: 0
-  month: 12
-  day: 1
+  _currentPlayerSaveKey: 0
+  _currentScene: 0
+  _currentMap: 0
+  _currentStage: 0
+  _currentRemainingPeriod: 0
+--- !u!1 &7920753406576846317
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3952897277067873381}
+  - component: {fileID: 7606015660482458582}
+  m_Layer: 0
+  m_Name: ItemManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3952897277067873381
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7920753406576846317}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1861339401939184162}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7606015660482458582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7920753406576846317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5627bfd020d52c4a80ede6b420521de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8202754553376829560
 GameObject:
   m_ObjectHideFlags: 0

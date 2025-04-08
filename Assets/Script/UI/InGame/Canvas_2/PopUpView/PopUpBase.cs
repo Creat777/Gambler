@@ -21,7 +21,7 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
 
     protected virtual void OnEnable()
     {
-        ChangeContentRectTransform();
+        RefreshPopUp();
     }
 
 
@@ -46,27 +46,27 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
 
             // 행개수 : ex) (자식개수가 4, 제약개수가 4) -> (3/4 + 1 = 1)
             int rowCount = ((ActiveObjList.Count - 1) / (contentGrid.constraintCount)) + 1;
-            Debug.Log($"rowCount : {rowCount}");
+            //Debug.Log($"rowCount : {rowCount}");
 
             int ColumnCount = contentGrid.constraintCount;
-            Debug.Log($"ColumnCount : {ColumnCount}");
+            //Debug.Log($"ColumnCount : {ColumnCount}");
 
             // 셀의 좌우 여백 및 한 행의 셀의 x축 크기 * 셀의 개수, 셀 사이의 여백을 더함
             size.x = contentGrid.padding.left + contentGrid.padding.right +
                 contentGrid.cellSize.x * ColumnCount +
                 contentGrid.spacing.x * (ColumnCount - 1);
-            Debug.Log($"size.x : {size.x}");
+            //Debug.Log($"size.x : {size.x}");
 
             size.y = contentGrid.padding.top + contentGrid.padding.bottom +
                 contentGrid.cellSize.y * rowCount +
                 contentGrid.spacing.y * (rowCount - 1);
-            Debug.Log($"size.y : {size.y}");
+            //Debug.Log($"size.y : {size.y}");
 
             contentTrans.sizeDelta = size;
 
             ScrollToTop();
 
-            Debug.Log("CONTENT 맞춤설정 완료");
+            //Debug.Log("CONTENT 맞춤설정 완료");
 
         }
         else
@@ -86,6 +86,7 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
         scrollRect.verticalNormalizedPosition = 1f;  // 1f: 맨 위
     }
 
+    public abstract void RefreshPopUp();
     public virtual void RefreshPopUp(int totalCount, Action InitElementCallback)
     {
         // 필요한 객체의 개수
@@ -118,7 +119,7 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
         // 현재 활성화된 객체에 정보를 초기화
         InitElementCallback();
     }
-    public abstract void RefreshPopUp();
+    
 
     protected override void CreateNewObject(int orderInPool)
     {

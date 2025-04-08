@@ -74712,6 +74712,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainDescription: {fileID: 2236917854700049594}
   YesButton: {fileID: 3899526911501678940}
+  yesText: {fileID: 4750580615304741765}
+  noText: {fileID: 7108754805908268427}
 --- !u!114 &6325618471650605290
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75849,6 +75851,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainDescription: {fileID: 0}
   YesButton: {fileID: 4038757819500382191}
+  yesText: {fileID: 0}
+  noText: {fileID: 0}
 --- !u!1 &7248865741472285831
 GameObject:
   m_ObjectHideFlags: 0
@@ -76230,7 +76234,7 @@ GameObject:
   - component: {fileID: 1697864398448723555}
   - component: {fileID: 7108754805908268427}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: NoText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77507,7 +77511,7 @@ GameObject:
   - component: {fileID: 126476995938464982}
   - component: {fileID: 4750580615304741765}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: YesText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

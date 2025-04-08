@@ -7,34 +7,35 @@ public class InventoryPopUp : PopUpBase<InventoryPopUp>
 {
     public sItem currentClickItem; // 현재 클릭한 아이템
 
+    HashSet<sItem> playerItems
+    {
+        get { return ItemManager.ItemHashSet; }
+    }
+
 
     public override void RefreshPopUp()
     {
-        // 플레이어의 아이템 정보 불러오기
-        HashSet<sItem> Player_items = PlayerPrefsManager.Instance.LoadItems(ePlayerSaveKey.None);
-
-        Debug.Log($"Player_items.Count == {Player_items.Count}");
-        RefreshPopUp(Player_items.Count,
+        Debug.Log($"Player_items.Count == {playerItems.Count}");
+        RefreshPopUp(playerItems.Count,
             () =>
             {
                 int num = 0;
-                foreach (sItem item in Player_items)
+                foreach (sItem item in playerItems)
                 {
                     // 아이템정보로 초기화될 객체
-                    GameObject obj = ActiveObjList[num];
+                    ItemDefault itemDefault = ActiveObjList[num].GetComponent<ItemDefault>(); ;
 
                     // 아이템 종합정보를 호출
                     cItemInfo itemInfo = CsvManager.Instance.GetItemInfo(item.type);
 
-                    // 활서화된 각 객체에 정보를 초기화
-                    ItemDefault itemDefault = obj.GetComponent<ItemDefault>();
+                    // 활성화된 각 객체에 정보를 초기화
                     if (itemDefault != null)
                     {
                         itemDefault.InitItemData(item);
                     }
                     else
                     {
-                        Debug.LogAssertion($"{obj.name}은 itemScript == null");
+                        Debug.LogAssertion($"{itemDefault.gameObject.name}은 itemScript == null");
                     }
 
 
@@ -54,6 +55,7 @@ public class InventoryPopUp : PopUpBase<InventoryPopUp>
                                 // 팝업창이 켜진 후 아이템 이름과 설명을 업데이트
                                 string inputString = $"아이템 이름 : {itemInfo.name}\n\n{itemInfo.description}";
 
+                                yesOrNoPopUp_Script.SetYesText("사용하기");
                                 yesOrNoPopUp_Script.UpdateMainDescription(inputString);
 
                                 // 콜백에서 활용하기 위해 아이템 정보를 저장
@@ -67,9 +69,8 @@ public class InventoryPopUp : PopUpBase<InventoryPopUp>
                                     yesOrNoPopUp_Script.SetYesButtonCallBack(
                                         () =>
                                         {
-                                            yesOrNoPopUp_Script.gameObject.SetActive(false);
                                             itemInfo.itemCallback();
-                                            obj.GetComponent<ItemDefault>().UsedByPlayer();
+                                            itemDefault.UsedByPlayer();
                                             RefreshPopUp();
                                         }
                                         );
@@ -108,13 +109,11 @@ public class InventoryPopUp : PopUpBase<InventoryPopUp>
                     }
 
                     // 스케일 초기화
-                    obj.transform.localScale = Vector3.one;
+                    itemDefault.transform.localScale = Vector3.one;
 
                     num++;
                 }
             });
 
     }
-
-    
 }

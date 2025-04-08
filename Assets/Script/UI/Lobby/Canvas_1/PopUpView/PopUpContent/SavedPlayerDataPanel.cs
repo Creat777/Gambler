@@ -34,14 +34,14 @@ public class SavedPlayerDataPanel : MonoBehaviour
         // 게임 내 남은 기간
         {
             int remainingPeriod = PlayerPrefsManager.Instance.LoadRemainingPeriod(savekey);
-            if (remainingPeriod > 0) SetRemainingPeriod(remainingPeriod.ToString());
+            if (remainingPeriod > 0) SetRemainingPeriod($"{remainingPeriod.ToString()}일");
             else SetRemainingPeriod("null");
         }
 
         // 플레이어의 재화상태
         {
             sPlayerStatus status = PlayerPrefsManager.Instance.LoadPlayerStatus(savekey);
-            if (status != sPlayerStatus.defaultData) SetPlayerCash(status.money.ToString());
+            if (status != sPlayerStatus.defaultData) SetPlayerCash($"{status.coin.ToString()}코인");
             else SetPlayerCash("null");
         }
 

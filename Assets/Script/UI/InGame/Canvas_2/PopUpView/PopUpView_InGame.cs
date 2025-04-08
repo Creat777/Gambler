@@ -14,14 +14,7 @@ public class PopUpView_InGame : PopUpViewBase
     public QuestContentPopUp questContentPopUp;
     public GameAssistantPopUp_OnlyOneLives gameAssistantPopUp_OnlyOneLives;
     public SaveDataPopUp saveDataPopUp;
-
-    
-    
-    // cardGameView 전용 팝업
     public CardGameRulePopUp CardGameRulePopUp;
-
-
-    
 
     /// <summary>
     /// 팝업은 awake에서 싱글톤생성 호출을 하지 않음
@@ -32,6 +25,8 @@ public class PopUpView_InGame : PopUpViewBase
         questListPopUp.MakeSingleTone();
         questContentPopUp.MakeSingleTone();
         gameAssistantPopUp_OnlyOneLives.MakeSingleTone();
+        CardGameRulePopUp.MakeSingleTone();
+        saveDataPopUp.MakeSingleTone();
         CardGameRulePopUp.MakeSingleTone();
     }
 

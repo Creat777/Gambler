@@ -9,6 +9,7 @@ public class SaveButton : SaveAndContinue_ButtonBase
         {
             popUpView.YesOrNoPopUpOpen();
             yesOrNoPopUp.UpdateMainDescription("이미 저장된 데이터가 있습니다.\n데이터를 새롭게 등록하시겠습니까?");
+            yesOrNoPopUp.SetYesText("예");
             yesOrNoPopUp.SetYesButtonCallBack(
                 () =>
                 {
@@ -29,5 +30,6 @@ public class SaveButton : SaveAndContinue_ButtonBase
 
         popUpView.CheckPopUpOpen();
         checkPopUp.UpdateMainDescription("플레이어 정보가 저장되었습니다.");
+        GameManager.connector_InGame.popUpView_Script.saveDataPopUp.RefreshPopUp();
     }
 }

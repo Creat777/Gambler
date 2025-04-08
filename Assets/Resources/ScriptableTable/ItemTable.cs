@@ -14,10 +14,7 @@ using static UnityEngine.GraphicsBuffer;
 public class ItemPlusInfo
 {
     // 아이템 고유 번호
-    public eItemType serialNumber;
-
-    // 아이템 프리팹
-    public GameObject itemPrefab;
+    public eItemType type;
 
     // 아이템 사용 클릭시 처리될 콜백함수의 번호
     public eItemCallback itemCallbackIndex;

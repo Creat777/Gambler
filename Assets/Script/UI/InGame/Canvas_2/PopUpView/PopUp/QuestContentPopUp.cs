@@ -4,7 +4,7 @@ public class QuestContentPopUp : PopUpBase<QuestContentPopUp>
 {
     public override void RefreshPopUp()
     {
-        throw new System.NotImplementedException();
+        Debug.LogWarning("재정의되지 않았음");
     }
 
     protected override void Awake()

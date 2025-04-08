@@ -8,8 +8,10 @@ public class ContinuePopUp : PopUpBase<ContinuePopUp>
     {
         InitializePool(4);
     }
-    private void Start()
+
+    protected override void OnEnable()
     {
+        // RefreshPopUp에서 ChangeContentRectTransform를 호출했으니 base는 일부러 안씀
         RefreshPopUp();
     }
     public override void RefreshPopUp()

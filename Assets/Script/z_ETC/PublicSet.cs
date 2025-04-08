@@ -71,6 +71,7 @@ namespace PublicSet
         // -----------None Interactable--------------
         // 플레이어 혼잣말
         PlayerMonologue,
+        OnPlayerWakeUp,
 
         // 카지노
         GameMaster,
@@ -88,12 +89,12 @@ namespace PublicSet
 
         // 공격차례, computer의 경우 AttackTurn_Player를 스킵
         num201_AttackTurnPlayer = 201,
-        num202_Attack,
+        num202_AttackDone,
         num203_PlayerCantAttack,
 
         // 수비차례, computer의 경우 DefenseTrun_Player를 스킵
         num301_DefenseTrun_Player= 301,
-        num302_Defense,
+        num302_DefenseDone,
         num303_PlayerCantDefense,
 
 
@@ -168,12 +169,27 @@ namespace PublicSet
         // 기타 잡템
         Notice_Stage1 = 10001
     }
-
     public enum eItemCallback
     {
         None,
         FirstQuest,
         EatMeal
+    }
+
+    public enum eQuestType
+    {
+        None,
+
+        //튜토리얼 관련
+        Tutorial,
+    }
+
+    
+
+    public enum eQuestCallback
+    {
+        None,
+        Tutorial,
     }
 
     public enum eHasEndCallback
@@ -239,7 +255,7 @@ namespace PublicSet
     public class cItemInfo
     {
         // 기본정보
-        public eItemType serialNumber { get; set; }
+        public eItemType type { get; set; }
         public string name { get; set; }
         public string description { get; set; }
 
@@ -266,6 +282,27 @@ namespace PublicSet
         public UnityAction itemCallback { get; set; }
 
     }
+
+    public class cQuestInfo
+    {
+        public eQuestType type { get; set; }
+        public string name { get; set; }
+        public UnityAction callback_endConditionCheck { get; set; }
+        public int rewardCoin { get; set; }
+        public eItemType rewardItem { get; set; }
+        public bool isRepeatable { get; set; }
+    }
+
+    public class cQuestDescription
+    {
+        public List<string> description { get; set; }
+
+        public cQuestDescription()
+        {
+            description = new List<string>();
+        }
+    }
+
 
     public class cTrumpCardInfo
     {

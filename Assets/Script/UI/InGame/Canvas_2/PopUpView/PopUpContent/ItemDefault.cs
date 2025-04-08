@@ -41,12 +41,12 @@ public class ItemDefault : ButtonBase
 
     public void UsedByPlayer()
     {
-        PlayerPrefsManager.Instance.PlayerLoseItem(item);
+        ItemManager.Instance.PlayerLoseItem(item);
     }
 
     public void SoldByPlayer()
     {
-        PlayerPrefsManager.Instance.PlayerLoseItem(item);
+        ItemManager.Instance.PlayerLoseItem(item);
 
         cItemInfo itemInfo = CsvManager.Instance.GetItemInfo(item.type);
         PlayManager.Instance.AddPlayerMoney(itemInfo.value_Sale);

@@ -29,7 +29,7 @@ public class TextWindowView : MonoBehaviour
     private void Awake()
     {
         isTypingReady = true;
-        typingDelay = 0.05f;
+        typingDelay = 0.03f;
     }
 
 
@@ -290,7 +290,13 @@ public class TextWindowView : MonoBehaviour
         {
             if (dialogue.Contains("{D-DAY}"))
             {
-                dialogue = dialogue.Replace("{D-DAY}", GameManager.Instance.RemainingPeriod.ToString());
+                dialogue = dialogue.Replace("{D-DAY}", GameManager.Instance.currentRemainingPeriod.ToString());
+            }
+
+            if (dialogue.Contains("{Additional coins}"))
+            {
+                int additionalCoins = 10000 - PlayManager.Instance.currentPlayerStatus.coin;
+                dialogue = dialogue.Replace("{Additional coins}", additionalCoins.ToString());
             }
         }
         else if(currentTextType == eTextType.OnlyOneLivesProgress)
@@ -325,7 +331,6 @@ public class TextWindowView : MonoBehaviour
                 dialogue = dialogue.Replace("{EXPRESSION}", CardGamePlayManager.Instance.ExpressionValue.ToString());
             }
         }
-        
         
         isTypingReady = false;
         textWindow.text = "";

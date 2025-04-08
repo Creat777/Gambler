@@ -170,6 +170,12 @@ public abstract class CardGamePlayerBase : MonoBehaviour
         if (openedCardList.Contains(card))
         {
             openedCardList.Remove(card);
+
+            // 한번 오픈되었다가 다시 손패로 가져간 카드는 이미 공개된 것
+            if (revealedCardList.Contains(card) == false)
+            {
+                revealedCardList.Add(card);
+            }
         }
     }
 
@@ -183,13 +189,16 @@ public abstract class CardGamePlayerBase : MonoBehaviour
 
         // 반대쪽 리스트에서 제거
         if (closedCardList.Contains(card))
-            closedCardList.Remove(card);
-
-        // 한번 오픈된 카드는 공개된 것임
-        if(revealedCardList.Contains(card) == false)
         {
-            revealedCardList.Add(card);
+            closedCardList.Remove(card);
         }
+        if (revealedCardList.Contains(card))
+        {
+            revealedCardList.Remove(card);
+        }
+
+
+
     }
 
     public void OrganizeCard(Transform card)

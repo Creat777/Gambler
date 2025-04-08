@@ -15,11 +15,30 @@ public class GameManager : Singleton<GameManager>
     static private Connector _connector;
     static public Connector connector
     {
-        get { 
-            if(_connector == null) Debug.LogAssertion("커넥터 연결 안됐음");
+        get
+        {
+            if (_connector == null) Debug.LogAssertion("커넥터 연결 안됐음");
             return _connector;
         }
     }
+
+    static public Connector_Lobby connector_Lobby
+    {
+        get
+        {
+            if (connector is Connector_Lobby) return (connector as Connector_Lobby);
+            else { Debug.LogAssertion("커넥터 캐스팅 실패 : connector_Lobby"); return null; }
+        }
+    }
+    static public Connector_InGame connector_InGame
+    {
+        get
+        {
+            if (connector is Connector_InGame) return (connector as Connector_InGame);
+            else { Debug.LogAssertion("커넥터 캐스팅 실패 : connector_InGame"); return null; }
+        }
+    }
+
 
     // 에디터에서 수정
     public float defaultGamespeed;
@@ -34,7 +53,7 @@ public class GameManager : Singleton<GameManager>
     public eScene _currentScene;
     public eMap _currentMap;
     public eStage _currentStage;
-    [SerializeField] private int _RemainingPeriod;
+    [SerializeField] private int _currentRemainingPeriod;
 
     public ePlayerSaveKey currentPlayerSaveKey
     { get { return _currentPlayerSaveKey; } private set {  _currentPlayerSaveKey = value; } }
@@ -44,8 +63,8 @@ public class GameManager : Singleton<GameManager>
     { get { return _currentMap; } private set { _currentMap = value; } }
     public eStage currentStage
     { get { return _currentStage; } private set { _currentStage = value; } }
-    public int RemainingPeriod 
-    { get { return _RemainingPeriod; } private set { _RemainingPeriod = value; } }
+    public int currentRemainingPeriod 
+    { get { return _currentRemainingPeriod; } private set { _currentRemainingPeriod = value; } }
 
     public void SetPlayerSaveKey(ePlayerSaveKey value)
     {
@@ -67,11 +86,11 @@ public class GameManager : Singleton<GameManager>
     }
     public void SetRemainingPeriod(int value)
     {
-        RemainingPeriod = value;
+        currentRemainingPeriod = value;
     }
     public void CountDownRemainingPeriod()
     {
-        RemainingPeriod--;
+        currentRemainingPeriod--;
     }
 
     Dictionary<eStage, string> StageMessageDict;
@@ -188,7 +207,7 @@ public class GameManager : Singleton<GameManager>
         sequence.Play();
     }
 
-    public void ChangeStage(eStage stageEnum)
+    public void SetStage(eStage stageEnum)
     {
         currentStage = stageEnum;
     }
@@ -203,15 +222,15 @@ public class GameManager : Singleton<GameManager>
         //Debug.Log("stage 애니메이션 시작");
 
         // 이미지 활성화
-        (connector as Connector_InGame).StageView.SetActive(true);
+        connector_InGame.StageView.SetActive(true);
 
         // 이미지 색깔 초기화
-        Image stateViewImage = (connector as Connector_InGame).StageView.GetComponent<Image>();
+        Image stateViewImage = connector_InGame.StageView.GetComponent<Image>();
         Color colorBack = new Color(1,1,1,0);
         stateViewImage.color = colorBack;
 
         // 이미지 내부 텍스트 초기화
-        Text StageViewText = (connector as Connector_InGame).StageView.transform.GetChild(0).gameObject.GetComponent<Text>();
+        Text StageViewText = connector_InGame.StageView.transform.GetChild(0).gameObject.GetComponent<Text>();
         StageViewText.text = StageMessageDict[currentStage];
         StageViewText.color = Color.clear;
 
@@ -235,7 +254,7 @@ public class GameManager : Singleton<GameManager>
 
                 .AppendCallback(() =>
                 {
-                    (connector as Connector_InGame).StageView.SetActive(false);
+                    connector_InGame.StageView.SetActive(false);
                 })
 
                 .SetLoops(1);
@@ -250,15 +269,13 @@ public class GameManager : Singleton<GameManager>
 
         // 코인을 0으로 초기화
         PlayManager.Instance.SetPlayerStatus();
-        Debug.LogWarning("빠른 디버깅을 위해 골드 설정했음");
-        PlayManager.Instance.SetPlayerMoney(50);
 
-        (connector as Connector_InGame).map_Script.ChangeMapTo(eMap.InsideOfHouse);
-        ChangeStage(eStage.Stage1);
+        connector_InGame.map_Script.ChangeMapTo(eMap.InsideOfHouse);
+        SetStage(eStage.Stage1);
         SceneLoadView(
             () =>
             {
-                StartPlayerMonologue();
+                PlayManager.Instance.StartPlayerMonologue();
             }
             );
     }
@@ -273,27 +290,35 @@ public class GameManager : Singleton<GameManager>
             PlayerPrefsManager.Instance.LoadPlayerStatus(currentPlayerSaveKey)
             );
 
-        (connector as Connector_InGame).map_Script.ChangeMapTo(eMap.InsideOfHouse);
-        ChangeStage(eStage.Stage1);
+        connector_InGame.map_Script.ChangeMapTo(eMap.InsideOfHouse);
+        PlayerPrefsManager.Instance.LoadStage(currentPlayerSaveKey); // 여기서 데이터 Set함
+        PlayerPrefsManager.Instance.LoadOpenedIconCount(currentPlayerSaveKey); // 여기서 Set함
+        PlayerPrefsManager.Instance.LoadItems(currentPlayerSaveKey);
+
+        SceneLoadView(
+            () =>
+            {
+                PlayManager.Instance.StartPlayerMonologue();
+            }
+            );
     }
 
-    public void StartPlayerMonologue()
-    {
-        CallbackManager.Instance.TextWindowPopUp_Open();
-
-        (GameManager.connector as Connector_InGame).textWindowView_Script.StartTextWindow(eTextScriptFile.PlayerMonologue);
-
-    }
+    
 
     public void GameOver()
     {
         float delay = 2f;
         CallbackManager.Instance.PlaySequnce_BlackViewProcess(
             delay,
-            () => (connector as Connector_InGame).youLoseView_Script.gameObject.SetActive(true));
+            () => connector_InGame.youLoseView_Script.gameObject.SetActive(true));
     }
 
-    // 씬 로드 시 호출될 콜백 함수
+
+    /// <summary>
+    /// Awake -> OnEnable(SceneManager.sceneLoaded에 추가) -> 씬로드 -> OnSceneLoaded -> Start
+    /// </summary>
+    /// <param name="scene"></param>
+    /// <param name="mode"></param>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         switch (scene.buildIndex)

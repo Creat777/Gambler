@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using PublicSet;
 using UnityEngine.UI;
+using System.Collections;
 
 public class IconView : MonoBehaviour
 {
@@ -25,7 +26,40 @@ public class IconView : MonoBehaviour
     private Vector2 Center_anchoredPos;
     private Vector2 OutOfScreen_anchoredPos;
     bool isIconViewOpen;
-    float openDuration;
+    Coroutine currentCoroutine;
+    public int OpenedIconCount {  get; private set; }
+    public void SetOpendIconCount(int value)
+    {
+        OpenedIconCount = value;
+        if(OpenedIconCount != 0)
+        {
+            switch(OpenedIconCount)
+            {
+                case 1:
+                    Destroy(inventory_Lock);
+                    break;
+
+                case 2:
+                    Destroy(inventory_Lock);
+                    Destroy(quest_Lock);
+                    break;
+
+                case 3:
+                    Destroy(inventory_Lock);
+                    Destroy(quest_Lock);
+                    Destroy(gameAssistance_Lock);
+                    break;
+
+                case 4:
+                    Destroy(inventory_Lock);
+                    Destroy(quest_Lock);
+                    Destroy(gameAssistance_Lock);
+                    Destroy(message_Lock);
+                    break;
+
+            }
+        }
+    }
 
     private Dictionary<eIcon, GameObject> _iconLockDict;
     private Dictionary<eIcon, GameObject> iconLockDict
@@ -38,15 +72,16 @@ public class IconView : MonoBehaviour
             }
             return _iconLockDict;
         }
+        set { _iconLockDict = value; }
     }
 
     public void InitIconDict()
     {
-        _iconLockDict = new Dictionary<eIcon, GameObject>();
-        _iconLockDict.Add(eIcon.Quest, quest_Lock);
-        _iconLockDict.Add(eIcon.Inventory, inventory_Lock);
-        _iconLockDict.Add(eIcon.GameAssistant, gameAssistance_Lock);
-        _iconLockDict.Add(eIcon.Message, message_Lock);
+        iconLockDict = new Dictionary<eIcon, GameObject>();
+        iconLockDict.Add(eIcon.Quest, quest_Lock);
+        iconLockDict.Add(eIcon.Inventory, inventory_Lock);
+        iconLockDict.Add(eIcon.GameAssistant, gameAssistance_Lock);
+        iconLockDict.Add(eIcon.Message, message_Lock);
     }
 
     private void Awake()
@@ -58,6 +93,7 @@ public class IconView : MonoBehaviour
         SetPos();
 
         if(iconLockDict == null) InitIconDict();
+        OpenedIconCount = 0;
     }
 
     private void SetPos()
@@ -73,34 +109,40 @@ public class IconView : MonoBehaviour
     }
 
 
-    private void FixedUpdate()
+    /// <summary>
+    /// 아이콘 뷰가 열리면 일정 시간 후 닫히도록 설정
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator IconViewCloseDelay()
     {
-        if(isIconViewOpen)
-        {
-            openDuration += Time.deltaTime;
-            if (openDuration > 5f)
-            {
-                IconViewClose();
-            }
-        }
+        yield return new WaitForSeconds(5f);
+        IconViewClose();
+        currentCoroutine = null;
     }
 
     public void IconViewOpen()
     {
-        IconViewProcess(Center_anchoredPos, true);
+        PlaySequnce_IconViewProcess(Center_anchoredPos, true);
     }
 
 
     public void IconViewClose()
     {
-        IconViewProcess(OutOfScreen_anchoredPos, false);
+        PlaySequnce_IconViewProcess(OutOfScreen_anchoredPos, false);
     }
 
-    private void IconViewProcess(Vector3 tragetPos ,bool boolActive, Sequence sequencePlus = null)
+    private void PlaySequnce_IconViewProcess(Vector3 tragetPos ,bool boolActive, Sequence sequencePlus = null)
     {
         // 변수 초기화
-        openDuration = 0;
         isIconViewOpen = boolActive;
+        if(isIconViewOpen)
+        {
+            if (currentCoroutine != null)
+            {
+                StopCoroutine(currentCoroutine);
+            }
+            currentCoroutine = StartCoroutine(IconViewCloseDelay());
+        }
 
         Sequence sequence = DOTween.Sequence();
 
@@ -122,6 +164,7 @@ public class IconView : MonoBehaviour
     {
         if(iconLockDict.ContainsKey(choice))
         {
+            OpenedIconCount++;
             Sequence sequence = DOTween.Sequence();
 
             Transform iconLockTrans = iconLockDict[choice].transform;
@@ -136,7 +179,7 @@ public class IconView : MonoBehaviour
             if (isIconViewOpen == false)
             {
                 // IconViewProcess 내부에서 sequence를 추가하여 트위닝 시작함
-                IconViewProcess(Center_anchoredPos, true, sequence);
+                PlaySequnce_IconViewProcess(Center_anchoredPos, true, sequence);
             }
             // 아이콘이 열려있는 경우
             else

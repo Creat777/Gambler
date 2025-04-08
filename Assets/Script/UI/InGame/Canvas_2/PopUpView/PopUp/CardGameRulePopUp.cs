@@ -4,7 +4,7 @@ public class CardGameRulePopUp : PopUpBase<CardGameRulePopUp>
 {
     public override void RefreshPopUp()
     {
-        throw new System.NotImplementedException();
+        Debug.LogWarning("재정의 되지 않았음");
     }
 
     void Start()

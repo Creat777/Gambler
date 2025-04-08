@@ -1,0 +1,3 @@
+stage번호,Character_Enum,DialogueIcon_Index,Script,"endCallback 유무(1, 0)",endCallback 번호,"selection 유무(1, 0)",1번 선택지,1번 콜백번호,2번 선택지,2번 콜백번호
+2,1001,0,잘 잤다… 이제 {D-DAY}일 남았네,0,,0,,,,
+3,1001,0,잘 잤다… 이제 {D-DAY}일 남았네,0,,0,,,,

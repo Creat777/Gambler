@@ -153,7 +153,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
             if(playerList[i].CompareTag("Player"))
             {
                 //Debug.Log("플레이어의 코인을 연동");
-                playerList[i].SetCoin(PlayManager.Instance.currentPlayerStatus.money);
+                playerList[i].SetCoin(PlayManager.Instance.currentPlayerStatus.coin);
             }
             else
             {
@@ -224,7 +224,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
                 // 컴퓨터의 경우
                 else
                 {
-                    currentProgress = eOOLProgress.num202_Attack;
+                    currentProgress = eOOLProgress.num202_AttackDone;
                 }
             }
             else
@@ -233,7 +233,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
             }
             
         }
-        else if (currentProgress == eOOLProgress.num202_Attack)
+        else if (currentProgress == eOOLProgress.num202_AttackDone)
         {
             if(Deffender != null)
             {
@@ -249,7 +249,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
                 }
                 else
                 {
-                    currentProgress = eOOLProgress.num302_Defense;
+                    currentProgress = eOOLProgress.num302_DefenseDone;
                 }
             }
             else
@@ -257,7 +257,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
                 Debug.LogAssertion("이번 진행의 방어자가 설정되지 않았음");
             }
         }
-        else if(currentProgress == eOOLProgress.num302_Defense ||
+        else if(currentProgress == eOOLProgress.num302_DefenseDone ||
                 currentProgress == eOOLProgress.num303_PlayerCantDefense)
         {
             currentProgress = eOOLProgress.num401_CardOpenAtTheSameTime;
@@ -426,13 +426,22 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         // 카메라를 뒤집기 전 화면을 확대
         mainCamAnime.GetSequnce_CameraZoomIn(sequence);
 
-        Sequence appendSequence = DOTween.Sequence();
-        Attacker.PresentedCardScript.GetSequnce_TryCardOpen(appendSequence, Attacker);
-        sequence.Append(appendSequence);
+        if (Attacker != null && Attacker.PresentedCardScript != null)
+        {
+            Sequence appendSequence = DOTween.Sequence();
+            Attacker.PresentedCardScript.GetSequnce_TryCardOpen(appendSequence, Attacker);
+            sequence.Append(appendSequence);
+        }
+        else Debug.LogWarning("공격자가 카드를 선택하지 못함");
 
-        Sequence joinSequnce = DOTween.Sequence();
-        Deffender.PresentedCardScript.GetSequnce_TryCardOpen(joinSequnce, Deffender);
-        sequence.Join(joinSequnce);
+        // 먹잇감인 플레이어는 카드를 선택하지 못함
+        if (Deffender != null && Deffender.PresentedCardScript != null)
+        {
+            Sequence joinSequnce = DOTween.Sequence();
+            Deffender.PresentedCardScript.GetSequnce_TryCardOpen(joinSequnce, Deffender);
+            sequence.Join(joinSequnce);
+        }
+        else Debug.LogWarning("방어자가 카드를 선택하지 못함");
 
         // 카드를 자세히 확인하기 위한 시간
         float delay = 1.5f;

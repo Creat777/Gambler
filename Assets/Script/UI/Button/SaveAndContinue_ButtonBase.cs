@@ -9,8 +9,8 @@ public abstract class SaveAndContinue_ButtonBase : ButtonBase
         {
             switch (GameManager.Instance.currentScene)
             {
-                case eScene.Lobby: return (GameManager.connector as Connector_Lobby).popUpView_Script;
-                case eScene.InGame: return (GameManager.connector as Connector_InGame).popUpView_Script;
+                case eScene.Lobby: return GameManager.connector_Lobby.popUpView_Script;
+                case eScene.InGame: return GameManager.connector_InGame.popUpView_Script;
             }
             Debug.LogAssertion("잘못된 접근");
             return null;

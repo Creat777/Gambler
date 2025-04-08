@@ -8,13 +8,13 @@ using UnityEngine;
 /// </summary>
 public struct sItem
 {
-    public int Id_inInventory; // 내가 소유하고 있는 아이템 번호
+    public int id; // 내가 소유하고 있는 아이템 번호
     public eItemType type; // 아이템 시리얼 번호 - 아이콘, 아이템의 능력치
 
     // 데이터 저장을 위해 string으로 변환
     public override string ToString()
     {
-        return $"{Id_inInventory}:{type}";
+        return $"{id}:{type}";
     }
 
     // string으로 저장했던 정보를 사용가능한 데이터로 변환
@@ -23,7 +23,7 @@ public struct sItem
         sItem item = new sItem();
         string[] parts = data.Split(':');
         if (parts.Length == 2 &&
-            int.TryParse(parts[0], out item.Id_inInventory) &&
+            int.TryParse(parts[0], out item.id) &&
             eItemType.TryParse(parts[1], out item.type))
         {
             return item;
@@ -40,26 +40,26 @@ public struct sItem
     public override bool Equals(object obj)
     {
         return obj is sItem item &&
-               Id_inInventory == item.Id_inInventory &&
+               id == item.id &&
                type == item.type;
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Id_inInventory, type);
+        return HashCode.Combine(id, type);
     }
 
     // 생성자
     public sItem(int id, eItemType serail)
     {
-        Id_inInventory = id;
+        this.id = id;
         type = serail;
         return;
     }
 
     public sItem(sItem item)
     {
-        Id_inInventory = item.Id_inInventory;
+        id = item.id;
         type = item.type;
         return;
     }
@@ -70,25 +70,53 @@ public struct sItem
 /// </summary>
 public struct sQuest
 {
-    public int ID;
+    public int id; // 퀘스트 순서
+    public eQuestType type; // 퀘스트 번호
 
     // 데이터 저장을 위해 string으로 변환
     public override string ToString()
     {
-        return $"{ID}";
+        return $"{id}:{type}";
     }
 
+    // string으로 저장했던 정보를 사용가능한 데이터로 변환
+    public static sQuest DataSplit(string data)
+    {
+        sQuest item = new sQuest();
+        string[] parts = data.Split(':');
+        if (parts.Length == 2 &&
+            int.TryParse(parts[0], out item.id) &&
+            eQuestType.TryParse(parts[1], out item.type))
+        {
+            return item;
+        }
+        return default;
+    }
+
+    public override bool Equals(object obj)
+    {
+        return obj is sQuest quest &&
+               id == quest.id &&
+               type == quest.type;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(id, type);
+    }
 
     // 생성자
-    public sQuest(int id)
+    public sQuest(int id, eQuestType type)
     {
-        this.ID = id;
+        this.id = id;
+        this.type = type;
         return;
     }
 
     public sQuest(sQuest quest)
     {
-        this.ID = quest.ID;
+        id = quest.id;
+        type = quest.type;
         return;
     }
 }
@@ -101,13 +129,13 @@ public struct sPlayerStatus
     public int hp; // 체력
     public int agility; // 민첩성
     public int hunger; // 허기
-    public int money; // 소지금
+    public int coin; // 소지금
 
 
 
     public override string ToString()
     {
-        return $"{hp}:{agility}:{hunger}:{money}";
+        return $"{hp}:{agility}:{hunger}:{coin}";
     }
 
     // string으로 저장했던 정보를 사용가능한 데이터로 변환
@@ -120,7 +148,7 @@ public struct sPlayerStatus
             int.TryParse(parts[0], out playerStatus.hp) &&
             int.TryParse(parts[1], out playerStatus.agility) &&
             int.TryParse(parts[2], out playerStatus.hunger) &&
-            int.TryParse(parts[3], out playerStatus.money))
+            int.TryParse(parts[3], out playerStatus.coin))
         {
             return playerStatus;
         }
@@ -148,12 +176,12 @@ public struct sPlayerStatus
                hp == status.hp &&
                agility == status.agility &&
                hunger == status.hunger &&
-               money == status.money;
+               coin == status.coin;
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(hp, agility, hunger, money);
+        return HashCode.Combine(hp, agility, hunger, coin);
     }
 
     // == 연산자 재정의
@@ -163,7 +191,7 @@ public struct sPlayerStatus
         return left.hp == right.hp &&
                left.agility == right.agility &&
                left.hunger == right.hunger &&
-               left.money == right.money;
+               left.coin == right.coin;
     }
 
     // != 연산자 재정의
@@ -178,7 +206,7 @@ public struct sPlayerStatus
         this.hp = hp;
         this.agility = agility;
         this.hunger = hunger;
-        this.money = money;
+        this.coin = money;
     }
 
     public sPlayerStatus(sPlayerStatus status)
@@ -186,7 +214,7 @@ public struct sPlayerStatus
         hp = status.hp;
         agility = status.agility;
         hunger = status.hunger;
-        money = status.money;
+        coin = status.coin;
     }
 }
 
@@ -198,7 +226,9 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
     public const string defaultSaveKey_Items = "SavedItems";
     public const string defaultSaveKey_Quests = "SavedQuests";
     public const string defaultSaveKey_RemainingPeriod = "SavedRemainingPeriod";
+    public const string defaultSaveKey_Stage = "SavedStage";
     public const string defaultSaveKey_PlayerStatus = "SavedPlayerStatus";
+    public const string defaultSaveKey_OpenedIconCount = "SavedOpenedIconCount";
 
     public string currentPlayerSaveKey_SavedDate
     { get { return (currentPlayerSavaKey + defaultSaveKey_SavedDate); } }
@@ -208,8 +238,13 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
     { get { return (currentPlayerSavaKey + defaultSaveKey_Quests); } }
     public string currentPlayerSaveKey_RemainingPeriod
     { get { return (currentPlayerSavaKey + defaultSaveKey_RemainingPeriod); } }
+    public string currentPlayerSaveKey_Stage
+    { get { return (currentPlayerSavaKey + defaultSaveKey_Stage); } }
     public string currentPlayerSaveKey_PlayerStatus
     { get { return (currentPlayerSavaKey + defaultSaveKey_PlayerStatus); } }
+
+    public string currentPlayerSaveKey_OpenedIconCount
+    { get { return (currentPlayerSavaKey + defaultSaveKey_OpenedIconCount); } }
 
     public void SaveTotalData()
     {
@@ -221,12 +256,27 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
         // 결과 출력
         Debug.Log($"저장 시간 : {SavedDate}");
 
-        // 저장날짜와 더미데이터를 현재 플레이어 데이터에 저장
         SaveData(currentPlayerSaveKey_SavedDate, SavedDate);
-        SaveData(currentPlayerSaveKey_Items, LoadItems(ePlayerSaveKey.None));
-        SaveData(currentPlayerSaveKey_Quests, LoadQuests(ePlayerSaveKey.None));
-        SaveData(currentPlayerSaveKey_RemainingPeriod, LoadRemainingPeriod(ePlayerSaveKey.None));
-        SaveData(currentPlayerSaveKey_PlayerStatus, LoadPlayerStatus(ePlayerSaveKey.None));
+
+        //LoadItems(ePlayerSaveKey.None);
+        string itemData = string.Join(",", ItemManager.ItemHashSet);
+        SaveData(currentPlayerSaveKey_Items, itemData);
+
+        //LoadQuests(ePlayerSaveKey.None);
+        string questData = string.Join(",", QuestManager.questHashSet);
+        SaveData(currentPlayerSaveKey_Quests, questData);
+
+        int remainingPeriod = GameManager.Instance.currentRemainingPeriod;
+        SaveData(currentPlayerSaveKey_RemainingPeriod, remainingPeriod);
+
+        int numStage = (int)GameManager.Instance.currentStage;
+        SaveData(currentPlayerSaveKey_Stage, numStage);
+
+        string playerStatus = PlayManager.Instance.currentPlayerStatus.ToString();
+        SaveData(currentPlayerSaveKey_PlayerStatus, playerStatus);
+
+        int openedIconCount = GameManager.connector_InGame.iconView_Script.OpenedIconCount;
+        SaveData(currentPlayerSaveKey_OpenedIconCount, openedIconCount);
     }
     
 
@@ -235,148 +285,59 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
         DeleteDefaultData();
     }
 
-    // 플레이어가 저장하지 않은 경우
+    /// <summary>
+    /// 게임 종료시 더미데이터는 모두 삭제
+    /// </summary>
     private void DeleteDefaultData()
     {
-        // 게임 종료시 더미데이터는 모두 삭제
-        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_SavedDate);
-        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_Items);
-        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_Quests);
-        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_RemainingPeriod);
-        PlayerPrefs.DeleteKey(ePlayerSaveKey.None.ToString() + defaultSaveKey_PlayerStatus);
+        string playerKey = ePlayerSaveKey.None.ToString();
+        PlayerPrefs.DeleteKey(playerKey + defaultSaveKey_SavedDate);
+        PlayerPrefs.DeleteKey(playerKey + defaultSaveKey_Items);
+        PlayerPrefs.DeleteKey(playerKey + defaultSaveKey_Quests);
+        PlayerPrefs.DeleteKey(playerKey + defaultSaveKey_RemainingPeriod);
+        PlayerPrefs.DeleteKey(playerKey + defaultSaveKey_Stage);
+        PlayerPrefs.DeleteKey(playerKey + defaultSaveKey_PlayerStatus);
     }
 
-    // 현재 플레이어가 소유하고있는 아이템
-    // HashSet(집합) : 중복되는 데이터는 무시함
-    // 참조타입을 자료형 파라미터에 넣을경우 참조(주소)를 비교하여 실 데이터가 중복될 수 있음
-    public HashSet<sItem> Player_Items { get; private set; }
+    
 
-    /// <summary>
-    /// 완료되었던 퀘스트를 포함한 모든 퀘스트
-    /// </summary>
-    public HashSet<sQuest> Player_Quests { get; private set; }
+    
     
 
     protected override void Awake()
     {
         base.Awake();
-        Player_Items = new HashSet<sItem>();
-        Player_Quests = new HashSet<sQuest>();
+        
+        
 
         //currentPlayerSaveKey_Items = ePlayerSaveKey.None.ToString()+defaultSaveKey_Items;
     }
 
-    private void SaveData(string key, object value)
-    {
-        // 해당 key 리셋
-        //PlayerPrefs.DeleteKey(key); 
+    
 
-        // 해당 key에 Value를 저장
-        // 같은 키에 서로다른 자료형을 저장하는 경우 마지막에 저장된 데이터만 유효함
-        if (value is int)
-        {
-            PlayerPrefs.SetInt(key, (int)value);
-        }
-        else if (value is float)
-        {
-            PlayerPrefs.SetFloat(key, (float)value);
-        }
-        else if (value is string)
-        {
-            PlayerPrefs.SetString(key, (string)value);
-        }
-        else
-        {
-            Debug.LogError("지원되지 않는 데이터 타입입니다.");
-            return;
-        }
+    
 
-        PlayerPrefs.Save();
-        //Debug.Log($"Data saved : {key} = {value}");
-    }
+    //public void ItemsDataSave(int itemId, eItemType serialNum, Action<sItem> middleCallback, Action endCallback)
+    //{
+    //    // 더미데이터에 저장된 데이터를 불러오고
+    //    LoadItems(ePlayerSaveKey.None);
 
-    public int LoadData(string key, int defaultValue)
-    {
-        return PlayerPrefs.GetInt(key, defaultValue);
-    }
+    //    // 입력된 아이템 코드에 맞는 임시데이터를 생성
+    //    sItem newItem = new sItem(itemId, serialNum);
 
-    public float LoadData(string key, float defaultValue)
-    {
-        return PlayerPrefs.GetFloat(key, defaultValue);
-    }
+    //    // 아이템 획득, 삭제에 따른
+    //    middleCallback(newItem);
 
-    public string LoadData(string key, string defaultValue)
-    {
-        return PlayerPrefs.GetString(key, defaultValue);
-    }
+    //    // 새로운 아이템 목록을 PlayerPrefs를 이용하여 레지스트리에 저장
+    //    // Join : 구분자(첫번째 변수)로 데이터목록을 묶음
+    //    // Join의 두번째 인수에서 ToString 메소드가 사용됨
+    //    SaveData(ePlayerSaveKey.None.ToString() + defaultSaveKey_Items, string.Join(",", ItemManager.ItemHashSet));
 
-    public void PlayerLoseItem(sItem item)
-    {
-        Debug.Log($"item {item.ToString()} 삭제 시도");
-        ItemsDataSaveProcess(item.Id_inInventory, item.type,
-            (sItem newItem) =>
-            {
-                // 지금 입력된 아이템이 존재하는지 여부를 판단
-                if (Player_Items.Contains(newItem) == false)
-                {
-                    // 존재하지 않는 버그 아이템이라면 실행을 취소하고 inventory 업데이트
-                    // DoTo 인벤토리 업데이트
-                    Debug.LogWarning($"Item {item.Id_inInventory}은 존재하지 않는 데이터");
-                    return;
-                }
-                // 존재하는 아이템이면 목록에서 제거
-                Player_Items.Remove(newItem);
-            },
-            () => Debug.Log($"Item {item.Id_inInventory} 제거 성공함")
-            );
-    }
+    //    endCallback();
 
-    // 새로운 아이템 정보를 저장하기 위한 함수
-    public void PlayerGetItem(eItemType itemType)
-    {
-        int itemId = GetNewLastId();
-
-        ItemsDataSaveProcess(itemId, itemType,
-            (sItem newItem) =>
-            {
-                // 지금 입력된 아이템이 존재하는지 여부를 판단
-                if (Player_Items.Contains(newItem))
-                {
-                    Debug.LogWarning($"Item {itemId} is already saved.");
-                    return;
-                }
-                // 존재하지 않는다면 아이템 목록에 추가
-                Player_Items.Add(newItem);
-            },
-            ()=>Debug.Log($"Item {itemId} 저장 성공함.")
-            );
-        //
-    }
-
-    public void ItemsDataSaveProcess(int itemId, eItemType serialNum, Action<sItem> middleCallback, Action endCallback)
-    {
-        // 더미데이터에 저장된 데이터를 불러오고
-        LoadItems(ePlayerSaveKey.None);
-
-        // 입력된 아이템 코드에 맞는 임시데이터를 생성
-        sItem newItem = new sItem(itemId, serialNum);
-
-        // 아이템 획득, 삭제에 따른
-        middleCallback(newItem);
-
-        // 새로운 아이템 목록을 PlayerPrefs를 이용하여 레지스트리에 저장
-        // Join : 구분자(첫번째 변수)로 데이터목록을 묶음
-        // Join의 두번째 인수에서 ToString 메소드가 사용됨
-
-
-        SaveData(ePlayerSaveKey.None.ToString() + defaultSaveKey_Items, string.Join(",", Player_Items));
-
-        endCallback();
-
-        // 아이템에 변화가 생겼으니 인벤토리창을 새로고침
-        (GameManager.connector as Connector_InGame).
-            popUpView_Script.inventoryPopUp.GetComponent<InventoryPopUp>().RefreshPopUp();
-    }
+    //    // 아이템에 변화가 생겼으니 인벤토리창을 새로고침
+    //    GameManager.connector_InGame.popUpView_Script.inventoryPopUp.GetComponent<InventoryPopUp>().RefreshPopUp();
+    //}
 
     public string LoadSavedDate(ePlayerSaveKey saveKey)
     {
@@ -403,6 +364,7 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
         Debug.Log($"savedData : {savedData}");
         if (string.IsNullOrEmpty(savedData))
         {
+            Debug.LogWarning("저장된 데이터가 없음 : LoadItems");
             return new HashSet<sItem>();
         }
 
@@ -415,13 +377,13 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
             sItem item = sItem.DataSplit(itemString);
 
             // 데이터가 잘못된경우 패스
-            if (item.Id_inInventory == 0 && item.type == 0)
+            if (item.id == 0 && item.type == 0)
             {
                 continue;
             }
 
             // 해쉬셋에서 이미 존재하는 데이터는 무시됨
-            else if (Player_Items.Contains(item))
+            else if (ItemManager.ItemHashSet.Contains(item))
             {
                 continue;
             }
@@ -429,16 +391,51 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
             // 올바른 데이터를 해쉬셋에 추가
             else
             {
-                Player_Items.Add(item);
+                ItemManager.ItemHashSet.Add(item);
             }
         }
-        return Player_Items;
+
+        Debug.Log("데이터 로딩 성공 : LoadItems");
+        return ItemManager.ItemHashSet;
     }
+
     public HashSet<sQuest> LoadQuests(ePlayerSaveKey saveKey)
     {
         //string savedData = PlayerPrefs.GetString(savedItemsKey, string.Empty);
-        int savedData = LoadData(saveKey.ToString() + defaultSaveKey_Quests, 0);
-        return null;
+        string savedData = LoadData(saveKey.ToString() + defaultSaveKey_Quests, string.Empty);
+
+        Debug.Log($"savedData : {savedData}");
+        if (string.IsNullOrEmpty(savedData))
+        {
+            return new HashSet<sQuest>();
+        }
+
+        string[] questStrings = savedData.Split(',');
+
+        foreach (string questString in questStrings)
+        {
+            // id : serail
+            sQuest quest = sQuest.DataSplit(questString);
+
+            // 데이터가 잘못된경우 패스
+            if (quest.id == 0 && quest.type == 0)
+            {
+                continue;
+            }
+
+            // 해쉬셋에서 이미 존재하는 데이터는 무시됨
+            else if (QuestManager.questHashSet.Contains(quest))
+            {
+                continue;
+            }
+
+            // 올바른 데이터를 해쉬셋에 추가
+            else
+            {
+                QuestManager.questHashSet.Add(quest);
+            }
+        }
+        return QuestManager.questHashSet;
     }
     public int LoadRemainingPeriod(ePlayerSaveKey saveKey)
     {
@@ -461,7 +458,33 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
             Debug.Log("데이터 로딩 성공 : LoadRemainingPeriod");
             return savedData;
         }
-        
+    }
+
+    public eStage LoadStage(ePlayerSaveKey saveKey)
+    {
+        //string savedData = PlayerPrefs.GetString(savedItemsKey, string.Empty);
+        int savedData = LoadData(saveKey.ToString() + defaultSaveKey_Stage, 0);
+
+        Debug.Log($"savedData : {savedData}");
+        if (savedData == 0)
+        {
+            Debug.LogWarning("데이터가 비었음 : LoadStage");
+            return eStage.Stage1;
+        }
+        else
+        {
+            if(Enum.IsDefined(typeof(eStage), savedData))
+            {
+                Debug.Log("데이터 로딩 성공 : LoadStage");
+                GameManager.Instance.SetStage((eStage)savedData);
+                return (eStage)savedData;
+            }
+            else
+            {
+                Debug.LogError("데이터 로딩 실패 : LoadStage");
+                return eStage.Defualt;
+            }
+        }
     }
     public sPlayerStatus LoadPlayerStatus(ePlayerSaveKey saveKey)
     {
@@ -487,35 +510,26 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
         return playerStatus;
     }
 
-    public int GetNewLastId()
+    public int LoadOpenedIconCount(ePlayerSaveKey saveKey)
     {
-        int LastitemID = GetLastItemId();
-        Debug.Log($"GetNewLastId에서 반환되는 id : {LastitemID + 1}");
-        return LastitemID + 1;
+        //string savedData = PlayerPrefs.GetString(savedItemsKey, string.Empty);
+        int savedData = LoadData(saveKey.ToString() + defaultSaveKey_OpenedIconCount, 0);
+
+        Debug.Log($"savedData : {savedData}");
+        if (savedData == 0)
+        {
+            Debug.LogWarning("데이터가 비었음 : LoadOpenedIconCount");
+            return savedData;
+        }
+        else
+        {
+            Debug.Log("데이터 로딩 성공 : LoadOpenedIconCount");
+            GameManager.connector_InGame.iconView_Script.SetOpendIconCount(savedData);
+            return savedData;
+        }
     }
 
-    public int GetLastItemId()
-    {
-        LoadItems(ePlayerSaveKey.None);
-
-        if (Player_Items.Count == 0)
-        {
-            Debug.Log("저장된 데이터가 없음");
-            return -1;
-        }
-
-        int maxItemNumber = int.MinValue;
-
-        foreach (sItem item in Player_Items)
-        {
-            if (item.Id_inInventory > maxItemNumber)
-            {
-                maxItemNumber = item.Id_inInventory;
-            }
-        }
-
-        return maxItemNumber;
-    }
+    
 
 #if UNITY_EDITOR
     private void Update()
@@ -528,4 +542,33 @@ public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
         }
     }
 #endif
+
+    private void SaveData(string key, int value)
+    {
+        PlayerPrefs.SetInt(key, value);
+        PlayerPrefs.Save();
+    }
+    private void SaveData(string key, float value)
+    {
+        PlayerPrefs.SetFloat(key, value);
+        PlayerPrefs.Save();
+    }
+    private void SaveData(string key, string value)
+    {
+        PlayerPrefs.SetString(key, value);
+        PlayerPrefs.Save();
+    }
+    
+    public int LoadData(string key, int defaultValue)
+    {
+        return PlayerPrefs.GetInt(key, defaultValue);
+    }
+    public float LoadData(string key, float defaultValue)
+    {
+        return PlayerPrefs.GetFloat(key, defaultValue);
+    }
+    public string LoadData(string key, string defaultValue)
+    {
+        return PlayerPrefs.GetString(key, defaultValue);
+    }
 }
