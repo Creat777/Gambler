@@ -62,4 +62,12 @@ public class QuestManager : Singleton<QuestManager>
         InventoryPopUp.Instance.RefreshPopUp();
         //GameManager.connector_InGame.popUpView_Script.inventoryPopUp.RefreshPopUp();
     }
+
+    public void PlayerCompleteQuest(eQuestType questType)
+    {
+        cQuestInfo questInfo = CsvManager.Instance.GetQuestInfo(questType);
+
+        Debug.Log("애니메이션 필요");
+        questInfo.isComplete = true;
+    }
 }

@@ -13,26 +13,26 @@ public class ItemDefault : ButtonBase
 
     
 
-    public void InitItemData(int id, eItemType serial)
+    public void InitItemData(int id, eItemType type, cItemInfo itemInfo)
     {
-        item = new sItem(id, serial);
-        InitItemInfo(item.type);
+        item = new sItem(id, type);
+        InitItemInfo(itemInfo);
     }
 
-    public void InitItemData(sItem inputItem)
+    public void InitItemData(sItem item, cItemInfo itemInfo)
     {
-        item = new sItem(inputItem);
-        InitItemInfo(item.type);
+        this.item = new sItem(item);
+        InitItemInfo(itemInfo);
     }
 
-    public void InitItemInfo(eItemType itemType)
+    public void InitItemInfo(cItemInfo itemInfo)
     {
         // 아이템 정보를 초기화
-        itemInfo = CsvManager.Instance.GetItemInfo(itemType);
+        this.itemInfo = itemInfo;
 
         // 아이템 이미지 교체
         bool result = false;
-        Sprite sprite = ItemImageResource.Instance.TryGetImage(itemType, out result);
+        Sprite sprite = ItemImageResource.Instance.TryGetImage(itemInfo.type, out result);
         if (result)
         {
             image.sprite = sprite;

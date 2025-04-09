@@ -1,3 +1,5 @@
+using PublicSet;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class QuestListPopUp : PopUpBase<QuestListPopUp>
@@ -10,47 +12,76 @@ public class QuestListPopUp : PopUpBase<QuestListPopUp>
         {
             if(_questContentPopUp == null)
             {
-                GameObject[] quests =  GameObject.FindGameObjectsWithTag("Quest");
-                if (quests.Length != 2) Debug.LogAssertion("태그가 부착되지 않았음");
-                foreach(GameObject quest in quests)
-                {
-                    if (quest == gameObject) continue;
-                    else
-                    {
-                        _questContentPopUp = quest.GetComponent<QuestContentPopUp>();
-                    }
-                    if(_questContentPopUp == null)
-                    {
-                        Debug.LogAssertion("QuestContentPopUp에 스크립트 연결이 안됐음");
-                    }
-                }
+                Debug.LogAssertion("QuestListPopUp에 QuestContentPopUp가 연결되지 않았음");
+                //GameObject[] quests =  GameObject.FindGameObjectsWithTag("Quest");
+                //if (quests.Length != 2) Debug.LogAssertion("태그가 부착되지 않았음");
+                //foreach(GameObject quest in quests)
+                //{
+                //    if (quest == gameObject) continue;
+                //    else
+                //    {
+                //        _questContentPopUp = quest.GetComponent<QuestContentPopUp>();
+                //    }
+                //    if(_questContentPopUp == null)
+                //    {
+                //        Debug.LogAssertion("QuestContentPopUp에 스크립트 연결이 안됐음");
+                //    }
+                //}
             }
             return _questContentPopUp;
         }
     }
 
-    public override void RefreshPopUp()
+    HashSet<sQuest> playerQuestHash
     {
-        Debug.LogWarning("재정의되지 않았음");
+        get { return QuestManager.questHashSet; }
     }
 
     protected override void Awake()
     {
         base.Awake();
-        InitializePool(1);
+        InitializePool(10);
+        questContentPopUp.InitPopUp();
     }
-    private void Start()
+
+    private void OnEnable()
     {
-        GameObject obj = GetObject();
-        Debug.Log("임시로 연결됐음");
+        RefreshPopUp();
+    }
 
-        QuestElementPanel script = obj.GetComponent<QuestElementPanel>();
-        if (script != null)
-        {
-            script.SetButtonCallback(
-                (GameManager.connector as Connector_InGame).popUpView_Script.QuestContentPopUpOpen);
-            ChangeContentRectTransform();
-        }
+    public override void RefreshPopUp()
+    {
+        Debug.Log($"playerQuestHash.Count == {playerQuestHash.Count}");
+        RefreshPopUp(playerQuestHash.Count,
+            () =>
+            {
+                foreach (sQuest quest in playerQuestHash)
+                {
+                    // 아이템정보로 초기화될 객체
+                    QuestElementPanel questPanel = ActiveObjList[quest.id].GetComponent<QuestElementPanel>(); ;
 
+                    // 아이템 종합정보를 호출
+                    cQuestInfo questInfo = CsvManager.Instance.GetQuestInfo(quest.type);
+
+                    // 활성화된 각 객체에 정보를 초기화
+                    if (questInfo != null)
+                    {
+                        questPanel.SetQuestdata(quest, questInfo);
+                        questPanel.InitQuestPanel();
+
+                        // 퀘스트 항목을 클릭시 호출
+                        questPanel.SetButtonCallback(
+                            () =>
+                            {
+                                questContentPopUp.descriptionPanel.SetPanel(questInfo);
+                                GameManager.connector_InGame.popUpView_Script.QuestContentPopUpOpen();
+                            });
+                    }
+                    else
+                    {
+                        Debug.LogAssertion($"{questPanel.gameObject.name}은 QuestElementPanel == null");
+                    }
+                }
+            });
     }
 }

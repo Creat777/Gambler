@@ -289,14 +289,15 @@ namespace PublicSet
         public string name { get; set; }
         public UnityAction callback_endConditionCheck { get; set; }
         public int rewardCoin { get; set; }
-        public eItemType rewardItem { get; set; }
+        public eItemType rewardItemType { get; set; }
         public bool isRepeatable { get; set; }
+        public bool isComplete {  get; set; }
 
-        public List<string> description { get; set; }
+        public List<string> descriptionList { get; set; }
 
         public cQuestInfo()
         {
-            description = new List<string>();
+            descriptionList = new List<string>();
         }
         
     }

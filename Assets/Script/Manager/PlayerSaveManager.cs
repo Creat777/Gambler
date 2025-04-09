@@ -218,7 +218,7 @@ public struct sPlayerStatus
     }
 }
 
-public class PlayerPrefsManager : Singleton<PlayerPrefsManager>
+public class PlayerSaveManager : Singleton<PlayerSaveManager>
 {
     string currentPlayerSavaKey { get { return GameManager.Instance.currentPlayerSaveKey.ToString(); } }
 

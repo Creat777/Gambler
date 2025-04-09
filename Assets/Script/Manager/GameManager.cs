@@ -93,19 +93,19 @@ public class GameManager : Singleton<GameManager>
         currentRemainingPeriod--;
     }
 
-    Dictionary<eStage, string> StageMessageDict;
+    //Dictionary<eStage, string> StageMessageDict;
 
-    public void Init_StageMessageDict()
-    {
-        StageMessageDict = new Dictionary<eStage, string>();
-        StageMessageDict.Add(eStage.Stage1, "STAGE 1\n여기가 대체 어디야?");
-        StageMessageDict.Add(eStage.Stage2, "STAGE 2\n카지노에 입성하자");
-    }
+    //public void Init_StageMessageDict()
+    //{
+    //    StageMessageDict = new Dictionary<eStage, string>();
+    //    StageMessageDict.Add(eStage.Stage1, "STAGE 1\n여기가 대체 어디야?");
+    //    StageMessageDict.Add(eStage.Stage2, "STAGE 2\n카지노에 입성하자");
+    //}
 
     protected override void Awake()
     {
         base.Awake();
-        Init_StageMessageDict();
+        //Init_StageMessageDict();
         Continue_theGame();
     }
 
@@ -217,50 +217,50 @@ public class GameManager : Singleton<GameManager>
         currentStage++;
     }
 
-    public void PlaySequnce_StageAnimation()
-    {
-        //Debug.Log("stage 애니메이션 시작");
+    //public void PlaySequnce_StageAnimation()
+    //{
+    //    //Debug.Log("stage 애니메이션 시작");
 
-        // 이미지 활성화
-        connector_InGame.StageView.SetActive(true);
+    //    // 이미지 활성화
+    //    connector_InGame.EventView.SetActive(true);
 
-        // 이미지 색깔 초기화
-        Image stateViewImage = connector_InGame.StageView.GetComponent<Image>();
-        Color colorBack = new Color(1,1,1,0);
-        stateViewImage.color = colorBack;
+    //    // 이미지 색깔 초기화
+    //    Image stateViewImage = connector_InGame.EventView.GetComponent<Image>();
+    //    Color colorBack = new Color(1,1,1,0);
+    //    stateViewImage.color = colorBack;
 
-        // 이미지 내부 텍스트 초기화
-        Text StageViewText = connector_InGame.StageView.transform.GetChild(0).gameObject.GetComponent<Text>();
-        StageViewText.text = StageMessageDict[currentStage];
-        StageViewText.color = Color.clear;
+    //    // 이미지 내부 텍스트 초기화
+    //    Text StageViewText = connector_InGame.EventView.transform.GetChild(0).gameObject.GetComponent<Text>();
+    //    StageViewText.text = StageMessageDict[currentStage];
+    //    StageViewText.color = Color.clear;
 
-        Sequence sequence = DOTween.Sequence();
+    //    Sequence sequence = DOTween.Sequence();
 
-        float intervalDelay = 0.5f; // 이벤트 종료후 스테이지화면 등장 대기시간
-        float startDelay = 1f; // 화면 등장시간
-        float middleDelay = 1; // 유지시간
-        float endDelay = 1f; // 퇴장시간
+    //    float intervalDelay = 0.5f; // 이벤트 종료후 스테이지화면 등장 대기시간
+    //    float startDelay = 1f; // 화면 등장시간
+    //    float middleDelay = 1; // 유지시간
+    //    float endDelay = 1f; // 퇴장시간
 
-        // 등장
-        sequence.AppendInterval(intervalDelay)
+    //    // 등장
+    //    sequence.AppendInterval(intervalDelay)
 
-                .Append(stateViewImage.DOColor(Color.white, startDelay))
-                .Join(StageViewText.DOColor(Color.black, startDelay))
+    //            .Append(stateViewImage.DOColor(Color.white, startDelay))
+    //            .Join(StageViewText.DOColor(Color.black, startDelay))
 
-                .AppendInterval(middleDelay)
+    //            .AppendInterval(middleDelay)
 
-                .Append(stateViewImage.DOColor(colorBack, endDelay))
-                .Join(StageViewText.DOColor(Color.clear, endDelay))
+    //            .Append(stateViewImage.DOColor(colorBack, endDelay))
+    //            .Join(StageViewText.DOColor(Color.clear, endDelay))
 
-                .AppendCallback(() =>
-                {
-                    connector_InGame.StageView.SetActive(false);
-                })
+    //            .AppendCallback(() =>
+    //            {
+    //                connector_InGame.EventView.SetActive(false);
+    //            })
 
-                .SetLoops(1);
+    //            .SetLoops(1);
 
-        sequence.Play();
-    }
+    //    sequence.Play();
+    //}
 
     private void StartNewGame()
     {
@@ -283,17 +283,18 @@ public class GameManager : Singleton<GameManager>
     private void ContinueGame()
     {
         // 남은기간 불러오기
-        SetRemainingPeriod(PlayerPrefsManager.Instance.LoadRemainingPeriod(currentPlayerSaveKey));
+        SetRemainingPeriod(PlayerSaveManager.Instance.LoadRemainingPeriod(currentPlayerSaveKey));
 
         // 플레이어 정보 불러오기
         PlayManager.Instance.SetPlayerStatus(
-            PlayerPrefsManager.Instance.LoadPlayerStatus(currentPlayerSaveKey)
+            PlayerSaveManager.Instance.LoadPlayerStatus(currentPlayerSaveKey)
             );
 
         connector_InGame.map_Script.ChangeMapTo(eMap.InsideOfHouse);
-        PlayerPrefsManager.Instance.LoadStage(currentPlayerSaveKey); // 여기서 데이터 Set함
-        PlayerPrefsManager.Instance.LoadOpenedIconCount(currentPlayerSaveKey); // 여기서 Set함
-        PlayerPrefsManager.Instance.LoadItems(currentPlayerSaveKey);
+        PlayerSaveManager.Instance.LoadStage(currentPlayerSaveKey); // 여기서 데이터 Set함
+        PlayerSaveManager.Instance.LoadOpenedIconCount(currentPlayerSaveKey); // 여기서 Set함
+        PlayerSaveManager.Instance.LoadItems(currentPlayerSaveKey);
+        PlayerSaveManager.Instance.LoadQuests(currentPlayerSaveKey);
 
         SceneLoadView(
             () =>

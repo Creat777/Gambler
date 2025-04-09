@@ -8,14 +8,13 @@ public class Connector_InGame : Connector
 {
     public Canvas_InGame MainCanvas_script;
 
-    public GameObject StageView;
-
     public GameObject player;
     public GameObject insideOfHouse;
     public GameObject outsideOfHouse;
     public GameObject interfaceView;
     public GameObject textWindowView;
 
+    public EventView eventView;
     public PlayerMoneyView playerMoneyView_Script;
     public TextWindowView textWindowView_Script;
     public IconView iconView_Script;

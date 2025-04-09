@@ -4,7 +4,7 @@ public class SaveButton : SaveAndContinue_ButtonBase
 {
     public override void Callback()
     {
-        string savedDate = PlayerPrefsManager.Instance.LoadSavedDate(saveKey);
+        string savedDate = PlayerSaveManager.Instance.LoadSavedDate(saveKey);
         if (savedDate != string.Empty) // 이미 저장된 데이터가 있는 경우
         {
             popUpView.YesOrNoPopUpOpen();
@@ -26,7 +26,7 @@ public class SaveButton : SaveAndContinue_ButtonBase
     private void SaveDataProcess()
     {
         GameManager.Instance.SetPlayerSaveKey(saveKey);
-        PlayerPrefsManager.Instance.SaveTotalData();
+        PlayerSaveManager.Instance.SaveTotalData();
 
         popUpView.CheckPopUpOpen();
         checkPopUp.UpdateMainDescription("플레이어 정보가 저장되었습니다.");

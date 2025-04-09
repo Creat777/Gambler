@@ -19,10 +19,6 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
         Debug.LogWarning("PopUp은 Awake에서 싱글톤 생성 안함");
     }
 
-    protected virtual void OnEnable()
-    {
-        RefreshPopUp();
-    }
 
 
     private void InitAnchor()
@@ -31,10 +27,6 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
         contentTrans.anchorMax = new Vector2(0.5f, 1f);
     }
 
-    private void InitGridRayout()
-    {
-        contentGrid.childAlignment = TextAnchor.MiddleCenter;
-    }
     protected virtual void ChangeContentRectTransform()
     {
         InitAnchor();
@@ -86,7 +78,16 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
         scrollRect.verticalNormalizedPosition = 1f;  // 1f: 맨 위
     }
 
-    public abstract void RefreshPopUp();
+    public virtual void RefreshPopUp()
+    {
+        // 더미데이터
+        int objCount = 1;
+        RefreshPopUp(objCount,
+            () =>
+        {
+
+        });
+    }
     public virtual void RefreshPopUp(int totalCount, Action InitElementCallback)
     {
         // 필요한 객체의 개수

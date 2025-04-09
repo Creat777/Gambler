@@ -8,7 +8,7 @@ public class ContinueButton : SaveAndContinue_ButtonBase
     {
         float delay = 2.0f;
 
-        string savedDate =  PlayerPrefsManager.Instance.LoadSavedDate(saveKey);
+        string savedDate =  PlayerSaveManager.Instance.LoadSavedDate(saveKey);
         if(savedDate != string.Empty)
         {
             popUpView.YesOrNoPopUpOpen();

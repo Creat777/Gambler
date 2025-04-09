@@ -74,7 +74,7 @@ public class BackGroundMusic : GameAudio
     {
         float value = 1.0f;
 
-        value = PlayerPrefsManager.Instance.LoadData(volumeKey, 0.8f);
+        value = PlayerSaveManager.Instance.LoadData(volumeKey, 0.8f);
 
         audioSource.volume = value;
 

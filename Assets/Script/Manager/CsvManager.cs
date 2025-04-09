@@ -680,6 +680,7 @@ public class CsvManager : Singleton<CsvManager>
                             {
                                 questInfo.type = enumField; // 기본키
                                 questInfo.callback_endConditionCheck = CallbackManager.Instance.CallBackList_Quest((int)enumField); // 체크
+                                questInfo.isComplete = false;
                             }
                             else
                             {
@@ -707,7 +708,7 @@ public class CsvManager : Singleton<CsvManager>
                         case 3:
                             if (eItemType.TryParse(field, out eItemType itemType)) 
                             {
-                                questInfo.rewardItem = itemType;
+                                questInfo.rewardItemType = itemType;
                             }
                             else
                             {
@@ -795,7 +796,7 @@ public class CsvManager : Singleton<CsvManager>
                             break;
 
                         case 1:
-                            QuestInfo_Dict[questType].description.Add(field);
+                            QuestInfo_Dict[questType].descriptionList.Add(field);
                             break;
 
                         default:

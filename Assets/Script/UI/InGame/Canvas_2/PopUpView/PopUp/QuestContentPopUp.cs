@@ -2,19 +2,13 @@ using UnityEngine;
 
 public class QuestContentPopUp : PopUpBase<QuestContentPopUp>
 {
-    public override void RefreshPopUp()
-    {
-        Debug.LogWarning("재정의되지 않았음");
-    }
+    public QuestDescriptionPanel descriptionPanel {  get; private set; }
 
-    protected override void Awake()
+    public void InitPopUp()
     {
-        base.Awake();
         InitializePool(1);
-    }
-    private void Start()
-    {
         GameObject obj = GetObject();
+        descriptionPanel = obj.GetComponent<QuestDescriptionPanel>();
         ChangeContentRectTransform();
     }
 }

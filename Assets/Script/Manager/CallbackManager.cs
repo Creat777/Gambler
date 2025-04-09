@@ -266,7 +266,8 @@ public class CallbackManager : Singleton<CallbackManager>
     // 14
     public void TutorialStart()
     {
-        GameManager.Instance.PlaySequnce_StageAnimation();
+        EventManager.Instance.PlaySequnce_StageAnimation();
+        QuestManager.Instance.PlayerGetQuest(eQuestType.Tutorial);
         GameManager.connector_InGame.iconView_Script.TryIconUnLock(eIcon.Quest);
     }
 
@@ -384,7 +385,7 @@ public class CallbackManager : Singleton<CallbackManager>
     public void CasinoOpen()
     {
         GameManager.Instance.NextStage();
-        GameManager.Instance.PlaySequnce_StageAnimation();
+        EventManager.Instance.PlaySequnce_StageAnimation();
     }
 
     

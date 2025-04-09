@@ -15,7 +15,7 @@ public class SavedPlayerDataPanel : MonoBehaviour
     {
         // 데이터자 저장된 시간과 날짜
         {
-            string savedDate = PlayerPrefsManager.Instance.LoadSavedDate(savekey);
+            string savedDate = PlayerSaveManager.Instance.LoadSavedDate(savekey);
             if (savedDate != string.Empty)
             {
                 //string SavedDate = DateTime.Now.ToString("yyyy년 MM월 dd일:HH시 mm분 ss초");
@@ -32,14 +32,14 @@ public class SavedPlayerDataPanel : MonoBehaviour
 
         // 게임 내 남은 기간
         {
-            int remainingPeriod = PlayerPrefsManager.Instance.LoadRemainingPeriod(savekey);
+            int remainingPeriod = PlayerSaveManager.Instance.LoadRemainingPeriod(savekey);
             if (remainingPeriod > 0) SetRemainingPeriod($"{remainingPeriod.ToString()}일");
             else SetRemainingPeriod("null");
         }
 
         // 플레이어의 재화상태
         {
-            sPlayerStatus status = PlayerPrefsManager.Instance.LoadPlayerStatus(savekey);
+            sPlayerStatus status = PlayerSaveManager.Instance.LoadPlayerStatus(savekey);
             if (status != sPlayerStatus.defaultData) SetPlayerCash($"{status.coin.ToString()}코인");
             else SetPlayerCash("null");
         }
