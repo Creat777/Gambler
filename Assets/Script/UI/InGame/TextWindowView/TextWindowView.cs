@@ -29,7 +29,7 @@ public class TextWindowView : MonoBehaviour
     private void Awake()
     {
         isTypingReady = true;
-        typingDelay = 0.03f;
+        typingDelay = 0.05f;
     }
 
 

@@ -1,6 +1,5 @@
 using PublicSet;
 using UnityEngine;
-using System;
 using UnityEngine.UI;
 
 public class SavedPlayerDataPanel : MonoBehaviour

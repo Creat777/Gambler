@@ -29,7 +29,6 @@ public class CsvManager : Singleton<CsvManager>
 
     // 퀘스트 객체 자료구조
     private Dictionary<eQuestType, cQuestInfo> QuestInfo_Dict;
-    private Dictionary<eQuestType, cQuestDescription> QuestDescription_Dict;
 
 
 
@@ -70,10 +69,6 @@ public class CsvManager : Singleton<CsvManager>
     public cQuestInfo GetQuestInfo(eQuestType questType)
     {
         return QuestInfo_Dict[questType];
-    }
-    public cQuestDescription GetQuestDescription(eQuestType questType)
-    {
-        return QuestDescription_Dict[questType];
     }
 
 
@@ -122,7 +117,6 @@ public class CsvManager : Singleton<CsvManager>
 
         // 퀘스트 관련
         QuestInfo_Dict = new Dictionary<eQuestType, cQuestInfo>();
-        QuestDescription_Dict = new Dictionary<eQuestType, cQuestDescription>();
     }
     
 
@@ -684,7 +678,8 @@ public class CsvManager : Singleton<CsvManager>
                         case 0:
                             if (eQuestType.TryParse(field, out eQuestType enumField))
                             {
-                                questInfo.type = enumField;
+                                questInfo.type = enumField; // 기본키
+                                questInfo.callback_endConditionCheck = CallbackManager.Instance.CallBackList_Quest((int)enumField); // 체크
                             }
                             else
                             {
@@ -697,18 +692,8 @@ public class CsvManager : Singleton<CsvManager>
 
                         case 1: questInfo.name = field; break;
 
-                        case 2:
-                            if (int.TryParse(field, out intField))
-                            {
-                                questInfo.callback_endConditionCheck = CallbackManager.Instance.CallBackList_Quest(intField);
-                            }
-                            else
-                            {
-                                Debug.LogWarning($"{field}는 정수로 캐스팅 불가");
-                            }
-                            break;
 
-                        case 3:
+                        case 2:
                             if (int.TryParse(field, out intField))
                             {
                                 questInfo.rewardCoin = intField;
@@ -719,7 +704,7 @@ public class CsvManager : Singleton<CsvManager>
                             }
                             break;
 
-                        case 4:
+                        case 3:
                             if (eItemType.TryParse(field, out eItemType itemType)) 
                             {
                                 questInfo.rewardItem = itemType;
@@ -730,7 +715,7 @@ public class CsvManager : Singleton<CsvManager>
                             }
                             break;
 
-                        case 5:
+                        case 4:
                             if (int.TryParse(field, out intField)) 
                             {
                                 if (intField == 0)
@@ -772,41 +757,6 @@ public class CsvManager : Singleton<CsvManager>
 
             }
             );
-
-        // 추가적인 데이터 처리
-        foreach (ItemPlusInfo itemPlusInfo in itemPlusInfoTable.item_PlusInfoList)
-        {
-            eItemType itemType = itemPlusInfo.type;
-
-            //// 아이템에 해당하는 프리팹을 연결
-            //if(ItemInfo_Dict.ContainsKey(itemType))
-            //{
-            //    ItemInfo_Dict[itemType].itemPrefab = itemPlusInfo.itemPrefab;
-            //}
-            //else
-            //{
-            //    Debug.LogAssertion($"serailNumber{itemType}는 딕셔너리 키에 없습니다.");
-            //}
-
-            // 사용 가능한 경우
-            if (ItemInfo_Dict[itemType].isAvailable)
-            {
-
-                // 콜백리스트에서 아이템에 해당하는 콜백함수를 저장하도록 함
-                ItemInfo_Dict[itemType].itemCallback +=
-                    CallbackManager.Instance.CallBackList_Item(itemPlusInfo.itemCallbackIndex);
-            }
-
-        }
-
-        //// 처리된 데이터의 확인
-        //foreach(eItemType serail in Enum.GetValues(typeof(eItemType)))
-        //{
-        //    if (serail == eItemType.None) continue;
-
-        //    Debug.Log($"csv Item({ItemInfo_Dict[serail].name}) 프린트 생략");
-        //    PrintProperties(ItemInfo_Dict[serail]);
-        //}
     }
 
     private void ProcessCsvOfQuestDescription()
@@ -817,21 +767,19 @@ public class CsvManager : Singleton<CsvManager>
         {
             path = Path.Combine(Application.streamingAssetsPath, path);
         }
-        LoadCsv<cQuestDescription>(path,
-            (row, questInfo) =>
+        LoadCsv<cQuestInfo>(path,
+            (row, None) =>
             {
-                // 저장공간을 할당받지 못한 경우
-                if (questInfo == null) return;
+                //// 저장공간을 할당받지 못한 경우
+                //if (None == null) return;
 
                 int field_num = 0;
                 eQuestType questType = eQuestType.None;
                 // 각 행의 처리 시작
                 foreach (string field in row)
                 {
-                    //Debug.Log($"{field_num}열 : " + field);
                     switch (field_num)
                     {
-                        // 처리된 데이터를 넣을 Stage를 저장
                         case 0:
                             if (eQuestType.TryParse(field, out eQuestType type))
                             {
@@ -846,64 +794,27 @@ public class CsvManager : Singleton<CsvManager>
                             }
                             break;
 
-                        case 1: //questInfo.name = field; 
-                            Debug.LogAssertion("여기서부터 수정 필요");
-
+                        case 1:
+                            QuestInfo_Dict[questType].description.Add(field);
                             break;
+
                         default:
                             Debug.LogAssertion($"{field}는 잘못된 항목에 위치함");
                             break;
                     }
                     field_num++;
                 }
-
-                //// 아이템 딕셔너리에 삽입
-                //if (QuestInfo_Dict.ContainsKey(questInfo.type) == false)
-                //{
-                //    QuestInfo_Dict.Add(questInfo.type, questInfo);
-                //}
-                //else
-                //{
-                //    QuestInfo_Dict[questInfo.type] = questInfo;
-                //}
-
             }
             );
 
-        // 추가적인 데이터 처리
-        foreach (ItemPlusInfo itemPlusInfo in itemPlusInfoTable.item_PlusInfoList)
+        // 처리된 데이터의 확인
+        foreach (eQuestType type in Enum.GetValues(typeof(eQuestType)))
         {
-            eItemType itemType = itemPlusInfo.type;
+            if (type == eQuestType.None) continue;
 
-            //// 아이템에 해당하는 프리팹을 연결
-            //if(ItemInfo_Dict.ContainsKey(itemType))
-            //{
-            //    ItemInfo_Dict[itemType].itemPrefab = itemPlusInfo.itemPrefab;
-            //}
-            //else
-            //{
-            //    Debug.LogAssertion($"serailNumber{itemType}는 딕셔너리 키에 없습니다.");
-            //}
-
-            // 사용 가능한 경우
-            if (ItemInfo_Dict[itemType].isAvailable)
-            {
-
-                // 콜백리스트에서 아이템에 해당하는 콜백함수를 저장하도록 함
-                ItemInfo_Dict[itemType].itemCallback +=
-                    CallbackManager.Instance.CallBackList_Item(itemPlusInfo.itemCallbackIndex);
-            }
-
+            //Debug.Log($"csv Item({QuestInfo_Dict[type].name}) 프린트 생략");
+            PrintProperties(QuestInfo_Dict[type]);
         }
-
-        //// 처리된 데이터의 확인
-        //foreach(eItemType serail in Enum.GetValues(typeof(eItemType)))
-        //{
-        //    if (serail == eItemType.None) continue;
-
-        //    Debug.Log($"csv Item({ItemInfo_Dict[serail].name}) 프린트 생략");
-        //    PrintProperties(ItemInfo_Dict[serail]);
-        //}
     }
 
 

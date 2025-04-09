@@ -1,2 +1,2 @@
-id,Name(string),Callback_endConditionCheck,reward_coin(int),reward_items(itemType),repeatable(bool)
-1,¹ÛÀ» µÑ·¯º¸ÀÚ,1,0,0,0
+"id(conditionCheck, descriptionì— í™œìš©)",Name(string),reward_coin(int),reward_items(itemType),repeatable(bool)
+1,ë°–ì„ ë‘˜ëŸ¬ë³´ì,0,0,0

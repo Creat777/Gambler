@@ -291,15 +291,23 @@ namespace PublicSet
         public int rewardCoin { get; set; }
         public eItemType rewardItem { get; set; }
         public bool isRepeatable { get; set; }
+
+        public List<string> description { get; set; }
+
+        public cQuestInfo()
+        {
+            description = new List<string>();
+        }
+        
     }
 
     public class cQuestDescription
     {
-        public List<string> description { get; set; }
+        
 
         public cQuestDescription()
         {
-            description = new List<string>();
+            
         }
     }
 

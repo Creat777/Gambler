@@ -156,6 +156,11 @@ public class DeckOfCards : MonoBehaviour
             if (Cards[i].layer != 0)
             {
                 Cards[i].layer = 0;
+                // 조커 처리
+                if (Cards[i].transform.childCount != 0)
+                {
+                    Cards[i].transform.GetChild(0).gameObject.layer = 0;
+                }
             }
             // 카드를 회수하고 스케일 정정
             Cards[i].transform.SetParent(transform, false);
@@ -175,6 +180,11 @@ public class DeckOfCards : MonoBehaviour
             if (cardBox.gameObject.layer != 0)
             {
                 child.gameObject.layer = 0;
+                // 조커 처리
+                if (child.transform.childCount != 0)
+                {
+                    child.transform.GetChild(0).gameObject.layer = 0;
+                }
             }
 
             child.SetParent(this.transform);

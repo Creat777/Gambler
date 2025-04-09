@@ -38,7 +38,15 @@ public class TrumpCardDefault : MonoBehaviour
         if(isSelected)
         {
             sequence.AppendCallback(()=>
-                    { if(gameObject.layer != 0) gameObject.layer = 0; }
+                    {
+                        if(gameObject.layer != 0) gameObject.layer = 0;
+
+                        // 조커의 경우 추가 재설정
+                        if (transform.childCount != 0)
+                        {
+                            transform.GetChild(0).gameObject.layer = 0;
+                        }
+                    }
             ); // 서브스크린에서 지우기 위함
 
             playerScript.SetParent_OpenBox(gameObject);
@@ -59,8 +67,14 @@ public class TrumpCardDefault : MonoBehaviour
         {
             // 레이어 재설정
             if(playerScript.tag == "Player") gameObject.layer = CardGamePlayManager.Instance.layerOfMe;
-            //else gameObject.layer = 0;
-            
+
+            // 조커의 경우 레이어 추가 재설정
+            if (transform.childCount != 0)
+            {
+                transform.GetChild(0).gameObject.layer = CardGamePlayManager.Instance.layerOfMe;
+            }
+
+
             playerScript.SetParent_CloseBox(gameObject);
             animationScript.GetSequnce_Animation_CardClose(sequence);
 

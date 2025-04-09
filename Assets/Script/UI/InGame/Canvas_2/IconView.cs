@@ -56,6 +56,7 @@ public class IconView : MonoBehaviour
                     Destroy(gameAssistance_Lock);
                     Destroy(message_Lock);
                     break;
+                default: Debug.LogError($"잘못된 입력 : SetOpendIconCount(value = {value})");break;
 
             }
         }
