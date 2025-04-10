@@ -76,7 +76,10 @@ public struct sQuest
     // 데이터 저장을 위해 string으로 변환
     public override string ToString()
     {
-        return $"{id}:{type}";
+        cQuestInfo questInfo = CsvManager.Instance.GetQuestInfo(type);
+
+        // 참조변수의 일부 데이터를 같이 저장
+        return $"{id}:{type}:{questInfo.isComplete.ToString()}:{questInfo.hasReceivedReward.ToString()}";
     }
 
     // string으로 저장했던 정보를 사용가능한 데이터로 변환
@@ -84,10 +87,20 @@ public struct sQuest
     {
         sQuest item = new sQuest();
         string[] parts = data.Split(':');
-        if (parts.Length == 2 &&
+
+        if (parts.Length == 4 &&
             int.TryParse(parts[0], out item.id) &&
-            eQuestType.TryParse(parts[1], out item.type))
+            eQuestType.TryParse(parts[1], out item.type)&&
+            bool.TryParse(parts[2], out bool isComplete) &&
+            bool.TryParse(parts[3], out bool hasReceivedReward)
+            )
+            
         {
+            // 데이터를 불러오면서 참조변수의 데이터도 같이 복원
+            cQuestInfo questInfo = CsvManager.Instance.GetQuestInfo(item.type);
+            questInfo.isComplete = isComplete;
+            questInfo.hasReceivedReward = hasReceivedReward;
+
             return item;
         }
         return default;

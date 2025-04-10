@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class EventManager : Singleton<EventManager>
 {
     public Connector_InGame connector_InGame { get { return GameManager.connector_InGame; } }
-    public eStage currentStage { get { return GameManager.Instance.currentStage; } }
+    
 
 
     Dictionary<eStage, string> StageMessageDict;
@@ -38,14 +38,15 @@ public class EventManager : Singleton<EventManager>
     public void GetSequnce_EventAnimation(Sequence sequence, Text eventText)
     {
         //Debug.Log("stage 애니메이션 시작");
+        
 
         // 이벤트화면 활성화
         connector_InGame.eventView.gameObject.SetActive(true);
 
         // 이미지 색깔 초기화
         Image stateViewImage = connector_InGame.eventView.GetComponent<Image>();
-        
         stateViewImage.color = colorClearAlpha;
+        connector_InGame.eventView.SetTextColer(Color.clear);
 
         // 이벤트 끝난 후 간격
         sequence.AppendInterval(intervalDelay);
@@ -65,18 +66,18 @@ public class EventManager : Singleton<EventManager>
         sequence.AppendCallback(() => connector_InGame.eventView.gameObject.SetActive(false));
     }
 
-    public void PlaySequnce_StageAnimation()
+
+    public void SetEventMessage(string message)
+    {
+        connector_InGame.eventView.SetTextContent(message); // 이미지 내부 텍스트 설정
+    }
+
+    public void PlaySequnce_EventAnimation()
     {
         Sequence sequence = DOTween.Sequence();
-
-        // 이미지 내부 텍스트 설정
-        connector_InGame.eventView.SetTextContent(StageMessageDict[currentStage]);
-        connector_InGame.eventView.SetTextColer(Color.clear);
-
         GetSequnce_EventAnimation(sequence, connector_InGame.eventView.eventText);
 
         sequence.SetLoops(1);
         sequence.Play();
-
     }
 }

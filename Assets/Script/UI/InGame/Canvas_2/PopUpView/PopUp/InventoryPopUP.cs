@@ -57,10 +57,12 @@ public class InventoryPopUp : PopUpBase<InventoryPopUp>
                                 (GameManager.connector as Connector_InGame).popUpView_Script.YesOrNoPopUpOpen();
 
                                 // 팝업창이 켜진 후 아이템 이름과 설명을 업데이트
-                                string inputString = $"아이템 이름 : {itemInfo.name}\n\n{itemInfo.description}";
+                                List<string> list = new List<string>();
+                                list.Add($"아이템 이름 : {itemInfo.name}\n");
+                                list.AddRange(itemInfo.descriptionList);
 
                                 yesOrNoPopUp_Script.SetYesText("사용하기");
-                                yesOrNoPopUp_Script.UpdateMainDescription(inputString);
+                                yesOrNoPopUp_Script.UpdateMainDescription(list);
 
                                 // 콜백에서 활용하기 위해 아이템 정보를 저장
                                 currentClickItem = item;
@@ -101,12 +103,16 @@ public class InventoryPopUp : PopUpBase<InventoryPopUp>
                         itemDefault.SetButtonCallback(
                             () =>
                             {
-                                (GameManager.connector as Connector_InGame).popUpView_Script.CheckPopUpOpen();
+                                GameManager.connector_InGame.popUpView_Script.CheckPopUpOpen();
 
                                 // 팝업창을 초기화
-                                CheckPopUp checkPopUp_Script = (GameManager.connector as Connector_InGame).popUpView_Script.checkPopUp.GetComponent<CheckPopUp>();
-                                string inputString = $"아이템 이름 : {itemInfo.name}\n\n{itemInfo.description}";
-                                checkPopUp_Script.UpdateMainDescription(inputString);
+                                CheckPopUp checkPopUp_Script = GameManager.connector_InGame.popUpView_Script.checkPopUp.GetComponent<CheckPopUp>();
+
+                                List<string> list = new List<string>();
+
+                                list.Add($"아이템 이름 : {itemInfo.name}\n");
+                                list.AddRange(itemInfo.descriptionList);
+                                checkPopUp_Script.UpdateMainDescription(itemInfo.descriptionList);
 
                                 currentClickItem = item;
                             });

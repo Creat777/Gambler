@@ -4,14 +4,18 @@ using DG.Tweening;
 using UnityEngine.UI;
 using System;
 using PublicSet;
+using System.Collections.Generic;
 
 
 public class CallbackManager : Singleton<CallbackManager>
 {
-    
+
     // 스크립트로 편집
+    public eStage currentStage { get { return GameManager.Instance.currentStage; } }
+    public Dictionary<eStage, string> stageMessageDict { get { return GameManager.Instance.stageMessageDict; } }
+    public Connector_InGame connector_InGame { get { return GameManager.connector_InGame; } }
     Image blackViewImage;
-    private bool isBlakcViewReady;
+    //private bool isBlakcViewReady;
 
     protected override void Awake()
     {
@@ -20,12 +24,12 @@ public class CallbackManager : Singleton<CallbackManager>
 
     void Start()
     {
-        isBlakcViewReady = true;
+        //isBlakcViewReady = true;
     }
 
     public void PlaySequnce_BlackViewProcess(float delay, Action middleCallBack, Action endCallback = null)
     {
-        isBlakcViewReady = false;
+        //isBlakcViewReady = false;
 
         // 대화창 끄고 일시정지
         GameManager.connector_InGame.textWindowView.SetActive(false);
@@ -63,7 +67,7 @@ public class CallbackManager : Singleton<CallbackManager>
             // 게임 지속
             GameManager.Instance.Continue_theGame();
 
-            isBlakcViewReady = true;
+            //isBlakcViewReady = true;
         }
         );
 
@@ -164,6 +168,7 @@ public class CallbackManager : Singleton<CallbackManager>
                 () =>
                 {
                     GameManager.Instance.CountDownRemainingPeriod();
+                    GameManager.connector_InGame.canvas0_InGame.casinoView.onlyOneLivesButton.InitButtonCallback();
                 },
                 ()=>
                 {
@@ -217,6 +222,7 @@ public class CallbackManager : Singleton<CallbackManager>
         PlayManager.Instance.AddPlayerMoney(100);
         GameManager.connector_InGame.box_Script.FillUpBox();
         TextHoldOn();
+        QuestManager.Instance.CheckAllQuest();
     }
 
     // 10
@@ -254,11 +260,11 @@ public class CallbackManager : Singleton<CallbackManager>
         PlaySequnce_BlackViewProcess(delay,
             ()=>
             {
-                GameManager.connector_InGame.MainCanvas_script.CasinoViewOpen();
+                GameManager.connector_InGame.canvas0_InGame.CasinoViewOpen();
             },
             ()=>  
             {
-                GameManager.connector_InGame.MainCanvas_script.CasinoView.GetComponent<CasinoView>().StartDealerDialogue();
+                GameManager.connector_InGame.canvas0_InGame.casinoView.GetComponent<CasinoView>().StartDealerDialogue();
             }
             );
     }
@@ -266,7 +272,8 @@ public class CallbackManager : Singleton<CallbackManager>
     // 14
     public void TutorialStart()
     {
-        EventManager.Instance.PlaySequnce_StageAnimation();
+        EventManager.Instance.SetEventMessage(stageMessageDict[currentStage]);
+        EventManager.Instance.PlaySequnce_EventAnimation();
         QuestManager.Instance.PlayerGetQuest(eQuestType.Tutorial);
         GameManager.connector_InGame.iconView_Script.TryIconUnLock(eIcon.Quest);
     }
@@ -385,14 +392,14 @@ public class CallbackManager : Singleton<CallbackManager>
     public void CasinoOpen()
     {
         GameManager.Instance.NextStage();
-        EventManager.Instance.PlaySequnce_StageAnimation();
+        EventManager.Instance.SetEventMessage(stageMessageDict[currentStage]);
+        EventManager.Instance.PlaySequnce_EventAnimation();
     }
 
     
     public void EatMeal()
     {
-        InventoryPopUp inven = GameManager.connector_InGame.
-                                popUpView_Script.inventoryPopUp.GetComponent<InventoryPopUp>();
+        InventoryPopUp inven = connector_InGame.popUpView_Script.inventoryPopUp.GetComponent<InventoryPopUp>();
         if (inven != null)
         {
             cItemInfo itemInfo = CsvManager.Instance.GetItemInfo(inven.currentClickItem.type);
@@ -409,12 +416,12 @@ public class CallbackManager : Singleton<CallbackManager>
         switch (index)
         {
             case 1: return TutorialCompleteCheck;
-            default: return TrashFuc;
+            default: { Debug.LogError("존재하지 않는 퀘스트"); return null; } 
         }
     }
 
     public void TutorialCompleteCheck()
     {
-
+        QuestManager.Instance.PlayerCompleteQuest(eQuestType.Tutorial);   
     }
 }

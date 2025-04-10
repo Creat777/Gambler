@@ -183,6 +183,7 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
             obj.SetActive(false);
             memoryPool.Enqueue(obj);
             ActiveObjList.Remove(obj);
+            ChangeContentRectTransform(); // 객체가 회수됐으면 그만큼 스크롤 공간을 조정
         }
         else
         {
@@ -198,5 +199,6 @@ public abstract class PopUpBase<T_Class> : MemoryPool_Queue<T_Class>
         {
             ReturnObject(ActiveObjList[0]);
         }
+        ChangeContentRectTransform();
     }
 }

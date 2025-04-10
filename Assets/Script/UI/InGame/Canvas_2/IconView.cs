@@ -37,17 +37,20 @@ public class IconView : MonoBehaviour
             {
                 case 1:
                     Destroy(inventory_Lock);
+                    inventory_Lock = null;
                     break;
 
                 case 2:
                     Destroy(inventory_Lock);
                     Destroy(quest_Lock);
+                    inventory_Lock = quest_Lock = null;
                     break;
 
                 case 3:
                     Destroy(inventory_Lock);
                     Destroy(quest_Lock);
                     Destroy(gameAssistance_Lock);
+                    inventory_Lock = quest_Lock = gameAssistance_Lock = null;
                     break;
 
                 case 4:
@@ -55,10 +58,14 @@ public class IconView : MonoBehaviour
                     Destroy(quest_Lock);
                     Destroy(gameAssistance_Lock);
                     Destroy(message_Lock);
+                    inventory_Lock = quest_Lock = gameAssistance_Lock = message_Lock = null;
                     break;
                 default: Debug.LogError($"잘못된 입력 : SetOpendIconCount(value = {value})");break;
 
             }
+
+            // 아이콘잠금이 삭제된 경우 딕셔너리를 다시 구성
+            InitIconDict();
         }
     }
 
@@ -78,11 +85,16 @@ public class IconView : MonoBehaviour
 
     public void InitIconDict()
     {
-        iconLockDict = new Dictionary<eIcon, GameObject>();
-        iconLockDict.Add(eIcon.Quest, quest_Lock);
-        iconLockDict.Add(eIcon.Inventory, inventory_Lock);
-        iconLockDict.Add(eIcon.GameAssistant, gameAssistance_Lock);
-        iconLockDict.Add(eIcon.Message, message_Lock);
+        _iconLockDict = new Dictionary<eIcon, GameObject>();
+
+        if (quest_Lock != null)
+            iconLockDict.Add(eIcon.Quest, quest_Lock);
+        if (inventory_Lock != null)
+            iconLockDict.Add(eIcon.Inventory, inventory_Lock);
+        if (gameAssistance_Lock != null)
+            iconLockDict.Add(eIcon.GameAssistant, gameAssistance_Lock);
+        if (message_Lock != null)
+            iconLockDict.Add(eIcon.Message, message_Lock);
     }
 
     private void Awake()
@@ -93,7 +105,7 @@ public class IconView : MonoBehaviour
         }
         SetPos();
 
-        if(iconLockDict == null) InitIconDict();
+        InitIconDict();
         OpenedIconCount = 0;
     }
 
@@ -191,7 +203,7 @@ public class IconView : MonoBehaviour
         }
         else
         {
-            Debug.Log($"{iconLockDict[choice]}가 이미 소멸했음");
+            Debug.Log($"{choice.ToString()}의 잠금장치가 이미 소멸했음");
             return false;
         }
         

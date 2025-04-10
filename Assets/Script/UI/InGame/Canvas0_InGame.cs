@@ -1,14 +1,14 @@
 using PublicSet;
 using UnityEngine;
 
-public class Canvas_InGame : MonoBehaviour
+public class Canvas0_InGame : MonoBehaviour
 {
     public GameObject interfaceView;
-    public GameObject CasinoView;
-    public GameObject CardGameView;
-    public GameObject textWindowView;
-    public GameObject PopUPView;
-    
+    public CasinoView casinoView;
+    public CardGameView cardGameView;
+    public TextWindowView textWindowView;
+
+
 
     void Start()
     {
@@ -32,7 +32,7 @@ public class Canvas_InGame : MonoBehaviour
     {
         CloseAllOfView();
         GameManager.Instance.ChangeCardGameView(true);
-        CasinoView.SetActive(true);
+        casinoView.gameObject.SetActive(true);
     }
 
     public void CasinoViewClose()

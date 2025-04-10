@@ -3,10 +3,10 @@ using UnityEngine.SceneManagement;
 public class ContinueButton : SaveAndContinue_ButtonBase
 {
 
-    float delay = 2.0f;
+    //float delay = 2.0f;
     public override void Callback()
     {
-        float delay = 2.0f;
+        //float delay = 2.0f;
 
         string savedDate =  PlayerSaveManager.Instance.LoadSavedDate(saveKey);
         if(savedDate != string.Empty)

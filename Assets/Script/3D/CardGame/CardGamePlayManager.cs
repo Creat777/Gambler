@@ -172,7 +172,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         popUpView.gameAssistantPopUp_OnlyOneLives.RefreshPopUp();
         
         // 게임어시스턴트를 사용할 수 있도록 시도
-        (GameManager.connector as Connector_InGame).iconView_Script.TryIconUnLock(eIcon.GameAssistant);
+        GameManager.connector_InGame.iconView_Script.TryIconUnLock(eIcon.GameAssistant);
 
         // 게임어시스턴트의 선택 기능은 사용순간까지 제한
         gameAssistantPopUp.PlaceRestrictionToAllSelections();
@@ -323,13 +323,13 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         int firstPlayerIndex = 0;
         for (int i = 1; i<playerList.Count; i++ )
         {
-            if (playerList[firstPlayerIndex].myDiceValue < playerList[i].myDiceValue)
+            if (playerList[firstPlayerIndex].myDiceValue > playerList[i].myDiceValue)
             {
                 firstPlayerIndex = i;
             }
         }
         Debug.Log($"{playerList[firstPlayerIndex].gameObject.name}의 주사위값은 " +
-            $"{playerList[firstPlayerIndex].myDiceValue}으로 제일 큽니다. 첫번째로 공격을 시작합니다.");
+            $"{playerList[firstPlayerIndex].myDiceValue}으로 제일 작습니다. 첫번째로 공격을 시작합니다.");
 
         // 첫번째 플레이어부터 반시계방향으로 큐에 넣기
         OrderedPlayerQueue.Clear();
@@ -476,8 +476,11 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
             SetVictim(Attacker);
         }
         // 공격성공 또는 수비성공 여부 판별
+        // 공격 성공
         else if (Attacker.PresentedCardScript.trumpCardInfo.cardType ==
-            Deffender.PresentedCardScript.trumpCardInfo.cardType) // 공격 성공
+            Deffender.PresentedCardScript.trumpCardInfo.cardType ||// 카드의 문양이 같은 경우
+            Attacker.PresentedCardScript.trumpCardInfo.cardValue ==
+            Deffender.PresentedCardScript.trumpCardInfo.cardValue) // 카드의 값이 같은 경우
         {
             currentCriteria = eCriteria.AttakkerWin;
         }
@@ -500,15 +503,24 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         switch (currentCriteria)
         {
             case eCriteria.JokerWin:
-            case eCriteria.HuntingTime:
                 {
                     resultValue = Victim.PresentedCardScript.trumpCardInfo.cardValue;
+                }
+                break;
+
+            case eCriteria.HuntingTime:
+                {
+                    resultValue = Attacker.PresentedCardScript.trumpCardInfo.cardValue;
                 }break;
 
             case eCriteria.AttakkerWin:
                 {
                     resultValue = Attacker.PresentedCardScript.trumpCardInfo.cardValue -
                                     Deffender.PresentedCardScript.trumpCardInfo.cardValue;
+                    if(resultValue == 0)
+                    {
+                        resultValue = Attacker.PresentedCardScript.trumpCardInfo.cardValue;
+                    }
                     resultValue = Mathf.Abs(resultValue);
                 }break;
             //case eCriteria.DeffenderWin: break;
@@ -609,7 +621,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
 
     public void OnHuntPrey()
     {
-        int result = Victim.TryMinusCoin(ExpressionValue, out bool isBankrupt);
+        int result = Prey.TryMinusCoin(ExpressionValue, out bool isBankrupt);
         Attacker.AddCoin(result);
 
         Sequence sequence = DOTween.Sequence();
@@ -618,7 +630,7 @@ public class CardGamePlayManager : Singleton<CardGamePlayManager>
         mainCamAnime.GetSequnce_CameraZoomOut(sequence);
 
         // 카드 정리 , 주인에게 돌아갈 카드만 언셀렉함
-        Victim.PresentedCardScript.UnselectThisCard_OnPlayTime(Attacker);
+        Attacker.PresentedCardScript.UnselectThisCard_OnPlayTime(Attacker);
         CardGameAnimationManager.Instance.GetSequnce_OrganizeCardAnimaition(sequence, Attacker, true);
 
         if (isBankrupt)

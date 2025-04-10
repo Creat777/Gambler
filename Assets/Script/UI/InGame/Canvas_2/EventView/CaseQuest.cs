@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class CaseQuest : MonoBehaviour
 {
+    public CheckPopUp checkPopUp;
+
     public Text questNameText;
     public GameObject rewardCoin;
     public GameObject rewardItem;
@@ -16,6 +18,8 @@ public class CaseQuest : MonoBehaviour
 
     public void SetPanel(cQuestInfo quest)
     {
+        checkPopUp.PopUpUpChange(checkCase.QuestComplete);
+
         // 패널에 보일 퀘스트명을 수정
         questNameText.text = quest.name;
 

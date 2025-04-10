@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -75,6 +76,7 @@ namespace PublicSet
 
         // 카지노
         GameMaster,
+        PlayerCantPlayThis
     }
 
     /// <summary>
@@ -257,7 +259,7 @@ namespace PublicSet
         // 기본정보
         public eItemType type { get; set; }
         public string name { get; set; }
-        public string description { get; set; }
+        public List<string> descriptionList { get; set; }
 
         // 사용이 가능한 경우 
         public bool isAvailable { get; set; }
@@ -270,6 +272,7 @@ namespace PublicSet
 
         public cItemInfo()
         {
+            descriptionList = new List<string>();
             isAvailable = false;
             isConsumable = false;
             value_Use = 0;
@@ -291,7 +294,10 @@ namespace PublicSet
         public int rewardCoin { get; set; }
         public eItemType rewardItemType { get; set; }
         public bool isRepeatable { get; set; }
+
+        // 별도 관리
         public bool isComplete {  get; set; }
+        public bool hasReceivedReward {  get; set; }
 
         public List<string> descriptionList { get; set; }
 

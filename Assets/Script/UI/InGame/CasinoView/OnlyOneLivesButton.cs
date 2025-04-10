@@ -1,12 +1,12 @@
 using UnityEngine;
+using PublicSet;
 
-public class OnlyOneLives : Deactivatable_ButtonBase
+public class OnlyOneLivesButton : GameEnterButtonBase
 {
     public CardGameView CardGameView;
     public CardGamePlayManager cardGamePlayManager;
 
-    // 버튼콜백
-    public void StartOnlyOneLives()
+    public override void EnterGame()
     {
         if(CardGameView == null)
         {
@@ -22,10 +22,11 @@ public class OnlyOneLives : Deactivatable_ButtonBase
         CallbackManager.Instance.PlaySequnce_BlackViewProcess(2.0f,
             () =>
             {
-                (GameManager.connector as Connector_InGame).MainCanvas_script.CloseAllOfView();
+                GameManager.connector_InGame.canvas0_InGame.CloseAllOfView();
                 CardGameView.gameObject.SetActive(true);
             }
             );
-        
     }
+
+    
 }

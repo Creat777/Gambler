@@ -29,15 +29,12 @@ public class PlayManager : Singleton<PlayManager>
 
     public sPlayerStatus currentPlayerStatus { get; private set; }
 
-    int currentItemIndex;
-    int currentQuestIndex;
+    
 
     //public int current
     protected override void Awake()
     {
         base.Awake();
-        currentItemIndex = 0;
-        currentQuestIndex = 0;
     }
 
     public void SetPlayerStatus(sPlayerStatus value = default)

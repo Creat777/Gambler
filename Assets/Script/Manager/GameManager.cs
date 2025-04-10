@@ -93,19 +93,19 @@ public class GameManager : Singleton<GameManager>
         currentRemainingPeriod--;
     }
 
-    //Dictionary<eStage, string> StageMessageDict;
+    public Dictionary<eStage, string> stageMessageDict;
 
-    //public void Init_StageMessageDict()
-    //{
-    //    StageMessageDict = new Dictionary<eStage, string>();
-    //    StageMessageDict.Add(eStage.Stage1, "STAGE 1\n여기가 대체 어디야?");
-    //    StageMessageDict.Add(eStage.Stage2, "STAGE 2\n카지노에 입성하자");
-    //}
+    public void Init_StageMessageDict()
+    {
+        stageMessageDict = new Dictionary<eStage, string>();
+        stageMessageDict.Add(eStage.Stage1, "STAGE 1\n여기가 대체 어디야?");
+        stageMessageDict.Add(eStage.Stage2, "STAGE 2\n카지노에 입성하자");
+    }
 
     protected override void Awake()
     {
         base.Awake();
-        //Init_StageMessageDict();
+        Init_StageMessageDict();
         Continue_theGame();
     }
 

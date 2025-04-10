@@ -141,9 +141,13 @@ public class CsvManager : Singleton<CsvManager>
     public void TotalCsvProCess()
     {
         ProcessCsvOfCharacterInfo(); // 캐릭터 정보가 로딩된 후에 TextCsv처리가 가능함
+
         ProcessCsvOfTextScript();
         ProcessCsvOfTextScript_OnlyOneLives();
+
         ProcessCsvOfItemInfo();
+        ProcessCsvOfItemDescription();
+
         ProcessCsvOfQuestInfo();
         ProcessCsvOfQuestDescription();
     }
@@ -372,54 +376,6 @@ public class CsvManager : Singleton<CsvManager>
                                 }
                             }
                             break;
-
-                        //// 선택지 처리
-                        //case 6:
-                        //    if (int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
-                        //    {
-                        //        if (Enum.IsDefined(typeof(eHasSelection), intField)) // 정수값이 enum에 정의되었는지 확인
-                        //        {
-                        //            info.hasSelection = (eHasSelection)intField;
-                        //        }
-                        //        else
-                        //        {
-                        //            Debug.LogWarning($"{intField}는 {typeof(eHasSelection).Name}에 정의되지 않았음");
-                        //        }
-                        //    }
-                        //    else
-                        //    {
-                        //        Debug.LogWarning($"{field}는 정수값이 아닙니다.");
-                        //    }
-                        //    break;
-                        //// 선택지가 존재하는 경우에만(기본값 NO)
-                        //default:
-                        //    if (info.hasSelection == eHasSelection.yes)
-                        //    {
-                        //        // 비어있는경우 제외
-                        //        if (field.Length > 0)
-                        //        {
-                        //            if ((field_num % 2) == 1)
-                        //            {
-
-                        //                // 선택지 스크립트
-                        //                info.selectionScript.Add(field);
-                        //            }
-                        //            else
-                        //            {
-                        //                // 선택지에 따른 처리
-                        //                if (int.TryParse(field, out intField))
-                        //                {
-                        //                    info.SelectionCallback.Add(CallbackManager.Instance.CallBackList_DefaultText(intField));
-                        //                }
-                        //                else
-                        //                {
-                        //                    Debug.LogAssertion($"[{field}]는 정수값이 아님");
-                        //                }
-                        //            }
-                        //        }
-
-                        //    }
-                        //    break;
                     }
 
                     field_num++;
@@ -487,14 +443,8 @@ public class CsvManager : Singleton<CsvManager>
 
                         case 1: itemInfo.name = field; break;
 
-                        case 2:
-                            {
-                                //'_'를 줄바꿈으로 변환
-                                string[] scripts = field.Split('_');
-                                itemInfo.description = string.Join('\n', scripts);
-                            } break;
 
-                        case 3:
+                        case 2:
                             if (int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
                             {
                                 if(intField == 0)
@@ -517,7 +467,7 @@ public class CsvManager : Singleton<CsvManager>
                             break;
 
                         // 소모성 여부
-                        case 4:
+                        case 3:
                             if(itemInfo.isAvailable)
                             {
                                 if (int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
@@ -543,7 +493,7 @@ public class CsvManager : Singleton<CsvManager>
                             break;
 
                             // 사용시 데이터
-                        case 5:
+                        case 4:
                             if(itemInfo.isAvailable)
                             {
                                 if (float.TryParse(field, out float floatField))
@@ -558,7 +508,7 @@ public class CsvManager : Singleton<CsvManager>
                             break;
 
                             // 판매가능 여부
-                        case 6:
+                        case 5:
                             if (int.TryParse(field, out intField)) // 문자열을 정수형으로 캐스팅
                             {
                                 if (intField == 0)
@@ -581,7 +531,7 @@ public class CsvManager : Singleton<CsvManager>
                             break;
 
                             // 판매시 가격
-                        case 7:
+                        case 6:
                             if(itemInfo.isForSale)
                             {
                                 if (int.TryParse(field, out int intField2))
@@ -620,16 +570,6 @@ public class CsvManager : Singleton<CsvManager>
         {
             eItemType itemType = itemPlusInfo.type;
 
-            //// 아이템에 해당하는 프리팹을 연결
-            //if(ItemInfo_Dict.ContainsKey(itemType))
-            //{
-            //    ItemInfo_Dict[itemType].itemPrefab = itemPlusInfo.itemPrefab;
-            //}
-            //else
-            //{
-            //    Debug.LogAssertion($"serailNumber{itemType}는 딕셔너리 키에 없습니다.");
-            //}
-
             // 사용 가능한 경우
             if (ItemInfo_Dict[itemType].isAvailable)
             {
@@ -640,15 +580,72 @@ public class CsvManager : Singleton<CsvManager>
             }
 
         }
-        
-        //// 처리된 데이터의 확인
-        //foreach(eItemType serail in Enum.GetValues(typeof(eItemType)))
-        //{
-        //    if (serail == eItemType.None) continue;
+    }
 
-        //    Debug.Log($"csv Item({ItemInfo_Dict[serail].name}) 프린트 생략");
-        //    PrintProperties(ItemInfo_Dict[serail]);
-        //}
+    private void ProcessCsvOfItemDescription()
+    {
+        string path = Path.Combine("CSV", "Item", "ItemDescription");
+
+        if (Application.platform == RuntimePlatform.Android)
+        {
+            path = Path.Combine(Application.streamingAssetsPath, path);
+        }
+
+        LoadCsv<cQuestInfo>(path,
+            (row, None) =>
+            {
+                int field_num = 0;
+                eItemType itemType = eItemType.None;
+
+                // 각 행의 처리 시작
+                foreach (string field in row)
+                {
+                    switch (field_num)
+                    {
+                        case 0:
+                            if (eItemType.TryParse(field, out eItemType type))
+                            {
+                                itemType = type;
+                            }
+                            else
+                            {
+                                if (field != "")
+                                {
+                                    Debug.LogWarning($"[{field}]는 아이템 시리얼번호가 될 수 없음");
+                                }
+                            }
+                            break;
+
+                        case 1:
+                            if(field.Contains("{newline}"))
+                            {
+                                string resultString = field.Replace("{newline}", "\n");
+                                ItemInfo_Dict[itemType].descriptionList.Add(resultString);
+                            }
+                            else
+                            {
+                                if (string.IsNullOrEmpty(field) == false)
+                                    ItemInfo_Dict[itemType].descriptionList.Add(field);
+                            }
+                            break;
+
+                        default:
+                            Debug.LogAssertion($"{field}는 잘못된 항목에 위치함");
+                            break;
+                    }
+                    field_num++;
+                }
+            }
+            );
+
+        // 처리된 데이터의 확인
+        foreach (eItemType type in Enum.GetValues(typeof(eItemType)))
+        {
+            if (type == eItemType.None) continue;
+
+            //Debug.Log($"csv Item({QuestInfo_Dict[type].name}) 프린트 생략");
+            PrintProperties(ItemInfo_Dict[type]);
+        }
     }
 
     private void ProcessCsvOfQuestInfo()
@@ -681,6 +678,7 @@ public class CsvManager : Singleton<CsvManager>
                                 questInfo.type = enumField; // 기본키
                                 questInfo.callback_endConditionCheck = CallbackManager.Instance.CallBackList_Quest((int)enumField); // 체크
                                 questInfo.isComplete = false;
+                                questInfo.hasReceivedReward = false;
                             }
                             else
                             {
@@ -796,7 +794,16 @@ public class CsvManager : Singleton<CsvManager>
                             break;
 
                         case 1:
-                            QuestInfo_Dict[questType].descriptionList.Add(field);
+                            if (field.Contains("{newline}"))
+                            {
+                                string resultString = field.Replace("{newline}", "\n");
+                                QuestInfo_Dict[questType].descriptionList.Add(resultString);
+                            }
+                            else
+                            {
+                                if (string.IsNullOrEmpty(field) == false)
+                                    QuestInfo_Dict[questType].descriptionList.Add(field);
+                            }
                             break;
 
                         default:

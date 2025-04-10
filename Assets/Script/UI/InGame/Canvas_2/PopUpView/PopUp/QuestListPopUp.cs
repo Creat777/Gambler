@@ -13,20 +13,6 @@ public class QuestListPopUp : PopUpBase<QuestListPopUp>
             if(_questContentPopUp == null)
             {
                 Debug.LogAssertion("QuestListPopUp에 QuestContentPopUp가 연결되지 않았음");
-                //GameObject[] quests =  GameObject.FindGameObjectsWithTag("Quest");
-                //if (quests.Length != 2) Debug.LogAssertion("태그가 부착되지 않았음");
-                //foreach(GameObject quest in quests)
-                //{
-                //    if (quest == gameObject) continue;
-                //    else
-                //    {
-                //        _questContentPopUp = quest.GetComponent<QuestContentPopUp>();
-                //    }
-                //    if(_questContentPopUp == null)
-                //    {
-                //        Debug.LogAssertion("QuestContentPopUp에 스크립트 연결이 안됐음");
-                //    }
-                //}
             }
             return _questContentPopUp;
         }
@@ -67,7 +53,7 @@ public class QuestListPopUp : PopUpBase<QuestListPopUp>
                     if (questInfo != null)
                     {
                         questPanel.SetQuestdata(quest, questInfo);
-                        questPanel.InitQuestPanel();
+                        questPanel.InitPanel();
 
                         // 퀘스트 항목을 클릭시 호출
                         questPanel.SetButtonCallback(

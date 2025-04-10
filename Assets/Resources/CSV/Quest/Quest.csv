@@ -1,2 +1,2 @@
 "id(conditionCheck, description에 활용)",Name(string),reward_coin(int),reward_items(itemType),repeatable(bool)
-1,밖을 둘러보자,0,0,0
+1,밖을 둘러보자,100,0,0

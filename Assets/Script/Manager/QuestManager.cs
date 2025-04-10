@@ -63,11 +63,30 @@ public class QuestManager : Singleton<QuestManager>
         //GameManager.connector_InGame.popUpView_Script.inventoryPopUp.RefreshPopUp();
     }
 
+    public void CheckAllQuest()
+    {
+        foreach(sQuest quest in questHashSet)
+        {
+            cQuestInfo questInfo = CsvManager.Instance.GetQuestInfo(quest.type);
+
+            // 완료하지 않은것만 체크
+            if (questInfo.isComplete) continue;
+
+            questInfo.callback_endConditionCheck();
+        }
+    }
+
     public void PlayerCompleteQuest(eQuestType questType)
     {
         cQuestInfo questInfo = CsvManager.Instance.GetQuestInfo(questType);
-
-        Debug.Log("애니메이션 필요");
         questInfo.isComplete = true;
+
+        // 보상이 따로 없는 경우는 바로 완료상태가 되도록 설정
+        if (questInfo.rewardCoin == 0 && questInfo.rewardItemType == eItemType.None)
+            questInfo.hasReceivedReward = true;
+
+        EventManager.Instance.SetEventMessage($"퀘스트\n{questInfo.name}\n성공!");
+        EventManager.Instance.PlaySequnce_EventAnimation();
     }
+
 }

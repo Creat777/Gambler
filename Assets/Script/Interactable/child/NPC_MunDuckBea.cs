@@ -1,16 +1,17 @@
 using PublicSet;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditorInternal.VersionControl.ListControl;
 
 public class NPC_MunDuckBea : InteractableObject
 {
     eTextScriptFile currentFile;
-    eStage currentStage;
+    eStage currentStage { get { return GameManager.Instance.currentStage; } }
+    eStage LastStage;
 
     private void Start()
     {
         currentFile = eTextScriptFile.NPC_MunDuckBea_Encounter;
-        currentStage = GameManager.Instance.currentStage;
     }
     public override eTextScriptFile GetInteractableEnum()
     {
@@ -32,9 +33,9 @@ public class NPC_MunDuckBea : InteractableObject
     private void FixedUpdate()
     {
         // 스테이지 변경시 해당스테이지의 Encounter를 시작하도록 조정
-        if (currentStage != GameManager.Instance.currentStage)
+        if (LastStage != currentStage)
         {
-            currentStage = GameManager.Instance.currentStage;
+            LastStage = currentStage;
             currentFile = eTextScriptFile.NPC_MunDuckBea_Encounter;
         }
     }

@@ -6,7 +6,7 @@ using UnityEngine;
 // æ¿∫π±ÕΩ√ ΩÃ±€≈Ê ∞¥√º¿« √≥∏Æ ¥„¥Á
 public class Connector_InGame : Connector
 {
-    public Canvas_InGame MainCanvas_script;
+    public Canvas0_InGame canvas0_InGame;
 
     public GameObject player;
     public GameObject insideOfHouse;

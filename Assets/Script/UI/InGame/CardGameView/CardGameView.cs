@@ -12,6 +12,7 @@ public class CardGameView : MonoBehaviour
     public CardScreenButton cardScreenButton;
     public DiceButton diceButton;
     public SelectCompleteButton selectCompleteButton;
+    public CasinoView casinoView;
 
     public GameObject SubScreen_Card;
     public GameObject StartButton;
@@ -50,6 +51,11 @@ public class CardGameView : MonoBehaviour
     private void OnEnable()
     {
         cardGamePlayManager.EnterCardGame();
+    }
+
+    private void OnDisable()
+    {
+        casinoView.onlyOneLivesButton.SetPlayerCantPlayThis();
     }
 
 
